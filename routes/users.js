@@ -45,31 +45,35 @@ router.post("/register", function (req, res, next) {
   const salt = saltHash.salt;
   const hash = saltHash.hash;
 
-  User.find({ username: req.body.username }, (err, data) => {
-    if (err) next(err);
-    if (data.length) return res.json({ err: "username already exists" });
+  User.find(
+    { $or: [{ username: req.body.username }, { email: req.body.email }] },
+    (err, data) => {
+      if (err) next(err);
 
-    const newUser = new User({
-      username: req.body.username,
-      hash: hash,
-      salt: salt,
-    });
+      if (data.length > 0) {
+        if (data[0].username === req.body.username)
+          return res.json({ success: false, msg: "username already exists" });
+        if (data[0].email === req.body.email)
+          return res.json({ success: false, msg: "email already exists" });
+      }
 
-    newUser
-      .save()
-      .then((user) => {
-        const id = user._id;
-        const jwt = authUtils.issueJWT(user);
+      const newUser = new User({
+        username: req.body.username,
+        hash: hash,
+        salt: salt,
+        email: req.body.email,
+      });
 
-        res.json({
-          success: true,
-          user: user,
-          token: jwt.token,
-          expiresIn: jwt.expires,
-        });
-      })
-      .catch((err) => next(err));
-  });
+      newUser
+        .save()
+        .then((user) => {
+          res.json({
+            success: true,
+          });
+        })
+        .catch((err) => next(err));
+    }
+  );
 });
 
 module.exports = router;
