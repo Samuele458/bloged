@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const User = mongoose.model("User");
+const Verification = mongoose.model("Verification");
 const passport = require("passport");
 const authUtils = require("../lib/authUtils");
+const crypto = require("crypto");
 
 router.post("/login", function (req, res, next) {
   User.findOne({ username: req.body.username })
@@ -39,7 +41,18 @@ router.post("/login", function (req, res, next) {
 
 // TODO
 router.post("/register", function (req, res, next) {
-  console.log(req.body.password);
+  let email = req.body.email.trim();
+  let username = req.body.username.trim();
+  let password = req.body.password;
+
+  //checking for formats
+  if (!authUtils.validateEmailFormat(email))
+    return res.json({ success: false, msg: "invalid email format" });
+  else if (!authUtils.validateUsernameFormat(username))
+    return res.json({ success: false, msg: "invalid username format" });
+  else if (!authUtils.validatePasswordFormat(password))
+    return res.json({ success: false, msg: "invalid password format" });
+
   const saltHash = authUtils.hashPassword(req.body.password);
 
   const salt = saltHash.salt;
@@ -67,13 +80,48 @@ router.post("/register", function (req, res, next) {
       newUser
         .save()
         .then((user) => {
-          res.json({
-            success: true,
+          const newVerification = new Verification({
+            verificationString: crypto.randomBytes(64).toString("hex"),
+            user: user._id,
           });
+
+          newVerification
+            .save()
+            .then((verification) => {
+              authUtils.sendVerificationEmail(
+                user.email,
+                verification.verificationString,
+                "localhost:3000"
+              );
+              res.json({
+                success: true,
+              });
+            })
+            .catch((err) => next(err));
         })
         .catch((err) => next(err));
     }
   );
 });
 
+router.get("/verify/:id", (req, res, next) => {
+  console.log(req.params);
+  Verification.findOneAndDelete({ verificationString: req.params.id })
+    .populate("user")
+    .exec((err, data) => {
+      if (err) console.log(err);
+
+      if (data) {
+        User.findByIdAndUpdate(data.user.id, { active: true }, (err, user) => {
+          if (err) console.log(err);
+
+          res.json({ success: true, msg: "User's account verified." });
+        });
+      } else {
+        res.json({ success: false, msg: "Expired verification" });
+      }
+    });
+});
+
+router.put("/:username");
 module.exports = router;

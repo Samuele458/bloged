@@ -30,6 +30,10 @@ app.use(passport.initialize());
 
 app.use(require("./routes"));
 
+app.get("*", (req, res) => {
+  res.send("eheheh");
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);

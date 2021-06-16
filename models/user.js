@@ -17,6 +17,17 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  active: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 mongoose.model("User", UserSchema);
+
+const VerificationSchema = new mongoose.Schema({
+  verificationString: { type: String, required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+});
+
+mongoose.model("Verification", VerificationSchema);
