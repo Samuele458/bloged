@@ -6,6 +6,7 @@ const passport = require("passport");
 const authUtils = require("../lib/authUtils");
 const crypto = require("crypto");
 const authMiddlewares = require("./authMiddlewares");
+const { config } = require("../config");
 
 router.post("/login", function (req, res, next) {
   User.findOne({ username: req.body.username })
@@ -45,7 +46,27 @@ router.post("/register", function (req, res, next) {
   let email = req.body.email.trim();
   let username = req.body.username.trim();
   let password = req.body.password;
-  let role = req.body.role;
+  let role = req.body.role || "subscriber";
+
+  let roleLevel = authUtils.getRoleLevel(role);
+
+  //check if roles exist
+  if (typeof roleLevel === "undefined") {
+    //unknown role
+    return res.status(401).json({ success: false, msg: "Unknown role" });
+  }
+
+  if (req.authenticated) {
+    let roleLevel = authUtils.getRoleLevel(req.user.role);
+    //check if user has permissions to set the role
+    if (reqRoleLevel <= roleLevel) {
+      return res.status(401).json({ success: false, msg: "Unauthorized role" });
+    }
+  } else if (roleLevel > 1) {
+    return res.status(401).json({ success: false, msg: "Unauthorized role" });
+  }
+
+  console.log(roleLevel, role);
 
   //checking for formats
   if (!authUtils.validateEmailFormat(email))
@@ -55,28 +76,29 @@ router.post("/register", function (req, res, next) {
   else if (!authUtils.validatePasswordFormat(password))
     return res.json({ success: false, msg: "invalid password format" });
 
-  const saltHash = authUtils.hashPassword(req.body.password);
+  const saltHash = authUtils.hashPassword(password);
 
   const salt = saltHash.salt;
   const hash = saltHash.hash;
 
   User.find(
-    { $or: [{ username: req.body.username }, { email: req.body.email }] },
+    { $or: [{ username: username }, { email: email }] },
     (err, data) => {
       if (err) next(err);
 
       if (data.length > 0) {
-        if (data[0].username === req.body.username)
+        if (data[0].username === username)
           return res.json({ success: false, msg: "username already exists" });
-        if (data[0].email === req.body.email)
+        if (data[0].email === email)
           return res.json({ success: false, msg: "email already exists" });
       }
 
       const newUser = new User({
-        username: req.body.username,
+        username: username,
         hash: hash,
         salt: salt,
-        email: req.body.email,
+        email: email,
+        role: role,
       });
 
       newUser
