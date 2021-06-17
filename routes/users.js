@@ -5,6 +5,7 @@ const Verification = mongoose.model("Verification");
 const passport = require("passport");
 const authUtils = require("../lib/authUtils");
 const crypto = require("crypto");
+const authMiddlewares = require("./authMiddlewares");
 
 router.post("/login", function (req, res, next) {
   User.findOne({ username: req.body.username })
@@ -44,6 +45,7 @@ router.post("/register", function (req, res, next) {
   let email = req.body.email.trim();
   let username = req.body.username.trim();
   let password = req.body.password;
+  let role = req.body.role;
 
   //checking for formats
   if (!authUtils.validateEmailFormat(email))
@@ -123,5 +125,9 @@ router.get("/verify/:id", (req, res, next) => {
     });
 });
 
-router.put("/:username");
+//edit
+router.get("/hello", authMiddlewares.optionalAuthenticate, (req, res) => {
+  //console.log(req);
+  res.send(req.authenticated);
+});
 module.exports = router;

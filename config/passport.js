@@ -17,7 +17,14 @@ const strategy = new JwtStrategy(options, (payload, done) => {
   User.findOne({ _id: payload.sub })
     .then((user) => {
       if (user) {
-        return done(null, user);
+        //just keep some user information in token payload
+        let userObj = {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+        };
+
+        return done(null, userObj);
       } else {
         return done(null, false);
       }
