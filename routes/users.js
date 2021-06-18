@@ -66,8 +66,6 @@ router.post("/register", function (req, res, next) {
     return res.status(401).json({ success: false, msg: "Unauthorized role" });
   }
 
-  console.log(roleLevel, role);
-
   //checking for formats
   if (!authUtils.validateEmailFormat(email))
     return res.json({ success: false, msg: "invalid email format" });
