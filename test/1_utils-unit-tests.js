@@ -62,3 +62,19 @@ describe("Credentials format", () => {
     assert.isTrue(authUtils.validateUsernameFormat("123sdsd"));
   });
 });
+
+describe("Permissions tests", () => {
+  it("GetRoleLevel() returns correct permission levels", () => {
+    assert.isNotFalse(authUtils.getRoleLevel("admin")); //admin probably will be removed
+    assert.isNotFalse(authUtils.getRoleLevel("subscriber"));
+    assert.isNotFalse(authUtils.getRoleLevel("owner"));
+
+    assert.isTrue(
+      authUtils.getRoleLevel("owner") > authUtils.getRoleLevel("admin")
+    );
+
+    assert.isTrue(
+      authUtils.getRoleLevel("admin") > authUtils.getRoleLevel("subscriber")
+    );
+  });
+});
