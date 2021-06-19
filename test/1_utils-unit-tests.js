@@ -43,4 +43,22 @@ describe("Credentials format", () => {
       assert.isFalse(authUtils.validateEmailFormat(email));
     });
   });
+
+  it("Validation password format", () => {
+    assert.isTrue(authUtils.validatePasswordFormat("12345678"));
+    assert.isTrue(authUtils.validatePasswordFormat("rwerw267"));
+    assert.isTrue(authUtils.validatePasswordFormat("rwerw267@23gd///2332"));
+    assert.isFalse(authUtils.validatePasswordFormat(""));
+    assert.isFalse(authUtils.validatePasswordFormat("123"));
+    assert.isFalse(authUtils.validatePasswordFormat("123sdsd"));
+  });
+
+  it("Validation username format", () => {
+    assert.isTrue(authUtils.validateUsernameFormat("12345678"));
+    assert.isTrue(authUtils.validateUsernameFormat("rwerw267"));
+    assert.isFalse(authUtils.validateUsernameFormat("rwerw267@23gd///2332"));
+    assert.isFalse(authUtils.validateUsernameFormat(""));
+    assert.isTrue(authUtils.validateUsernameFormat("123"));
+    assert.isTrue(authUtils.validateUsernameFormat("123sdsd"));
+  });
 });

@@ -31,7 +31,7 @@ app.use(passport.initialize());
 app.use(require("./routes"));
 
 app.get("*", (req, res) => {
-  res.send("eheheh");
+  res.send(req.subdomains);
 });
 
 const port = process.env.PORT || 3000;
