@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "mocha || true"
+    "test": "mocha || true",
+    "genkeypair": "node generateKeypair.js"
   },
   "repository": {
     "type": "git",
