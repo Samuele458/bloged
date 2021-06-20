@@ -11,6 +11,7 @@ require("./config/database");
 
 //loading models
 require("./models/user");
+require("./models/blog");
 
 //fetch POST parameters
 app.use(express.json());
