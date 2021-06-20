@@ -9,8 +9,54 @@ const BlogSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  //admins: [{ type: String, ref: "User" }],
   admins: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 mongoose.model("Blog", BlogSchema);
+
+const CategorySchema = new mongoose.Schema({
+  urlName: {
+    type: String,
+    required: true,
+  },
+  fullName: {
+    type: String,
+    required: true,
+  },
+  description: String,
+  blog: { type: mongoose.Schema.Types.ObjectId, ref: "Blog" },
+});
+
+mongoose.model("Category", CategorySchema);
+
+const TagSchema = new mongoose.Schema({
+  urlName: {
+    type: String,
+    required: true,
+  },
+  fullName: {
+    type: String,
+    required: true,
+  },
+  description: String,
+  blog: { type: mongoose.Schema.Types.ObjectId, ref: "Blog" },
+});
+
+mongoose.model("Tag", TagSchema);
+
+const PostSchema = new mongoose.Schema({
+  urlName: {
+    type: String,
+    required: true,
+  },
+  fullName: {
+    type: String,
+    required: true,
+  },
+  description: String,
+  blog: { type: mongoose.Schema.Types.ObjectId, ref: "Blog" },
+  tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }],
+  categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+});
+
+mongoose.model("Post", PostSchema);

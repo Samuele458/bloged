@@ -4,6 +4,27 @@ const passport = require("passport");
 const authUtils = require("../lib/authUtils");
 const Blog = mongoose.model("Blog");
 
+//get blog data
+router.get("/:blogUrlName", (req, res, next) => {
+  Blog.findOne({ urlName: req.params.blogUrlName }, (err, blogData) => {
+    if (err) next(err);
+
+    if (blogData)
+      res.status(200).json({
+        success: true,
+        data: {
+          urlName: blogData.urlName,
+          fullName: blogData.fullName,
+        },
+      });
+    else
+      res.status(404).json({
+        success: false,
+        msg: "Unknown blog.",
+      });
+  });
+});
+
 //create new blog
 router.post(
   "/",
@@ -135,5 +156,7 @@ router.delete(
     });
   }
 );
+
+//TODO: add /:blog/admin for add and remove admins from blog
 
 module.exports = router;
