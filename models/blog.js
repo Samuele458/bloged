@@ -9,6 +9,7 @@ const BlogSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  //admins: [{ type: String, ref: "User" }],
   admins: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
