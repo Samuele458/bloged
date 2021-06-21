@@ -7,6 +7,7 @@ const authUtils = require("../lib/authUtils");
 const crypto = require("crypto");
 const authMiddlewares = require("./authMiddlewares");
 const { config } = require("../config");
+const { runInNewContext } = require("vm");
 
 router.post("/login", function (req, res, next) {
   User.findOne({ username: req.body.username })
@@ -53,7 +54,7 @@ router.post("/register", function (req, res, next) {
   //check if roles exist
   if (typeof roleLevel === "undefined") {
     //unknown role
-    return res.status(401).json({ success: false, msg: "Unknown role" });
+    return res.status(400).json({ success: false, msg: "Unknown role" });
   }
 
   if (req.authenticated) {
@@ -68,11 +69,17 @@ router.post("/register", function (req, res, next) {
 
   //checking for formats
   if (!authUtils.validateEmailFormat(email))
-    return res.json({ success: false, msg: "invalid email format" });
+    return res
+      .status(400)
+      .json({ success: false, msg: "invalid email format" });
   else if (!authUtils.validateUsernameFormat(username))
-    return res.json({ success: false, msg: "invalid username format" });
+    return res
+      .status(400)
+      .json({ success: false, msg: "invalid username format" });
   else if (!authUtils.validatePasswordFormat(password))
-    return res.json({ success: false, msg: "invalid password format" });
+    return res
+      .status(400)
+      .json({ success: false, msg: "invalid password format" });
 
   const saltHash = authUtils.hashPassword(password);
 
@@ -86,9 +93,13 @@ router.post("/register", function (req, res, next) {
 
       if (data.length > 0) {
         if (data[0].username === username)
-          return res.json({ success: false, msg: "username already exists" });
+          return res
+            .status(400)
+            .json({ success: false, msg: "username already exists" });
         if (data[0].email === email)
-          return res.json({ success: false, msg: "email already exists" });
+          return res
+            .status(400)
+            .json({ success: false, msg: "email already exists" });
       }
 
       const newUser = new User({
@@ -152,5 +163,20 @@ router.get("/verify/:id", (req, res, next) => {
       }
     });
 });
+
+router.delete(
+  "/:username",
+  passport.authenticate("jwt", { session: false }),
+  (req, res, next) => {
+    if (req.params.username === req.user.username) {
+      User.findByIdAndDelete(req.user._id, (err, userData) => {
+        if (userData) res.status(200).json({ success: true });
+        else res.status(404).json({ success: false, msg: "Unknown user" });
+      });
+    } else {
+      res.status(401).json({ success: false, msg: "Unauthorized." });
+    }
+  }
+);
 
 module.exports = router;
