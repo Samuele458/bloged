@@ -97,29 +97,37 @@ router.post("/register", function (req, res, next) {
         salt: salt,
         email: email,
         role: role,
+        active: process.env.NODE_ENV === "test", //if test, true
       });
 
       newUser
         .save()
         .then((user) => {
-          const newVerification = new Verification({
-            verificationString: crypto.randomBytes(64).toString("hex"),
-            user: user._id,
-          });
+          //email verification is disabled in unit tests
+          if (process.env.NODE_ENV === "test") {
+            res.json({
+              success: true,
+            });
+          } else {
+            const newVerification = new Verification({
+              verificationString: crypto.randomBytes(64).toString("hex"),
+              user: user._id,
+            });
 
-          newVerification
-            .save()
-            .then((verification) => {
-              authUtils.sendVerificationEmail(
-                user.email,
-                verification.verificationString,
-                "localhost:3000"
-              );
-              res.json({
-                success: true,
-              });
-            })
-            .catch((err) => next(err));
+            newVerification
+              .save()
+              .then((verification) => {
+                authUtils.sendVerificationEmail(
+                  user.email,
+                  verification.verificationString,
+                  "localhost:3000"
+                );
+                res.json({
+                  success: true,
+                });
+              })
+              .catch((err) => next(err));
+          }
         })
         .catch((err) => next(err));
     }
@@ -145,9 +153,4 @@ router.get("/verify/:id", (req, res, next) => {
     });
 });
 
-//edit
-router.get("/hello", authMiddlewares.optionalAuthenticate, (req, res) => {
-  //console.log(req);
-  res.send(req.authenticated);
-});
 module.exports = router;

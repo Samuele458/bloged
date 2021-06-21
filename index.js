@@ -7,7 +7,7 @@ const passport = require("passport");
 const app = new express();
 
 //MongoDB database
-require("./config/database");
+require("./config/database")(app);
 
 //loading models
 require("./models/user");

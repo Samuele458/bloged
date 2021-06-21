@@ -36,6 +36,9 @@ router.post(
 
       //check if blog exists
       if (!blog) res.status(404).json({ success: false, msg: "Unknown blog." });
+      //checks if user has rights to edit blog
+      else if (!blogToEdit.admins.includes(req.user._id))
+        return res.status(401).json({ success: false, msg: "Unauthorized." });
       else
         Tag.findOne(
           {
@@ -67,7 +70,8 @@ router.post(
   }
 );
 
-router.put("/:tagUrlName", (req, res, next) => {});
+router.put("/:blogUrlName/tags/:tagUrlName", (req, res, next) => {});
+
 router.delete("/:tagUrlName", (req, res, next) => {});
 
 module.exports = router;
