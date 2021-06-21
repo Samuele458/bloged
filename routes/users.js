@@ -7,13 +7,52 @@ const authUtils = require("../lib/authUtils");
 const crypto = require("crypto");
 const authMiddlewares = require("./authMiddlewares");
 const { config } = require("../config");
-const { runInNewContext } = require("vm");
 
 router.post("/login", function (req, res, next) {
-  User.findOne({ username: req.body.username })
+  let username = req.body.username;
+  let email = req.body.email;
+  let password = req.body.password;
+
+  //object used to query user
+  let queryObj = {};
+
+  if (!password && !authUtils.validatePasswordFormat(password))
+    return res.status(400).json({
+      success: false,
+      msg: "Invalid password format",
+    });
+
+  //only username or email
+  if ((typeof email === "undefined") ^ (typeof username === "undefined")) {
+    if (email) {
+      if (authUtils.validateEmailFormat(email))
+        queryObj = { email: email.trim() };
+      else
+        return res.status(400).json({
+          success: false,
+          msg: "Invalid email format",
+        });
+    } else if (authUtils.validateUsernameFormat(username)) {
+      if (authUtils.validateUsernameFormat(username))
+        queryObj = { username: username.trim() };
+      else
+        return res.status(400).json({
+          success: false,
+          msg: "Invalid username format",
+        });
+    }
+  } else {
+    //both email and username cannot be used toghether to login. Only one of them.
+    return res.status(400).json({
+      success: false,
+      msg: "Use email or username to login.",
+    });
+  }
+
+  User.findOne(queryObj)
     .then((user) => {
       if (!user) {
-        res.status(401).json({ success: false, msg: "could not find user" });
+        res.status(404).json({ success: false, msg: "Unknown user" });
       }
 
       const isValid = authUtils.validatePassword(

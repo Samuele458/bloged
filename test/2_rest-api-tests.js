@@ -6,9 +6,6 @@ const { request } = require("chai");
 
 chai.use(chaiHttp);
 
-//variable used authorization
-let token;
-
 //waiting for mongoDB connection
 before(function (done) {
   this.timeout(50000);
@@ -20,6 +17,9 @@ before(function (done) {
 
 describe("REST API tests", () => {
   describe("Users authentication", () => {
+    //variable used for JWT authorization
+    let token;
+
     it("POST /users/register - Valid credentials", (done) => {
       chai
         .request(server)
@@ -100,7 +100,39 @@ describe("REST API tests", () => {
         });
     });
 
-    it("POST /users/login - Valid credentials", (done) => {
+    it("POST /users/login - Wrong username", (done) => {
+      chai
+        .request(server)
+        .post("/users/login")
+        .send({
+          username: "randomUser",
+          password: "c0mmon_pw123@",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 404);
+          assert.equal(res.body.success, false);
+          token = res.body.token;
+          done();
+        });
+    });
+
+    it("POST /users/login - Wrong email", (done) => {
+      chai
+        .request(server)
+        .post("/users/login")
+        .send({
+          email: "exam.ple2d81636@example.com",
+          password: "c0mmon_pw123@",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 404);
+          assert.equal(res.body.success, false);
+          token = res.body.token;
+          done();
+        });
+    });
+
+    it("POST /users/login - Login by username", (done) => {
       chai
         .request(server)
         .post("/users/login")
@@ -112,6 +144,39 @@ describe("REST API tests", () => {
           assert.equal(res.status, 200);
           assert.equal(res.body.success, true);
           token = res.body.token;
+
+          done();
+        });
+    });
+
+    it("POST /users/login - Login by email", (done) => {
+      chai
+        .request(server)
+        .post("/users/login")
+        .send({
+          email: "exam.ple281636@example.com",
+          password: "c0mmon_pw123@",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.success, true);
+          token = res.body.token;
+          done();
+        });
+    });
+
+    it("POST /users/login - Provide both email and username", (done) => {
+      chai
+        .request(server)
+        .post("/users/login")
+        .send({
+          email: "exam.ple281636@example.com",
+          username: "SampleUser23",
+          password: "c0mmon_pw123@",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 400);
+          assert.equal(res.body.success, false);
           done();
         });
     });
@@ -149,5 +214,33 @@ describe("REST API tests", () => {
           done();
         });
     });
+  });
+
+  describe("Blog", () => {
+    let token;
+    before((done) => {
+      chai
+        .request(server)
+        .post("/users/register")
+        .send({
+          email: "bloguser8726472@blog.example.com",
+          username: "blogUser",
+          password: "random12345",
+        })
+        .end((err, res) => {
+          if (res.status === 200)
+            chai.request(server).post("/users/register").send({
+              username: "blogUser",
+              password: "random12345",
+            });
+          done();
+        });
+    });
+
+    it("POST /blogs/ - Create new blog", (done) => {
+      done();
+    });
+
+    after((done) => {});
   });
 });
