@@ -59,8 +59,10 @@ router.post(
 
       newBlog.save((err, data) => {
         if (err) next(err);
-        console.log(data);
-        res.send(data);
+        res.status(200).send({
+          success: true,
+          data: data,
+        });
       });
     });
   }

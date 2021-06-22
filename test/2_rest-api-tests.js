@@ -229,18 +229,64 @@ describe("REST API tests", () => {
         })
         .end((err, res) => {
           if (res.status === 200)
-            chai.request(server).post("/users/register").send({
-              username: "blogUser",
-              password: "random12345",
-            });
+            chai
+              .request(server)
+              .post("/users/login")
+              .send({
+                username: "blogUser",
+                password: "random12345",
+              })
+              .end((err, res) => {
+                if (res.status === 200) {
+                  token = res.body.token;
+                  done();
+                }
+              });
+        });
+    });
+
+    it("POST /blogs/ - Invalid url name blog", (done) => {
+      chai
+        .request(server)
+        .post("/blogs")
+        .set({ Authorization: token })
+        .send({
+          urlName: "tech@blog",
+          fullName: "TheTechBlog",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 400);
+          assert.isFalse(res.body.success);
           done();
         });
     });
 
     it("POST /blogs/ - Create new blog", (done) => {
-      done();
+      chai
+        .request(server)
+        .post("/blogs")
+        .set({ Authorization: token })
+        .send({
+          urlName: "tech-blog",
+          fullName: "TheTechBlog",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
     });
 
-    after((done) => {});
+    after((done) => {
+      chai
+        .request(server)
+        .delete("/users/blogUser")
+        .set({ Authorization: token })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.success, true);
+          done();
+        });
+    });
   });
 });
