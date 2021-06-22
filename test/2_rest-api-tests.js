@@ -505,6 +505,39 @@ describe("REST API tests", () => {
         });
     });
 
+    it("GET /blog/:blogUrlName/tags/:tagUrlName - Get tag info", (done) => {
+      chai
+        .request(server)
+        .get("/blogs/test-blog/tags/new")
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.data.urlName, "new");
+          assert.equal(res.body.data.fullName, "New product");
+          done();
+        });
+    });
+
+    it("DELETE /blogs/:blogUrlName/tags/:tagUrlName - Delete tag", (done) => {
+      chai
+        .request(server)
+        .delete("/blogs/test-blog/tags/new")
+        .set({ Authorization: token })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+
+          chai
+            .request(server)
+            .delete("/blogs/test-blog/tags/new-topics")
+            .set({ Authorization: token })
+            .end((err, res) => {
+              assert.equal(res.status, 200);
+              assert.isTrue(res.body.success);
+              done();
+            });
+        });
+    });
+
     after((done) => {
       chai
         .request(server)

@@ -148,7 +148,6 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   (req, res, next) => {
     Blog.findOne({ urlName: req.params.blogUrlName }, (err, blogToDelete) => {
-      if (err) console.log(err);
       if (err) next(err);
 
       //blog doesn't exist
