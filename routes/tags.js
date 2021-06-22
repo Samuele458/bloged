@@ -21,9 +21,13 @@ router.post(
 
     //checking formats
     if (!(urlName && authUtils.validateUrlnameFormat(urlName.trim())))
-      return res.json({ success: false, msg: "Invalid url name format" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid url name format" });
     else if (!fullName)
-      return res.json({ success: false, msg: "Invalid full name format" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid full name format" });
 
     //description is not necessary
     if (description) description = description.trim();
@@ -37,7 +41,7 @@ router.post(
       //check if blog exists
       if (!blog) res.status(404).json({ success: false, msg: "Unknown blog." });
       //checks if user has rights to edit blog
-      else if (!blogToEdit.admins.includes(req.user._id))
+      else if (!blog.admins.includes(req.user._id))
         return res.status(401).json({ success: false, msg: "Unauthorized." });
       else
         Tag.findOne(

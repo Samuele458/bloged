@@ -36,9 +36,13 @@ router.post(
 
     //checking formats
     if (!(urlName && authUtils.validateUrlnameFormat(urlName.trim())))
-      return res.json({ success: false, msg: "Invalid url name format" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid url name format" });
     else if (!fullName)
-      return res.json({ success: false, msg: "Invalid full name format" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid full name format" });
 
     urlName = urlName.trim();
     fullName = fullName.trim();
@@ -48,7 +52,9 @@ router.post(
 
       //check if another blog with the same name already exists
       if (data)
-        return res.json({ success: false, msg: "Url name already exists." });
+        return res
+          .status(400)
+          .json({ success: false, msg: "Url name already exists." });
 
       //creating blog
       const newBlog = new Blog({
@@ -142,6 +148,7 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   (req, res, next) => {
     Blog.findOne({ urlName: req.params.blogUrlName }, (err, blogToDelete) => {
+      if (err) console.log(err);
       if (err) next(err);
 
       //blog doesn't exist

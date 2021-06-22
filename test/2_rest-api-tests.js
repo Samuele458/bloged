@@ -245,6 +245,20 @@ describe("REST API tests", () => {
         });
     });
 
+    it("POST /blogs/ - Trying to create blog without authorization", (done) => {
+      chai
+        .request(server)
+        .post("/blogs")
+        .send({
+          urlName: "tech-blog",
+          fullName: "TheTechBlog",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
     it("POST /blogs/ - Invalid url name blog", (done) => {
       chai
         .request(server)
@@ -277,6 +291,110 @@ describe("REST API tests", () => {
         });
     });
 
+    it("POST /blogs/ - Trying to create blog with existing name", (done) => {
+      chai
+        .request(server)
+        .post("/blogs")
+        .set({ Authorization: token })
+        .send({
+          urlName: "tech-blog",
+          fullName: "TheTechBlog",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 400);
+          assert.isFalse(res.body.success);
+          done();
+        });
+    });
+
+    it("PUT /blogs/:blogUrlName - Trying to edit blog without authorization", (done) => {
+      chai
+        .request(server)
+        .put("/blogs/tech-blog")
+        .send({
+          urlName: "tech-blog-edit",
+          fullName: "TheTechBlog2",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
+    it("PUT /blogs/:blogUrlName - Edit blog", (done) => {
+      chai
+        .request(server)
+        .put("/blogs/tech-blog")
+        .set({ Authorization: token })
+        .send({
+          urlName: "tech-blog-edit",
+          fullName: "TheTechBlog2",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
+    it("GET /blogs/:blogUrlName - Get blog information", (done) => {
+      chai
+        .request(server)
+        .get("/blogs/tech-blog-edit")
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          assert.equal(res.body.data.urlName, "tech-blog-edit");
+          assert.equal(res.body.data.fullName, "TheTechBlog2");
+          done();
+        });
+    });
+
+    it("GET /blogs/:blogUrlName - Trying to get an unknown blog", (done) => {
+      chai
+        .request(server)
+        .get("/blogs/tech-blog")
+        .end((err, res) => {
+          assert.equal(res.status, 404);
+          assert.isFalse(res.body.success);
+          done();
+        });
+    });
+
+    it("DELETE /blogs/:blogUrlName - Trying to delete an unknown blog", (done) => {
+      chai
+        .request(server)
+        .delete("/blogs/tech-blog")
+        .set({ Authorization: token })
+        .end((err, res) => {
+          assert.equal(res.status, 404);
+          assert.isFalse(res.body.success);
+          done();
+        });
+    });
+
+    it("DELETE /blogs/:blogUrlName - Trying to delete a blog without authorization", (done) => {
+      chai
+        .request(server)
+        .delete("/blogs/tech-blog-edit")
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
+    it("DELETE /blogs/:blogUrlName - Delete a blog", (done) => {
+      chai
+        .request(server)
+        .delete("/blogs/tech-blog-edit")
+        .set({ Authorization: token })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
     after((done) => {
       chai
         .request(server)
@@ -286,6 +404,120 @@ describe("REST API tests", () => {
           assert.equal(res.status, 200);
           assert.equal(res.body.success, true);
           done();
+        });
+    });
+  });
+
+  describe("Tags", () => {
+    let token;
+    before((done) => {
+      chai
+        .request(server)
+        .post("/users/register")
+        .send({
+          email: "test.user837263@tst.example.co",
+          username: "testUser",
+          password: "1234@qwertdfg",
+        })
+        .end((err, res) => {
+          chai
+            .request(server)
+            .post("/users/login")
+            .send({
+              username: "testUser",
+              password: "1234@qwertdfg",
+            })
+            .end((err, res) => {
+              token = res.body.token;
+
+              chai
+                .request(server)
+                .post("/blogs")
+                .set({ Authorization: token })
+                .send({
+                  urlName: "test-blog",
+                  fullName: "The Test Blog",
+                })
+                .end((err, res) => {
+                  done();
+                });
+            });
+        });
+    });
+
+    it("POST /:blogUrlName/tags/ - Create new tag without authorization", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/test-blog/tags")
+        .send({
+          urlName: "new",
+          fullName: "New product",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
+    it("POST /blogs/:blogUrlName/tags/ - Create new tag", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/test-blog/tags")
+        .set({ Authorization: token })
+        .send({
+          urlName: "new",
+          fullName: "New product",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
+    it("POST /blogs/:blogUrlName/tags/ - Create new tag without fields", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/test-blog/tags")
+        .set({ Authorization: token })
+        .send({})
+        .end((err, res) => {
+          assert.equal(res.status, 400);
+          assert.isFalse(res.body.success);
+          done();
+        });
+    });
+
+    it("POST /blogs/:blogUrlName/tags/ - Create new tag with description", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/test-blog/tags")
+        .set({ Authorization: token })
+        .send({
+          urlName: "new-topics",
+          fullName: "New topics",
+          description: "Check out new topics!",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
+    after((done) => {
+      chai
+        .request(server)
+        .delete("/blogs/test-blog")
+        .set({ Authorization: token })
+        .end((err, res) => {
+          chai
+            .request(server)
+            .delete("/users/testUser")
+            .set({ Authorization: token })
+            .end((err, res) => {
+              if (res.status === 200) done();
+            });
         });
     });
   });
