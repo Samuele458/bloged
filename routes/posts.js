@@ -6,13 +6,44 @@ const Tag = mongoose.model("Tag");
 const Post = mongoose.model("Post");
 const Blog = mongoose.model("Blog");
 
+router.get("/:blogUrlName/posts/:postUrlName", (req, res, next) => {
+  Blog.findOne({ urlName: req.params.blogUrlName }, (err, blog) => {
+    if (err) next(err);
+
+    //blog doesn't exist
+    if (!blog)
+      return res.status(404).json({ success: false, msg: "Unknown blog." });
+    else
+      Post.findOne(
+        {
+          urlName: req.params.postUrlName,
+          blog: mongoose.Types.ObjectId(blog._id),
+        },
+        (err, post) => {
+          if (err) next(err);
+
+          if (post)
+            res.status(200).json({
+              success: true,
+              data: {
+                urlName: post.urlName,
+                fullName: post.fullName,
+                text: post.text,
+              },
+            });
+          else res.status(404).json({ succes: false, msg: "Unknown post." });
+        }
+      );
+  });
+});
+
 router.post(
   "/:blogUrlName/posts",
   passport.authenticate("jwt", { session: false }),
   (req, res, next) => {
     let urlName = req.body.urlName;
     let fullName = req.body.fullName;
-    let description = req.body.description;
+    let text = req.body.text;
     let tags = req.body.tags;
 
     //checking formats
@@ -25,8 +56,8 @@ router.post(
         .status(400)
         .json({ success: false, msg: "Invalid full name format" });
 
-    //description is not necessary
-    if (description) description = description.trim();
+    //text is not necessary
+    if (text) text = text.trim();
 
     urlName = urlName.trim();
     fullName = fullName.trim();
@@ -52,7 +83,7 @@ router.post(
           },
           (err, tagsFound) => {
             if (err) next(err);
-            
+
             //checking that all tags exists
             if (tagsFound.length !== tags.length)
               res.status(404).json({ success: false, msg: "Unknown tag" });
@@ -73,7 +104,7 @@ router.post(
                   const newPost = new Post({
                     urlName: urlName,
                     fullName: fullName,
-                    description: description,
+                    text: text,
                     blog: mongoose.Types.ObjectId(blog._id),
                     tags: tagsFound.map((tag) =>
                       mongoose.Types.ObjectId(tag._id)
@@ -94,11 +125,10 @@ router.post(
   }
 );
 
-
 router.delete(
-  "/:blogUrlName/posts/:postUrlName", 
+  "/:blogUrlName/posts/:postUrlName",
   passport.authenticate("jwt", { session: false }),
-  (req,res,next) => {
+  (req, res, next) => {
     Blog.findOne({ urlName: req.params.blogUrlName }, (err, blog) => {
       if (err) next(err);
 

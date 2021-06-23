@@ -650,6 +650,34 @@ describe("REST API tests", () => {
         });
     });
 
+    it("POST /blogs/:blogUrlName/posts/ - Trying to create post without authorization", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/test-blog/posts")
+        .send({
+          urlName: "learn-js",
+          fullName: "Learn JavaScript!",
+          tags: ["eg-tag"],
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
+    it("POST /blogs/:blogUrlName/posts/ - Create new post without fields", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/test-blog/posts")
+        .set({ Authorization: token })
+        .send({})
+        .end((err, res) => {
+          assert.equal(res.status, 400);
+          assert.isFalse(res.body.success);
+          done();
+        });
+    });
+
     it("POST /blogs/:blogUrlName/posts/ - Create new post", (done) => {
       chai
         .request(server)
@@ -688,15 +716,12 @@ describe("REST API tests", () => {
         });
     });
 
-
-
     after((done) => {
-
       chai
         .request(server)
         .delete("/blogs/test-blog/tags/eg-tag")
         .set({ Authorization: token })
-        .end((err,res) => {
+        .end((err, res) => {
           chai
             .request(server)
             .delete("/blogs/test-blog")
@@ -710,7 +735,7 @@ describe("REST API tests", () => {
                   if (res.status === 200) done();
                 });
             });
-        })
+        });
     });
   });
 });

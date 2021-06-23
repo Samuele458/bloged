@@ -99,7 +99,7 @@ router.post(
   }
 );
 
-//edit blog
+//edit tag
 router.put(
   "/:blogUrlName/tags/:tagUrlName",
   passport.authenticate("jwt", { session: false }),
