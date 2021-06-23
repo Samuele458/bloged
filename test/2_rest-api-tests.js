@@ -603,7 +603,7 @@ describe("REST API tests", () => {
     });
   });
 
-  describe("Tags", () => {
+  describe("Posts", () => {
     let token;
     before((done) => {
       chai
@@ -667,20 +667,50 @@ describe("REST API tests", () => {
         });
     });
 
-    after((done) => {
+    it("DELETE /blogs/:blogUrlName/posts/:postsUrlName - Delete post without authorization", (done) => {
       chai
         .request(server)
-        .delete("/blogs/test-blog")
+        .delete("/blogs/test-blog/posts/learn-js")
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
+    it("DELETE /blogs/:blogUrlName/posts/:postsUrlName - Delete post", (done) => {
+      chai
+        .request(server)
+        .delete("/blogs/test-blog/posts/learn-js")
         .set({ Authorization: token })
         .end((err, res) => {
+          assert.equal(res.status, 200);
+          done();
+        });
+    });
+
+
+
+    after((done) => {
+
+      chai
+        .request(server)
+        .delete("/blogs/test-blog/tags/eg-tag")
+        .set({ Authorization: token })
+        .end((err,res) => {
           chai
             .request(server)
-            .delete("/users/testUser")
+            .delete("/blogs/test-blog")
             .set({ Authorization: token })
             .end((err, res) => {
-              if (res.status === 200) done();
+              chai
+                .request(server)
+                .delete("/users/testUser")
+                .set({ Authorization: token })
+                .end((err, res) => {
+                  if (res.status === 200) done();
+                });
             });
-        });
+        })
     });
   });
 });

@@ -52,14 +52,7 @@ router.post(
           },
           (err, tagsFound) => {
             if (err) next(err);
-            console.log(tagsFound, {
-              blog: mongoose.Types.ObjectId(blog._id),
-              $or: [
-                tags.map((tag) => ({
-                  urlName: tag,
-                })),
-              ],
-            });
+            
             //checking that all tags exists
             if (tagsFound.length !== tags.length)
               res.status(404).json({ success: false, msg: "Unknown tag" });
@@ -95,6 +88,33 @@ router.post(
                 }
               );
             }
+          }
+        );
+    });
+  }
+);
+
+
+router.delete(
+  "/:blogUrlName/posts/:postUrlName", 
+  passport.authenticate("jwt", { session: false }),
+  (req,res,next) => {
+    Blog.findOne({ urlName: req.params.blogUrlName }, (err, blog) => {
+      if (err) next(err);
+
+      //blog doesn't exist
+      if (!blog)
+        return res.status(404).json({ success: false, msg: "Unknown blog." });
+      else if (!blog.admins.includes(req.user._id))
+        return res.status(401).json({ success: false, msg: "Unauthorized." });
+      else
+        Post.findOneAndDelete(
+          { urlName: req.params.postUrlName },
+          (err, postDeleted) => {
+            if (err) next(err);
+
+            if (postDeleted) res.status(200).json({ success: true });
+            else res.status(404).json({ succe: false, msg: "Unknown post." });
           }
         );
     });

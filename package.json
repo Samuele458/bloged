@@ -4,7 +4,7 @@
   "description": "Easy blog",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "cross-env NODE_ENV=test mocha || true",
     "dev": "nodemon index.js",
     "test": "cross-env NODE_ENV=test mocha || true",
     "genkeypair": "node generateKeypair.js"
