@@ -505,6 +505,54 @@ describe("REST API tests", () => {
         });
     });
 
+    it("PUT /blogs/:blogUrlName/tags/ - Trying to edit tag without authorization", (done) => {
+      chai
+        .request(server)
+        .put("/blogs/test-blog/tags/new-topics")
+        .send({
+          urlName: "another-tag",
+          fullName: "Other stuff",
+          description: "Check out other tag",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
+    it("PUT /blogs/:blogUrlName/tags/ - Trying to edit an unknown tag", (done) => {
+      chai
+        .request(server)
+        .put("/blogs/test-blog/tags/unknown")
+        .set({ Authorization: token })
+        .send({
+          urlName: "another-tag",
+          fullName: "Other stuff",
+          description: "Check out other tag",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 404);
+          done();
+        });
+    });
+
+    it("PUT /blogs/:blogUrlName/tags/ - Edit tag", (done) => {
+      chai
+        .request(server)
+        .put("/blogs/test-blog/tags/new-topics")
+        .set({ Authorization: token })
+        .send({
+          urlName: "another-tag",
+          fullName: "Other stuff",
+          description: "Check out other tag",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
     it("GET /blog/:blogUrlName/tags/:tagUrlName - Get tag info", (done) => {
       chai
         .request(server)
@@ -528,13 +576,94 @@ describe("REST API tests", () => {
 
           chai
             .request(server)
-            .delete("/blogs/test-blog/tags/new-topics")
+            .delete("/blogs/test-blog/tags/another-tag")
             .set({ Authorization: token })
             .end((err, res) => {
               assert.equal(res.status, 200);
               assert.isTrue(res.body.success);
               done();
             });
+        });
+    });
+
+    after((done) => {
+      chai
+        .request(server)
+        .delete("/blogs/test-blog")
+        .set({ Authorization: token })
+        .end((err, res) => {
+          chai
+            .request(server)
+            .delete("/users/testUser")
+            .set({ Authorization: token })
+            .end((err, res) => {
+              if (res.status === 200) done();
+            });
+        });
+    });
+  });
+
+  describe("Tags", () => {
+    let token;
+    before((done) => {
+      chai
+        .request(server)
+        .post("/users/register")
+        .send({
+          email: "test.user837263@tst.example.co",
+          username: "testUser",
+          password: "1234@qwertdfg",
+        })
+        .end((err, res) => {
+          chai
+            .request(server)
+            .post("/users/login")
+            .send({
+              username: "testUser",
+              password: "1234@qwertdfg",
+            })
+            .end((err, res) => {
+              token = res.body.token;
+
+              chai
+                .request(server)
+                .post("/blogs")
+                .set({ Authorization: token })
+                .send({
+                  urlName: "test-blog",
+                  fullName: "The Test Blog",
+                })
+                .end((err, res) => {
+                  chai
+                    .request(server)
+                    .post("/blogs/test-blog/tags")
+                    .set({ Authorization: token })
+                    .send({
+                      urlName: "eg-tag",
+                      fullName: "Example tag",
+                    })
+                    .end((err, res) => {
+                      done();
+                    });
+                });
+            });
+        });
+    });
+
+    it("POST /blogs/:blogUrlName/posts/ - Create new post", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/test-blog/posts")
+        .set({ Authorization: token })
+        .send({
+          urlName: "learn-js",
+          fullName: "Learn JavaScript!",
+          tags: ["eg-tag"],
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
         });
     });
 

@@ -136,46 +136,51 @@ router.put(
       if (!blog.admins.includes(req.user._id))
         return res.status(401).json({ success: false, msg: "Unauthorized." });
 
-      Tag.findOne({ urlName: urlName, blog: blog._id }, (err, tagToEdit) => {
-        if (err) next(err);
+      Tag.findOne(
+        { urlName: req.params.tagUrlName, blog: blog._id },
+        (err, tagToEdit) => {
+          if (err) next(err);
 
-        if (!tagToEdit)
-          return res.status(404).json({ success: false, msg: "Unknown tag." });
+          if (!tagToEdit)
+            return res
+              .status(404)
+              .json({ success: false, msg: "Unknown tag." });
 
-        //checks if user requested to change UrlName
-        if (queryObj.hasOwnProperty("urlName")) {
-          //checks if the new urlName exists (it must be unique)
-          tag.findOne({ urlName: queryObj.urlName }, (err, tagFound) => {
-            if (tagFound)
-              res.status(400).json({
-                success: false,
-                msg: "New url name tag already exists.",
-              });
-            //urlName is unique. Tag can be edited
-            else
-              Tag.findByIdAndUpdate(
-                tagToEdit._id,
-                queryObj,
-                (err, editedTag) => {
-                  if (err) next(err);
+          //checks if user requested to change UrlName
+          if (queryObj.hasOwnProperty("urlName")) {
+            //checks if the new urlName exists (it must be unique)
+            Tag.findOne({ urlName: queryObj.urlName }, (err, tagFound) => {
+              if (tagFound)
+                res.status(400).json({
+                  success: false,
+                  msg: "New url name tag already exists.",
+                });
+              //urlName is unique. Tag can be edited
+              else
+                Tag.findByIdAndUpdate(
+                  tagToEdit._id,
+                  queryObj,
+                  (err, editedTag) => {
+                    if (err) next(err);
 
-                  if (editedTag) res.json({ success: true });
-                  else
-                    return res.json({
-                      success: false,
-                      msg: "Could not edit tag",
-                    });
-                }
-              );
-          });
-        } else
-          Tag.findByIdAndUpdate(tagToEdit._id, queryObj, (err, editedTag) => {
-            if (err) next(err);
+                    if (editedTag) res.json({ success: true });
+                    else
+                      return res.json({
+                        success: false,
+                        msg: "Could not edit tag",
+                      });
+                  }
+                );
+            });
+          } else
+            Tag.findByIdAndUpdate(tagToEdit._id, queryObj, (err, editedTag) => {
+              if (err) next(err);
 
-            if (editedTag) res.json({ success: true });
-            else res.json({ success: false, msg: "Could not edit tag" });
-          });
-      });
+              if (editedTag) res.json({ success: true });
+              else res.json({ success: false, msg: "Could not edit tag" });
+            });
+        }
+      );
     });
   }
 );
