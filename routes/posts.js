@@ -2,9 +2,19 @@ const mongoose = require("mongoose");
 const router = require("express").Router();
 const passport = require("passport");
 const authUtils = require("../lib/authUtils");
+const blogMiddlewares = require("./blogMiddlewares");
 const Tag = mongoose.model("Tag");
 const Post = mongoose.model("Post");
 const Blog = mongoose.model("Blog");
+
+router.get(
+  "/:blogUrlName/beh/:tagUrlName",
+  blogMiddlewares.checkBlogExists("blogUrlName"),
+  blogMiddlewares.checkTagExists("tagUrlName"),
+  (req, res, next) => {
+    res.json(req.checked);
+  }
+);
 
 router.get("/:blogUrlName/posts/:postUrlName", (req, res, next) => {
   Blog.findOne({ urlName: req.params.blogUrlName }, (err, blog) => {

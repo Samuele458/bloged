@@ -715,6 +715,7 @@ describe("REST API tests", () => {
           done();
         });
     });
+    /*
 
     after((done) => {
       chai
@@ -736,6 +737,6 @@ describe("REST API tests", () => {
                 });
             });
         });
-    });
+    });*/
   });
 });

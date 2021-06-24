@@ -20,13 +20,16 @@ describe("Blog Utils tests", () => {
     blogUtils.blogExists("blog-utils", (err, data) => {
       assert.isNull(err);
       assert.equal(data.urlName, "blog-utils");
-      console.log(data);
       done();
     });
   });
 
   it("blogExists - Check for a nonexistent blog", (done) => {
-    done();
+    blogUtils.blogExists("blog-unknown", (err, data) => {
+      assert.isNull(data);
+      assert.equal(err.status, 404);
+      done();
+    });
   });
 
   after((done) => {
