@@ -29,11 +29,18 @@ require("./config/passport")(passport);
 //initialize the passport object on every request
 app.use(passport.initialize());
 
-app.use(require("./routes"));
-
-app.get("*", (req, res) => {
-  res.send(req.subdomains);
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+const s3Utils = require("./lib/s3Utils");
+app.post("/images", upload.single("image"), async (req, res) => {
+  const file = req.file;
+  console.log(file);
+  const result = await s3Utils.uploadToS3(file);
+  console.log(result);
+  res.send("okays");
 });
+
+app.use(require("./routes"));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

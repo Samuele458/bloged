@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Samuele458/easyblog-cms#readme",
   "dependencies": {
+    "aws-sdk": "^2.934.0",
     "chai-http": "^4.3.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
@@ -29,6 +30,7 @@
     "express-validator": "^6.12.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.14",
+    "multer": "^1.4.2",
     "nodemailer": "^6.6.1",
     "nodemon": "^2.0.7",
     "passport": "^0.4.1",

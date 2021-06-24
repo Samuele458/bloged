@@ -1,5 +1,13 @@
 const blogUtils = require("../lib/blogUtils");
 
+/**
+ * Check if a given field is present or not in the request object
+ *
+ * @param {*} req - Request object
+ * @param {*} field - Field name to check
+ * @param {*} where - Location in which find the field (body, params, etc.)
+ * @returns the field data if it is present, otherwise it returns undefined
+ */
 function checkField(req, field, where) {
   locations = ["query", "params", "body"];
 
@@ -18,6 +26,12 @@ function checkField(req, field, where) {
   }
 }
 
+/**
+ * Middeware for checking if a given blog exists in the database or not
+ *
+ * @param {String} field - name of the url name field
+ * @param {String} where - Where to find field (params, query or body) in the req object
+ */
 module.exports.checkBlogExists = (field, where) => {
   return (req, res, next) => {
     blogUrlName = checkField(req, field, where);
@@ -41,6 +55,12 @@ module.exports.checkBlogExists = (field, where) => {
   };
 };
 
+/**
+ * Middeware for checking if a given tag exists in the database or not
+ *
+ * @param {(String|String[])} tagField - tag url name, or array of tag url names
+ * @param {String} whereTagField - Where to find field (params, query or body) in the req object
+ */
 module.exports.checkTagExists = (tagField, whereTagField) => {
   return (req, res, next) => {
     tagUrlName = checkField(req, tagField, whereTagField);

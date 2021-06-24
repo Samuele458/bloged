@@ -6,13 +6,21 @@ const Tag = mongoose.model("Tag");
 
 describe("Blog Utils tests", () => {
   before((done) => {
-    newBlog = new Blog({
+    let newBlog = new Blog({
       urlName: "blog-utils",
       fullName: "Blog Utils",
     });
 
-    newBlog.save((err, data) => {
-      done();
+    newBlog.save((err, blogData) => {
+      let newTag = new Tag({
+        urlName: "tag1",
+        fullName: "Tag number 1",
+        blog: blogData._id,
+      });
+
+      newTag.save((err, tagData) => {
+        done();
+      });
     });
   });
 
@@ -32,9 +40,27 @@ describe("Blog Utils tests", () => {
     });
   });
 
+  it("tagExists - Check for an existing tag", (done) => {
+    blogUtils.tagExists(["tag1"], "blog-utils", (err, data) => {
+      assert.isNull(err);
+      assert.equal(data[0].urlName, "tag1");
+      done();
+    });
+  });
+
+  it("tagExists - Check for a nonexistent tag", (done) => {
+    blogUtils.tagExists(["tag13"], "blog-utils", (err, data) => {
+      assert.isNull(data);
+      assert.equal(err.status, 404);
+      done();
+    });
+  });
+
   after((done) => {
     Blog.findOneAndDelete({ urlName: "blog-utils" }, (err, data) => {
-      done();
+      Tag.findOneAndDelete({ urlName: "tag1" }, (err, data) => {
+        done();
+      });
     });
   });
 });
