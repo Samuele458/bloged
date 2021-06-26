@@ -31,7 +31,7 @@ app.use(passport.initialize());
 
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
-const s3Utils = require("./lib/s3Utils");
+const s3Utils = require("./utils/s3");
 app.post("/images", upload.single("image"), async (req, res) => {
   const file = req.file;
   console.log(file);
@@ -41,6 +41,11 @@ app.post("/images", upload.single("image"), async (req, res) => {
 });
 
 app.use(require("./routes"));
+
+app.use((err, req, res, next) => {
+  console.log(err.message, err.code);
+  res.send("ehe");
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const passport = require("passport");
-const authUtils = require("../lib/authUtils");
+const authUtils = require("../utils/auth");
 const Blog = mongoose.model("Blog");
 
 //get blog data

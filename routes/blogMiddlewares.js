@@ -1,5 +1,5 @@
-const blogUtils = require("../lib/blogUtils");
-const { checkField } = require("../lib/utils");
+const blogUtils = require("../utils/blog");
+const { checkField } = require("../utils/generic");
 
 /**
  * Middeware for checking if a given blog exists in the database or not

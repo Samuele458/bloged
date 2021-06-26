@@ -1,6 +1,6 @@
 const assert = require("chai").assert;
 const app = require("../index.js");
-const authUtils = require("../lib/authUtils");
+const authUtils = require("../utils/auth");
 
 describe("Credentials format", () => {
   it("Validation email format", () => {

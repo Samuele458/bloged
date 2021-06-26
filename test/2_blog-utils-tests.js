@@ -1,5 +1,5 @@
 const assert = require("chai").assert;
-const blogUtils = require("../lib/blogUtils");
+const blogUtils = require("../utils/blog");
 const mongoose = require("mongoose");
 const Blog = mongoose.model("Blog");
 const Tag = mongoose.model("Tag");

@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const jsonwebtoken = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
-const emailUtils = require("./emailUtils");
+const emailUtils = require("./email");
 const { config } = require("../config");
 
 const pathToPrivateKey = path.join(__dirname, "..", "id_rsa_priv.pem");

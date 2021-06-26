@@ -1,18 +1,24 @@
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const passport = require("passport");
-const authUtils = require("../lib/authUtils");
+const authUtils = require("../utils/auth");
 const blogMiddlewares = require("./blogMiddlewares");
 const Tag = mongoose.model("Tag");
 const Blog = mongoose.model("Blog");
-const { checkField } = require("../lib/utils");
+const { checkField } = require("../utils/generic");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const upload = multer({
+  dest: "uploads/",
+  limits: { fileSize: 1 * 1024 * 1024 },
+});
 
 router.post(
   "/:blogUrlName/images/",
+  upload.single("image"),
   blogMiddlewares.checkBlogExists("blogUrlName", "params"), //TODO check user right in blog
   (req, res, next) => {
+    return next(Error("sdfdfsdfsdf"));
+
     //checking title
     if (
       checkField(
@@ -36,6 +42,9 @@ router.post(
       return res
         .status(400)
         .json({ success: false, msg: "Invalid description" });
+
+    const file = req.file;
+    console.log(file);
 
     res.send("Done");
   }
