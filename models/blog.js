@@ -60,3 +60,15 @@ const PostSchema = new mongoose.Schema({
 });
 
 mongoose.model("Post", PostSchema);
+
+const ImageSchema = new mongoose.Schema({
+  description: String,
+  title: String,
+  urlName: { required: true, type: String },
+  key: {
+    type: String,
+    required: true,
+  },
+});
+
+mongoose.model("Image", ImageSchema);

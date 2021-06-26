@@ -1,30 +1,5 @@
 const blogUtils = require("../lib/blogUtils");
-
-/**
- * Check if a given field is present or not in the request object
- *
- * @param {*} req - Request object
- * @param {*} field - Field name to check
- * @param {*} where - Location in which find the field (body, params, etc.)
- * @returns the field data if it is present, otherwise it returns undefined
- */
-function checkField(req, field, where) {
-  locations = ["query", "params", "body"];
-
-  //checking if location is valid
-  if (typeof where !== "undefined" && locations.indexOf(where) === -1)
-    return false;
-
-  if (typeof where !== "undefined") {
-    return req[where][field];
-  } else {
-    let returnValue;
-    locations.forEach((loc, i) => {
-      if (typeof req[loc][field] !== "undefined") returnValue = req[loc][field];
-    });
-    return returnValue;
-  }
-}
+const { checkField } = require("../lib/utils");
 
 /**
  * Middeware for checking if a given blog exists in the database or not

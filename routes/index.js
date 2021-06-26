@@ -8,6 +8,8 @@ router.use("/blogs", require("./tags"));
 
 router.use("/blogs", require("./posts"));
 
+router.use("/blogs", require("./images"));
+
 // /blogs
 
 module.exports = router;
