@@ -2,100 +2,79 @@ const mongoose = require("mongoose");
 const router = require("express").Router();
 const passport = require("passport");
 const authUtils = require("../utils/auth");
+const { BadRequestError } = require("../utils/errors");
+const { checkField } = require("../utils/generic");
 const Tag = mongoose.model("Tag");
 const Blog = mongoose.model("Blog");
+const blogMiddlewares = require("./blogMiddlewares");
 
-router.get("/:blogUrlName/tags/:tagUrlName", (req, res, next) => {
-  Blog.findOne({ urlName: req.params.blogUrlName }, (err, blog) => {
-    if (err) next(err);
+router.get(
+  "/:blogUrlName/tags/:tagUrlName",
+  blogMiddlewares.checkBlogExists("blogUrlName", "params"),
+  blogMiddlewares.checkTagExists("tagUrlName", "params"),
+  (req, res, next) => {
+    let tag = req.checked.tags[0];
 
-    //blog doesn't exist
-    if (!blog)
-      return res.status(404).json({ success: false, msg: "Unknown blog." });
-    else
-      Tag.findOne(
-        {
-          urlName: req.params.tagUrlName,
-          blog: mongoose.Types.ObjectId(blog._id),
-        },
-        (err, tag) => {
-          if (err) next(err);
-
-          if (tag)
-            res.status(200).json({
-              success: true,
-              data: {
-                urlName: tag.urlName,
-                fullName: tag.fullName,
-                description: tag.description,
-              },
-            });
-          else res.status(404).json({ succe: false, msg: "Unknown tag." });
-        }
-      );
-  });
-});
+    res.status(200).json({
+      success: true,
+      data: {
+        urlName: tag.urlName,
+        fullName: tag.fullName,
+        description: tag.description,
+      },
+    });
+  }
+);
 
 router.post(
   "/:blogUrlName/tags/",
   passport.authenticate("jwt", { session: false }),
+  blogMiddlewares.checkBlogExists("blogUrlName", "params"),
+  blogMiddlewares.userIsAdmin, //check if user is admin in blog
   (req, res, next) => {
-    let urlName = req.body.urlName;
-    let fullName = req.body.fullName;
-    let description = req.body.description;
+    let description;
 
     //checking formats
-    if (!(urlName && authUtils.validateUrlnameFormat(urlName.trim())))
-      return res
-        .status(400)
-        .json({ success: false, msg: "Invalid url name format" });
-    else if (!fullName)
-      return res
-        .status(400)
-        .json({ success: false, msg: "Invalid full name format" });
+    let urlName = checkField(req, "urlName", "body", "urlName");
+    if (urlName === null)
+      return next(new BadRequestError("Invalid url name format."));
+
+    let fullName = checkField(req, "fullName", "body", "fullName");
+    if (fullName === null)
+      return next(new BadRequestError("Invalid full name format."));
 
     //description is not necessary
-    if (description) description = description.trim();
+    if (checkField(req, "description", "body") !== null) {
+      description = checkField(req, "description", "body", "text");
+      if (description === null)
+        return next(new BadRequestError("Invalid description format."));
+    }
 
-    urlName = urlName.trim();
-    fullName = fullName.trim();
+    Tag.findOne(
+      {
+        blog: mongoose.Types.ObjectId(req.checked.blog._id),
+        urlName: urlName,
+      },
+      (err, tagFound) => {
+        if (err) return next(err);
 
-    Blog.findOne({ urlName: req.params.blogUrlName }, (err, blog) => {
-      if (err) next(err);
-
-      //check if blog exists
-      if (!blog) res.status(404).json({ success: false, msg: "Unknown blog." });
-      //checks if user has rights to edit blog
-      else if (!blog.admins.includes(req.user._id))
-        return res.status(401).json({ success: false, msg: "Unauthorized." });
-      else
-        Tag.findOne(
-          {
-            blog: mongoose.Types.ObjectId(blog._id),
+        if (tagFound) next(new BadRequestError("Tag already exists"));
+        else {
+          const newTag = new Tag({
             urlName: urlName,
-          },
-          (err, tagFound) => {
-            if (err) next(err);
+            fullName: fullName,
+            description: description,
+            blog: mongoose.Types.ObjectId(req.checked.blog._id),
+          });
 
-            if (tagFound)
-              res.json({ success: false, msg: "Tag already exists." });
-            else {
-              const newTag = new Tag({
-                urlName: urlName,
-                fullName: fullName,
-                description: description,
-                blog: mongoose.Types.ObjectId(blog._id),
-              });
+          newTag.save((err, data) => {
+            if (err) return next(err);
 
-              newTag.save((err, data) => {
-                if (err) next(err);
-
-                res.status(200).json({ success: true });
-              });
-            }
-          }
-        );
-    });
+            res.status(200).json({ success: true });
+          });
+        }
+      }
+    );
   }
 );
 
@@ -103,110 +82,85 @@ router.post(
 router.put(
   "/:blogUrlName/tags/:tagUrlName",
   passport.authenticate("jwt", { session: false }),
+  blogMiddlewares.checkBlogExists("blogUrlName", "params"), //check blog
+  blogMiddlewares.userIsAdmin, //check if user is admin in blog
+  blogMiddlewares.checkTagExists("tagUrlName", "params"), //check tag
   (req, res, next) => {
-    let urlName = req.body.urlName;
-    let fullName = req.body.fullName;
-    let description = req.body.description;
+    let urlName;
+    let fullName;
+    let description;
 
     let queryObj = {};
 
-    //verifying tag urlname
-    if (urlName)
-      if (!authUtils.validateUrlnameFormat(urlName.trim()))
-        return res
-          .status(400)
-          .json({ success: false, msg: "Invalid url name format" });
-      else queryObj.urlName = urlName.trim();
+    if (checkField(req, "urlName", "body") !== null) {
+      urlName = checkField(req, "urlName", "body", "urlName");
+      if (urlName === null)
+        return next(new BadRequestError("Invalid url name format."));
+      queryObj.urlName = urlName;
+    }
 
-    //verifying tag fullName
-    if (fullName) queryObj.fullName = fullName.trim();
+    if (checkField(req, "fullName", "body") !== null) {
+      fullName = checkField(req, "fullName", "body", "fullName");
+      if (fullName === null)
+        return next(new BadRequestError("Invalid full name format."));
+      queryObj.fullName = fullName;
+    }
 
-    //verifying description
-    if (description) queryObj.description = description;
+    if (checkField(req, "description", "body") !== null) {
+      description = checkField(req, "description", "body", "text");
+      if (description === null)
+        return next(new BadRequestError("Invalid full name format."));
+      queryObj.description = description;
+    }
 
-    //checks if the blog in the params field actually exists
-    Blog.findOne({ urlName: req.params.blogUrlName }, (err, blog) => {
-      if (err) next(err);
+    //checks if user requested to change UrlName
+    if (queryObj.hasOwnProperty("urlName")) {
+      //checks if the new urlName exists (it must be unique)
+      Tag.findOne({ urlName: queryObj.urlName }, (err, tagFound) => {
+        if (err) return next(err);
 
-      //blog doesn't exist
-      if (!blog)
-        return res.status(404).json({ success: false, msg: "Unknown blog." });
-
-      //checks if user has rights to edit blog
-      if (!blog.admins.includes(req.user._id))
-        return res.status(401).json({ success: false, msg: "Unauthorized." });
-
-      Tag.findOne(
-        { urlName: req.params.tagUrlName, blog: blog._id },
-        (err, tagToEdit) => {
-          if (err) next(err);
-
-          if (!tagToEdit)
-            return res
-              .status(404)
-              .json({ success: false, msg: "Unknown tag." });
-
-          //checks if user requested to change UrlName
-          if (queryObj.hasOwnProperty("urlName")) {
-            //checks if the new urlName exists (it must be unique)
-            Tag.findOne({ urlName: queryObj.urlName }, (err, tagFound) => {
-              if (tagFound)
-                res.status(400).json({
-                  success: false,
-                  msg: "New url name tag already exists.",
-                });
-              //urlName is unique. Tag can be edited
-              else
-                Tag.findByIdAndUpdate(
-                  tagToEdit._id,
-                  queryObj,
-                  (err, editedTag) => {
-                    if (err) next(err);
-
-                    if (editedTag) res.json({ success: true });
-                    else
-                      return res.json({
-                        success: false,
-                        msg: "Could not edit tag",
-                      });
-                  }
-                );
-            });
-          } else
-            Tag.findByIdAndUpdate(tagToEdit._id, queryObj, (err, editedTag) => {
-              if (err) next(err);
+        if (tagFound) return next(new BadRequestError("Tag already exists."));
+        //urlName is unique. Tag can be edited
+        else
+          Tag.findByIdAndUpdate(
+            req.checked.tags[0]._id,
+            queryObj,
+            (err, editedTag) => {
+              if (err) return next(err);
 
               if (editedTag) res.json({ success: true });
-              else res.json({ success: false, msg: "Could not edit tag" });
-            });
+              else return next(new Error("Could not edit tag."));
+            }
+          );
+      });
+    } else
+      Tag.findByIdAndUpdate(
+        req.checked.tags[0]._id,
+        queryObj,
+        (err, editedTag) => {
+          if (err) return next(err);
+
+          if (editedTag) res.json({ success: true });
+          else res.json({ success: false, msg: "Could not edit tag." });
         }
       );
-    });
   }
 );
 
 router.delete(
   "/:blogUrlName/tags/:tagUrlName",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("jwt", { session: false }), //jwt auth
+  blogMiddlewares.checkBlogExists("blogUrlName", "params"), //check blog
+  blogMiddlewares.userIsAdmin, //check if user is admin in blog
+  blogMiddlewares.checkTagExists("tagUrlName", "params"), //check tag
   (req, res, next) => {
-    Blog.findOne({ urlName: req.params.blogUrlName }, (err, blog) => {
-      if (err) next(err);
+    let tag = req.checked.tags[0];
 
-      //blog doesn't exist
-      if (!blog)
-        return res.status(404).json({ success: false, msg: "Unknown blog." });
-      else if (!blog.admins.includes(req.user._id))
-        return res.status(401).json({ success: false, msg: "Unauthorized." });
-      else
-        Tag.findOneAndDelete(
-          { urlName: req.params.tagUrlName },
-          (err, tagDeleted) => {
-            if (err) next(err);
+    Tag.findByIdAndDelete(tag._id, (err, tagDeleted) => {
+      if (err) return next(err);
 
-            if (tagDeleted) res.status(200).json({ success: true });
-            else res.status(404).json({ succe: false, msg: "Unknown tag." });
-          }
-        );
+      if (tagDeleted) res.status(200).json({ success: true });
+      else next(new Error("COuld not delete tag."));
     });
   }
 );

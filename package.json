@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node --no-deprecation index.js ",
     "dev": "nodemon --no-deprecation index.js ",
-    "test": "cross-env NODE_ENV=test --no-deprecation mocha || true",
+    "test": "cross-env NODE_ENV=test mocha || true",
     "genkeypair": "node generateKeypair.js"
   },
   "repository": {

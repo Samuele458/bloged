@@ -1,3 +1,5 @@
+const authUtils = require("./auth");
+
 /**
  * Verification callback
  *
@@ -32,17 +34,29 @@ const checkField = (req, field, where, verification) => {
     if (typeof fieldValue !== "undefined") return fieldValue;
     else return null;
 
-  //if verification is a string
+  //preset verification
   if (typeof verification === "string") {
-    if (verification === "email") {
-      emailRegex =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (typeof fieldValue === "undefined") {
+      //if value is undefined return null
+      return null;
+    } else if (verification === "email") {
+      //check if email
+      if (authUtils.validateEmailFormat(fieldValue)) return fieldValue.trim();
+    } else if (verification == "urlName") {
+      //check if urlName
+      if (authUtils.validateUrlnameFormat(fieldValue)) return fieldValue.trim();
+    } else if (verification == "fullName") {
+      //check if fullName
+      return fieldValue.trim();
+    } else if (verification == "text") {
+      //checking for common text
+      return fieldValue.trim();
+    }
 
-      if (emailRegex.test(email)) return fieldValue;
-      else return null;
-    } else return null;
+    return null;
   }
 
+  //custom verification
   if (typeof verification === "function") {
     //executing verification
     if (verification(fieldValue)) return fieldValue;

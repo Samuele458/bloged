@@ -37,11 +37,11 @@ app.use((err, req, res, next) => {
   if (err.statusCode) {
     console.log("Handling error:", err.message, err.statusCode);
     res.status(err.statusCode).json({ success: false, msg: err.message });
+  } else {
+    console.log("Error: ", err.message);
+    console.log(err.stack);
+    res.status(500).json({ success: false, msg: "Error" });
   }
-
-  console.log("Error: ", err.message);
-  console.log(err.stack);
-  res.status(500).json({ success: false, msg: "Error" });
 });
 
 const port = process.env.PORT || 3000;
