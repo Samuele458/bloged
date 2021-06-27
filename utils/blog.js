@@ -1,16 +1,14 @@
 const mongoose = require("mongoose");
 const Blog = mongoose.model("Blog");
 const Tag = mongoose.model("Tag");
+const Image = mongoose.model("Image");
+const { NotFoundError } = require("../utils/errors");
 
 /**
  * Callback for getting result
  *
  * @callback getResult
- * @param {object} err - If err, it is an object, otherwise it is null
- * @param {number} err.status - HTTP status for the response
- * @param {object} err.response - the response body
- * @param {boolean} err.response.success - True if success, false otherwise. However it will be always false, bacause it will be set only if error found
- * @param {string} err.response.msg - Response message that describes the error
+ * @param {(Error|null)} err - If err, it is an Error object, otherwise it is null
  * @param {object} data - If no errors, data will contains the requested object
  */
 
@@ -23,28 +21,17 @@ const Tag = mongoose.model("Tag");
 module.exports.blogExists = (blogUrlName, callback) => {
   Blog.findOne({ urlName: blogUrlName }, (err, data) => {
     if (data) callback(null, data);
-    else
-      callback(
-        {
-          status: 404,
-          response: {
-            success: false,
-            msg: "Blog not found.",
-          },
-        },
-        null
-      );
+    else callback(new NotFoundError("Blog not found"), null);
   });
 };
 
 /**
- * Check if tag exists
+ * Check if tags exist
  *
- * @param {(string|object)} blogUrlName - The blog URL name
- * @param {string[]} tagsUrlName - Array of tag URL names
+ * @param {(string|object)} blogUrlName - The blog URL name, or the blog data
+ * @param {string[]} tagsUrlName - Array of tag URL names to check
  * @param {getResult} callback - Callback to know if blog exists or not
  */
-
 module.exports.tagExists = (tagsUrlName, blog, callback) => {
   //function for finding tag
   const findTag = (blogData) => {
@@ -57,16 +44,7 @@ module.exports.tagExists = (tagsUrlName, blog, callback) => {
       },
       (err, tagsData) => {
         if (tagsData.length !== tagsUrlName.length)
-          callback(
-            {
-              status: 404,
-              response: {
-                success: false,
-                msg: "Tag not found.",
-              },
-            },
-            null
-          );
+          callback(new NotFoundError("Tag not found."), null);
         else callback(null, tagsData);
       }
     );
@@ -83,5 +61,46 @@ module.exports.tagExists = (tagsUrlName, blog, callback) => {
   else {
     //passing blog data
     findTag(blog);
+  }
+};
+
+/**
+ * Check if images exist
+ *
+ * @param {(string|object)} blogUrlName - The blog URL name, or the blog data
+ * @param {string[]} imageUrlName - Array of image URL names to check
+ * @param {getResult} callback - Callback to know if blog exists or not
+ */
+module.exports.imageExists = (imageUrlName, blog, callback) => {
+  //function for finding image
+  const findImage = (blogData) => {
+    Image.find(
+      {
+        $or: imageUrlName.map((image) => ({
+          urlName: image,
+        })),
+        blog: mongoose.Types.ObjectId(blogData._id),
+      },
+      (err, imagesData) => {
+        if (err) return next(err);
+
+        if (imagesData.length !== imageUrlName.length)
+          callback(new NotFoundError("Image not found."), null);
+        else callback(null, imagesData);
+      }
+    );
+  };
+
+  if (typeof blog === "string")
+    //fetch blog data before
+    this.blogExists(blog, (err, data) => {
+      if (err) callback(err, null);
+      else {
+        findImage(data);
+      }
+    });
+  else {
+    //passing blog data
+    findImage(blog);
   }
 };

@@ -1,9 +1,18 @@
 /**
+ * Verification callback
+ *
+ * @callback verification
+ * @param {*} value - Value passed to callback.
+ * @returns a boolean, in order to decide if check passed or not
+ */
+
+/**
  * Check if a given field is present or not in the request object
  *
- * @param {*} req - Request object
- * @param {*} field - Field name to check
- * @param {*} where - Location in which find the field (body, params, etc.)
+ * @param {object} req - Request object
+ * @param {string} field - Field name to check
+ * @param {string} where - Location in which find the field (body, params, etc.)
+ * @param {(verification|string|null)} verification - Field to check if the value is correct or not. If null, it just returns the value. If string it executes a pre-existing check (like email verification). Also, it can be a function, in order to create a custom check. If it returns true the value is correct, otherwise null is returned
  * @returns the field data if it is present, otherwise it returns undefined
  */
 const checkField = (req, field, where, verification) => {

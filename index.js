@@ -29,22 +29,19 @@ require("./config/passport")(passport);
 //initialize the passport object on every request
 app.use(passport.initialize());
 
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-const s3Utils = require("./utils/s3");
-app.post("/images", upload.single("image"), async (req, res) => {
-  const file = req.file;
-  console.log(file);
-  const result = await s3Utils.uploadToS3(file);
-  console.log(result);
-  res.send("okays");
-});
-
+//loading API routes
 app.use(require("./routes"));
 
+//error handler
 app.use((err, req, res, next) => {
-  console.log(err.message, err.code);
-  res.send("ehe");
+  if (err.statusCode) {
+    console.log("Handling error:", err.message, err.statusCode);
+    res.status(err.statusCode).json({ success: false, msg: err.message });
+  }
+
+  console.log("Error: ", err.message);
+  console.log(err.stack);
+  res.status(500).json({ success: false, msg: "Error" });
 });
 
 const port = process.env.PORT || 3000;

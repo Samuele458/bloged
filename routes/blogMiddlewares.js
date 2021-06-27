@@ -1,5 +1,6 @@
 const blogUtils = require("../utils/blog");
 const { checkField } = require("../utils/generic");
+const { BadRequestError, UnauthorizedError } = require("../utils/errors");
 
 /**
  * Middeware for checking if a given blog exists in the database or not
@@ -12,13 +13,10 @@ module.exports.checkBlogExists = (field, where) => {
     blogUrlName = checkField(req, field, where);
 
     if (!blogUrlName)
-      res.status(400).json({
-        success: false,
-        msg: "Missing required field",
-      });
+      return next(new BadRequestError("Missing required field"));
     else {
       blogUtils.blogExists(blogUrlName, (err, data) => {
-        if (err) res.status(err.status).json(err.response);
+        if (err) return next(err);
         else {
           if (!req.checked) req.checked = {};
 
@@ -40,22 +38,44 @@ module.exports.checkTagExists = (tagField, whereTagField) => {
   return (req, res, next) => {
     tagUrlName = checkField(req, tagField, whereTagField);
 
-    if (!tagUrlName)
-      res.status(400).json({
-        success: false,
-        msg: "Missing required field",
-      });
+    if (!tagUrlName) return next(new BadRequestError("Missing required field"));
     else
       blogUtils.tagExists(
         Array.isArray(tagUrlName) ? tagUrlName : [tagUrlName],
         req.checked.blog,
         (err, data) => {
-          if (err) res.status(err.status).json(err.response);
+          if (err) return next(err);
           else {
-            req.checked.checked = data;
+            req.checked.tags = data;
             next();
           }
         }
       );
   };
+};
+
+module.exports.checkImageExists = (field, where) => {
+  return (req, res, next) => {
+    imageUrlName = checkField(req, field, where);
+
+    if (!imageUrlName)
+      return next(new BadRequestError("Missing required field"));
+    else
+      blogUtils.imageExists(
+        Array.isArray(imageUrlName) ? imageUrlName : [imageUrlName],
+        req.checked.blog,
+        (err, data) => {
+          if (err) return next(err);
+          else {
+            req.checked.images = data;
+            next();
+          }
+        }
+      );
+  };
+};
+
+module.exports.userIsAdmin = (req, res, next) => {
+  if (req.checked.blog.admins.indexOf(req.user._id) !== -1) next();
+  else next(new UnauthorizedError());
 };

@@ -68,7 +68,17 @@ const ImageSchema = new mongoose.Schema({
   key: {
     type: String,
     required: true,
+    unique: true,
   },
+  createdOn: {
+    type: Date,
+    required: true,
+  },
+  updatedOn: {
+    type: Date,
+    required: true,
+  },
+  blog: { type: mongoose.Schema.Types.ObjectId, ref: "Blog", required: true },
 });
 
 mongoose.model("Image", ImageSchema);

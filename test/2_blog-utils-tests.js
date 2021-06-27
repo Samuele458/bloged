@@ -35,7 +35,7 @@ describe("Blog Utils tests", () => {
   it("blogExists - Check for a nonexistent blog", (done) => {
     blogUtils.blogExists("blog-unknown", (err, data) => {
       assert.isNull(data);
-      assert.equal(err.status, 404);
+      assert.equal(err.statusCode, 404);
       done();
     });
   });
@@ -51,7 +51,7 @@ describe("Blog Utils tests", () => {
   it("tagExists - Check for a nonexistent tag", (done) => {
     blogUtils.tagExists(["tag13"], "blog-utils", (err, data) => {
       assert.isNull(data);
-      assert.equal(err.status, 404);
+      assert.equal(err.statusCode, 404);
       done();
     });
   });

@@ -1,5 +1,12 @@
 const nodemailer = require("nodemailer");
 
+/**
+ * Send an email
+ *
+ * @param {string} to - Recipient's email address
+ * @param {string} subject - Subject of the email
+ * @param {string} message - Text message to send
+ */
 function sendEmail(to, subject, message) {
   var transporter = nodemailer.createTransport({
     service: "gmail",
