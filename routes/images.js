@@ -11,6 +11,16 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
   limits: { fileSize: 1 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    if (
+      file.mimetype === "image/png" ||
+      file.mimetype === "image/gif" ||
+      file.mimetype === "image/jpg" ||
+      file.mimetype === "image/jpeg"
+    )
+      cb(null, true);
+    else cb(null, false);
+  },
 });
 
 const s3Utils = require("../utils/s3");
@@ -62,7 +72,7 @@ router.post(
 
     //checking if file exists
     const file = req.file;
-    if (!file) return next(new BadRequestError("Missing image"));
+    if (!file) return next(new BadRequestError("Missing or invalid image"));
 
     //splitting filename and extension
     let filename, extension;
@@ -102,6 +112,16 @@ router.post(
       }
     });
   }
+);
+
+//delete image
+router.delete(
+  "/:blogUrlName/images/:imageUrlName",
+  passport.authenticate("jwt", { session: false }), //jwt auth
+  blogMiddlewares.checkBlogExists("blogUrlName", "params"), //check blog
+  blogMiddlewares.userIsAdmin, //check if user is admin in blog
+  blogMiddlewares.checkImageExists("imageUrlName", "params"),
+  (req, res, next) => {}
 );
 
 module.exports = router;

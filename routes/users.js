@@ -52,9 +52,9 @@ router.post("/login", function (req, res, next) {
   User.findOne(queryObj)
     .then((user) => {
       if (!user) {
-        res.status(404).json({ success: false, msg: "Unknown user" });
+        return res.status(404).json({ success: false, msg: "Unknown user" });
       }
-
+      //console.log(req.body.password, user.hash, user.salt);
       const isValid = authUtils.validatePassword(
         req.body.password,
         user.hash,

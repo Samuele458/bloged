@@ -32,6 +32,7 @@ module.exports.uploadToS3 = (file) => {
 };
 
 /**
+ * Download file from S3
  *
  * @param {string} fileKey - File identifier, in order to download the file
  * @returns file stream
@@ -43,4 +44,19 @@ module.exports.downloadFromS3 = (fileKey) => {
   };
 
   return s3.getObject(downloadParams).createReadStream();
+};
+
+/**
+ * Delete file from S3
+ *
+ * @param {string} fileKey - File identifier, in order to delete the file
+ * @returns promise
+ */
+module.exports.deleteFromS3 = (fileKey) => {
+  const params = {
+    Key: fileKey,
+    Bucket: bucketName,
+  };
+
+  return s3.deleteObject(params).promise();
 };
