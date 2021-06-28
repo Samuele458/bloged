@@ -54,6 +54,33 @@ module.exports.checkTagExists = (tagField, whereTagField) => {
   };
 };
 
+/**
+ * Middeware for checking if a given post exists in the database or not
+ *
+ * @param {(String|String[])} postField - post url name, or array of post url names
+ * @param {String} wherePostField - Where to find field (params, query or body) in the req object
+ */
+module.exports.checkPostExists = (postField, wherePostField) => {
+  return (req, res, next) => {
+    postUrlName = checkField(req, postField, wherePostField);
+
+    if (!postUrlName)
+      return next(new BadRequestError("Missing required field"));
+    else
+      blogUtils.postExists(
+        Array.isArray(postUrlName) ? postUrlName : [postUrlName],
+        req.checked.blog,
+        (err, data) => {
+          if (err) return next(err);
+          else {
+            req.checked.posts = data;
+            next();
+          }
+        }
+      );
+  };
+};
+
 module.exports.checkImageExists = (field, where) => {
   return (req, res, next) => {
     imageUrlName = checkField(req, field, where);

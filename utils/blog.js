@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Blog = mongoose.model("Blog");
 const Tag = mongoose.model("Tag");
+const Post = mongoose.model("Post");
 const Image = mongoose.model("Image");
 const { NotFoundError } = require("../utils/errors");
 
@@ -61,6 +62,45 @@ module.exports.tagExists = (tagsUrlName, blog, callback) => {
   else {
     //passing blog data
     findTag(blog);
+  }
+};
+
+/**
+ * Check if post exists
+ *
+ * @param {(string|object)} blogUrlName - The blog URL name, or the blog data
+ * @param {string[]} postsUrlName - Array of tag URL names to check
+ * @param {getResult} callback - Callback to know if blog exists or not
+ */
+module.exports.postExists = (postsUrlName, blog, callback) => {
+  //function for finding post
+  const findPost = (blogData) => {
+    Post.find(
+      {
+        $or: postsUrlName.map((tag) => ({
+          urlName: tag,
+        })),
+        blog: mongoose.Types.ObjectId(blogData._id),
+      },
+      (err, postsData) => {
+        if (postsData.length !== postsUrlName.length)
+          callback(new NotFoundError("Post not found."), null);
+        else callback(null, postsData);
+      }
+    );
+  };
+
+  if (typeof blog === "string")
+    //fetch blog data before
+    this.blogExists(blog, (err, data) => {
+      if (err) callback(err, null);
+      else {
+        findPost(data);
+      }
+    });
+  else {
+    //passing blog data
+    findPost(blog);
   }
 };
 

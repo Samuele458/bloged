@@ -197,7 +197,7 @@ describe("REST API tests", () => {
         .delete("/users/randomUser382")
         .set({ Authorization: token })
         .end((err, res) => {
-          assert.equal(res.status, 401);
+          assert.equal(res.status, 404);
           assert.equal(res.body.success, false);
           done();
         });
@@ -695,6 +695,35 @@ describe("REST API tests", () => {
         });
     });
 
+    it("PUT /blogs/:blogUrlName/posts/:postUrlName - Edit post", (done) => {
+      chai
+        .request(server)
+        .put("/blogs/test-blog/posts/learn-js")
+        .set({ Authorization: token })
+        .send({
+          urlName: "learn-js-2",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
+    it("GET /blogs/:blogUrlName/posts/:postUrlName - Read post", (done) => {
+      chai
+        .request(server)
+        .get("/blogs/test-blog/posts/learn-js-2")
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          assert.equal(res.body.data.urlName, "learn-js-2");
+          assert.equal(res.body.data.fullName, "Learn JavaScript!");
+
+          done();
+        });
+    });
+
     it("DELETE /blogs/:blogUrlName/posts/:postsUrlName - Delete post without authorization", (done) => {
       chai
         .request(server)
@@ -708,7 +737,7 @@ describe("REST API tests", () => {
     it("DELETE /blogs/:blogUrlName/posts/:postsUrlName - Delete post", (done) => {
       chai
         .request(server)
-        .delete("/blogs/test-blog/posts/learn-js")
+        .delete("/blogs/test-blog/posts/learn-js-2")
         .set({ Authorization: token })
         .end((err, res) => {
           assert.equal(res.status, 200);

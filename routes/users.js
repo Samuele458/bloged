@@ -7,6 +7,11 @@ const authUtils = require("../utils/auth");
 const crypto = require("crypto");
 const authMiddlewares = require("./authMiddlewares");
 const { config } = require("../config");
+const {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} = require("../utils/errors");
 
 router.post("/login", function (req, res, next) {
   let username = req.body.username;
@@ -27,58 +32,49 @@ router.post("/login", function (req, res, next) {
     if (email) {
       if (authUtils.validateEmailFormat(email))
         queryObj = { email: email.trim() };
-      else
-        return res.status(400).json({
-          success: false,
-          msg: "Invalid email format",
-        });
+      else return next(new BadRequestError("Invalid email format."));
     } else if (authUtils.validateUsernameFormat(username)) {
       if (authUtils.validateUsernameFormat(username))
         queryObj = { username: username.trim() };
-      else
-        return res.status(400).json({
-          success: false,
-          msg: "Invalid username format",
-        });
+      else return next(new BadRequestError("Invalid username format."));
     }
   } else {
     //both email and username cannot be used toghether to login. Only one of them.
-    return res.status(400).json({
-      success: false,
-      msg: "Use email or username to login.",
-    });
+    return next(new BadRequestError("Use username or email to log in."));
   }
 
-  User.findOne(queryObj)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ success: false, msg: "Unknown user" });
-      }
-      //console.log(req.body.password, user.hash, user.salt);
-      const isValid = authUtils.validatePassword(
-        req.body.password,
-        user.hash,
-        user.salt
-      );
+  User.findOne(queryObj, (err, user) => {
+    if (err) return next(err);
 
-      if (isValid) {
-        const jwt = authUtils.issueJWT(user);
+    if (!user) {
+      return next(new NotFoundError("User not found."));
+    }
 
-        res.status(200).json({
-          success: true,
-          user: user,
-          token: jwt.token,
-          expiresIn: jwt.expires,
-        });
-      } else {
-        res
-          .status(401)
-          .json({ success: false, msg: "you entered the wrong password" });
-      }
-    })
-    .catch((err) => {
-      next(err);
-    });
+    if (user.active === false) {
+      return next(new UnauthorizedError("User is not verified."));
+    }
+
+    const isValid = authUtils.validatePassword(
+      req.body.password,
+      user.hash,
+      user.salt
+    );
+
+    if (isValid) {
+      const jwt = authUtils.issueJWT(user);
+
+      res.status(200).json({
+        success: true,
+        user: user,
+        token: jwt.token,
+        expiresIn: jwt.expires,
+      });
+    } else {
+      res
+        .status(401)
+        .json({ success: false, msg: "you entered the wrong password" });
+    }
+  });
 });
 
 // TODO
@@ -128,7 +124,7 @@ router.post("/register", function (req, res, next) {
   User.find(
     { $or: [{ username: username }, { email: email }] },
     (err, data) => {
-      if (err) next(err);
+      if (err) return next(err);
 
       if (data.length > 0) {
         if (data[0].username === username)
@@ -150,36 +146,34 @@ router.post("/register", function (req, res, next) {
         active: process.env.NODE_ENV === "test", //if test, true
       });
 
-      newUser
-        .save()
-        .then((user) => {
-          //email verification is disabled in unit tests
-          if (process.env.NODE_ENV === "test") {
+      newUser.save((err, user) => {
+        if (err) return next(err);
+
+        //email verification is disabled in unit tests
+        if (process.env.NODE_ENV === "test") {
+          res.json({
+            success: true,
+          });
+        } else {
+          const newVerification = new Verification({
+            verificationString: crypto.randomBytes(64).toString("hex"),
+            user: user._id,
+          });
+
+          newVerification.save((err, verification) => {
+            if (err) return next(err);
+
+            authUtils.sendVerificationEmail(
+              user.email,
+              verification.verificationString,
+              "localhost:3000"
+            );
             res.json({
               success: true,
             });
-          } else {
-            const newVerification = new Verification({
-              verificationString: crypto.randomBytes(64).toString("hex"),
-              user: user._id,
-            });
-
-            newVerification
-              .save()
-              .then((verification) => {
-                authUtils.sendVerificationEmail(
-                  user.email,
-                  verification.verificationString,
-                  "localhost:3000"
-                );
-                res.json({
-                  success: true,
-                });
-              })
-              .catch((err) => next(err));
-          }
-        })
-        .catch((err) => next(err));
+          });
+        }
+      });
     }
   );
 });
@@ -189,11 +183,11 @@ router.get("/verify/:id", (req, res, next) => {
   Verification.findOneAndDelete({ verificationString: req.params.id })
     .populate("user")
     .exec((err, data) => {
-      if (err) console.log(err);
+      if (err) return next(err);
 
       if (data) {
         User.findByIdAndUpdate(data.user.id, { active: true }, (err, user) => {
-          if (err) console.log(err);
+          if (err) return next(err);
 
           res.json({ success: true, msg: "User's account verified." });
         });
@@ -209,12 +203,12 @@ router.delete(
   (req, res, next) => {
     if (req.params.username === req.user.username) {
       User.findByIdAndDelete(req.user._id, (err, userData) => {
+        if (err) return next(err);
+
         if (userData) res.status(200).json({ success: true });
-        else res.status(404).json({ success: false, msg: "Unknown user" });
+        else next(new NotFoundError("User not found."));
       });
-    } else {
-      res.status(401).json({ success: false, msg: "Unauthorized." });
-    }
+    } else next(new UnauthorizedError("Unauthorized."));
   }
 );
 
