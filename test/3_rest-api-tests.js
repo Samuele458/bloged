@@ -640,6 +640,20 @@ describe("REST API tests", () => {
         });
     });
 
+    it("POST /blogs/:blogUrlName/categories/ - Trying to create category without authorization", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/blogtest/categories")
+        .send({
+          urlName: "tech",
+          fullName: "Tech products",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
     it("POST /blogs/:blogUrlName/categories/ - Create new category", (done) => {
       chai
         .request(server)
@@ -656,6 +670,20 @@ describe("REST API tests", () => {
         });
     });
 
+
+    it("PUT /blogs/:blogUrlName/categories/:categoryUrlName - Trying to edit category without authorization", (done) => {
+      chai
+        .request(server)
+        .put("/blogs/blogtest/categories/tech")
+        .send({
+          urlName: "tech3",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 401);
+          done();
+        });
+    });
+
     it("PUT /blogs/:blogUrlName/categories/:categoryUrlName - Edit category", (done) => {
       chai
         .request(server)
@@ -667,6 +695,16 @@ describe("REST API tests", () => {
         .end((err, res) => {
           assert.equal(res.status, 200);
           assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
+    it("DELETE /blogs/:blogUrlName/categories/:categoryUrlName - Trying to delete category without authorization", (done) => {
+      chai
+        .request(server)
+        .delete("/blogs/blogtest/categories/tech2")
+        .end((err, res) => {
+          assert.equal(res.status, 401);
           done();
         });
     });
