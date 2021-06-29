@@ -55,6 +55,33 @@ module.exports.checkTagExists = (tagField, whereTagField) => {
 };
 
 /**
+ * Middeware for checking if a given category exists in the database or not
+ *
+ * @param {(String|String[])} categoryField - category url name, or array of category url names
+ * @param {String} whereCategoryField - Where to find field (params, query or body) in the req object
+ */
+module.exports.checkCategoryExists = (categoryField, whereCategoryField) => {
+  return (req, res, next) => {
+    categoryUrlName = checkField(req, categoryField, whereCategoryField);
+
+    if (!categoryUrlName)
+      return next(new BadRequestError("Missing required field"));
+    else
+      blogUtils.categoryExists(
+        Array.isArray(categoryUrlName) ? categoryUrlName : [categoryUrlName],
+        req.checked.blog,
+        (err, data) => {
+          if (err) return next(err);
+          else {
+            req.checked.categories = data;
+            next();
+          }
+        }
+      );
+  };
+};
+
+/**
  * Middeware for checking if a given post exists in the database or not
  *
  * @param {(String|String[])} postField - post url name, or array of post url names

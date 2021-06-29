@@ -24,7 +24,7 @@ const CategorySchema = new mongoose.Schema({
     required: true,
   },
   description: String,
-  blog: { type: mongoose.Schema.Types.ObjectId, ref: "Blog" },
+  blog: { type: mongoose.Schema.Types.ObjectId, ref: "Blog", required: true },
 });
 
 mongoose.model("Category", CategorySchema);

@@ -3,6 +3,7 @@ const Blog = mongoose.model("Blog");
 const Tag = mongoose.model("Tag");
 const Post = mongoose.model("Post");
 const Image = mongoose.model("Image");
+const Category = mongoose.model("Category");
 const { NotFoundError } = require("../utils/errors");
 
 /**
@@ -62,6 +63,45 @@ module.exports.tagExists = (tagsUrlName, blog, callback) => {
   else {
     //passing blog data
     findTag(blog);
+  }
+};
+
+/**
+ * Check if categories exist
+ *
+ * @param {(string|object)} blogUrlName - The blog URL name, or the blog data
+ * @param {string[]} categoriesUrlName - Array of category URL names to check
+ * @param {getResult} callback - Callback to know if blog exists or not
+ */
+module.exports.categoryExists = (categoriesUrlName, blog, callback) => {
+  //function for finding category
+  const findCategory = (blogData) => {
+    Category.find(
+      {
+        $or: categoriesUrlName.map((category) => ({
+          urlName: category,
+        })),
+        blog: mongoose.Types.ObjectId(blogData._id),
+      },
+      (err, categoriesData) => {
+        if (categoriesData.length !== categoriesUrlName.length)
+          callback(new NotFoundError("Category not found."), null);
+        else callback(null, categoriesData);
+      }
+    );
+  };
+
+  if (typeof blog === "string")
+    //fetch blog data before
+    this.blogExists(blog, (err, data) => {
+      if (err) callback(err, null);
+      else {
+        findCategory(data);
+      }
+    });
+  else {
+    //passing blog data
+    findCategory(blog);
   }
 };
 

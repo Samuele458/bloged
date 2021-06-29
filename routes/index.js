@@ -10,6 +10,8 @@ router.use("/blogs", require("./posts"));
 
 router.use("/blogs", require("./images"));
 
+router.use("/blogs", require("./categories"));
+
 // /blogs
 
 module.exports = router;

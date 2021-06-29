@@ -603,6 +603,103 @@ describe("REST API tests", () => {
     });
   });
 
+  describe("Categories", () => {
+    let token;
+    before((done) => {
+      chai
+        .request(server)
+        .post("/users/register")
+        .send({
+          email: "test.user8372634@tst.example.co",
+          username: "testUser2",
+          password: "1234@qwertdfg",
+        })
+        .end((err, res) => {
+          chai
+            .request(server)
+            .post("/users/login")
+            .send({
+              username: "testUser2",
+              password: "1234@qwertdfg",
+            })
+            .end((err, res) => {
+              token = res.body.token;
+
+              chai
+                .request(server)
+                .post("/blogs")
+                .set({ Authorization: token })
+                .send({
+                  urlName: "blogtest",
+                  fullName: "The Test Blog",
+                })
+                .end((err, res) => {
+                  done();
+                });
+            });
+        });
+    });
+
+    it("POST /blogs/:blogUrlName/categories/ - Create new category", (done) => {
+      chai
+        .request(server)
+        .post("/blogs/blogtest/categories")
+        .set({ Authorization: token })
+        .send({
+          urlName: "tech",
+          fullName: "Tech products",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
+    it("PUT /blogs/:blogUrlName/categories/:categoryUrlName - Edit category", (done) => {
+      chai
+        .request(server)
+        .put("/blogs/blogtest/categories/tech")
+        .set({ Authorization: token })
+        .send({
+          urlName: "tech2",
+        })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
+    it("DELETE /blogs/:blogUrlName/categories/:categoryUrlName - Delete category", (done) => {
+      chai
+        .request(server)
+        .delete("/blogs/blogtest/categories/tech2")
+        .set({ Authorization: token })
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.isTrue(res.body.success);
+          done();
+        });
+    });
+
+    after((done) => {
+      chai
+        .request(server)
+        .delete("/blogs/blogtest")
+        .set({ Authorization: token })
+        .end((err, res) => {
+          chai
+            .request(server)
+            .delete("/users/testUser2")
+            .set({ Authorization: token })
+            .end((err, res) => {
+              if (res.status === 200) done();
+            });
+        });
+    });
+  });
+
   describe("Posts", () => {
     let token;
     before((done) => {
