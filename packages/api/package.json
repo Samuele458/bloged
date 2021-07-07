@@ -1,0 +1,47 @@
+{
+  "name": "@easyblog/api",
+  "version": "1.0.0",
+  "description": "Easy blog",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=test mocha || true",
+    "dev": "nodemon --no-deprecation index.js ",
+    "test": "cross-env NODE_ENV=test mocha || true",
+    "genkeypair": "node generateKeypair.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Samuele458/easyblog-cms.git"
+  },
+  "author": "Samuele Girgenti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Samuele458/easyblog-cms/issues"
+  },
+  "homepage": "https://github.com/Samuele458/easyblog-cms#readme",
+  "dependencies": {
+    "aws-sdk": "^2.934.0",
+    "base64url": "^3.0.1",
+    "chai-http": "^4.3.0",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "crypto": "^1.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.12.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.14",
+    "multer": "^1.4.2",
+    "nodemailer": "^6.6.1",
+    "nodemon": "^2.0.7",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.0.1"
+  },
+  "engines": {
+    "node": "14.x"
+  }
+}
