@@ -1,20 +1,32 @@
+import React from "react";
+import PropTypes from "prop-types";
+
 import "../../style/style.scss";
 
-const Button = (props) => {
-  const type = props.type || "button";
-  const text = props.text || "Button";
-
-  let btn;
+const Button = ({ text, type, url, ...props }) => {
+  let ButtonTag;
 
   if (type === "button") {
-    btn = <button className="p-4">{text}</button>;
+    ButtonTag = "button";
   } else if (type === "link") {
-    btn = <a href={props.link}>{text}</a>;
+    ButtonTag = "a";
   } else if (type === "submit") {
-    btn = <button type="submit">{text}</button>;
+    ButtonTag = "button";
   }
 
-  return <button className="ciao p-3">{text}</button>;
+  return <ButtonTag>{text}</ButtonTag>;
+};
+
+Button.propTypes = {
+  text: PropTypes.string,
+  url: PropTypes.string,
+  type: PropTypes.oneOf(["button", "link", "submit"]),
+};
+
+Button.defaultProps = {
+  text: "Button",
+  url: null,
+  type: "button",
 };
 
 export default Button;
