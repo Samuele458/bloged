@@ -20,6 +20,7 @@
     "@storybook/addon-links": "^6.3.2",
     "@storybook/react": "^6.3.2",
     "babel-loader": "^8.2.2",
+    "css-loader": "^5.2.6",
     "node-sass": "^6.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -27,7 +28,10 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-sass": "^1.2.2",
-    "rollup-plugin-scss": "^3.0.0"
+    "rollup-plugin-scss": "^3.0.0",
+    "sass": "^1.35.2",
+    "sass-loader": "^10.2.0",
+    "style-loader": "^2.0.0"
   },
   "peerDependencies": {
     "react": "^17.0.2",

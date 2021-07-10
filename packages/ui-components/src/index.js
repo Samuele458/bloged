@@ -1,2 +1,4 @@
-export * from "./components/Requirements";
-import "./style.scss";
+import Button from "./components/Button";
+import "./style/style.scss";
+
+export { Button };
