@@ -14,4 +14,7 @@ Default.args = {
   text: "Button",
   url: "#",
   type: "button",
+  color: "#000000",
+  backgroundColor: "#ffffff",
+  hoverBackgroundColor: "#dddddd",
 };

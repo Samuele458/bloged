@@ -3,7 +3,15 @@ import PropTypes from "prop-types";
 
 import "../../style/style.scss";
 
-const Button = ({ text, type, url, ...props }) => {
+const Button = ({
+  text,
+  type,
+  url,
+  color,
+  backgroundColor,
+  hoverBackgroundColor,
+  ...props
+}) => {
   let ButtonTag;
 
   if (type === "button") {
@@ -14,19 +22,32 @@ const Button = ({ text, type, url, ...props }) => {
     ButtonTag = "button";
   }
 
-  return <ButtonTag>{text}</ButtonTag>;
+  return (
+    <ButtonTag
+      className="button pt-1 pb-1 pr-4 pl-4"
+      style={{ color: "red", backgroundColor: backgroundColor }}
+    >
+      {text}
+    </ButtonTag>
+  );
 };
 
 Button.propTypes = {
   text: PropTypes.string,
   url: PropTypes.string,
   type: PropTypes.oneOf(["button", "link", "submit"]),
+  color: PropTypes.color,
+  backgroundColor: PropTypes.color,
+  hoverBackgroundColor: PropTypes.color,
 };
 
 Button.defaultProps = {
   text: "Button",
   url: null,
   type: "button",
+  color: "#000000",
+  backgroundColor: "#ffffff",
+  hoverBackgroundColor: "#dddddd",
 };
 
 export default Button;
