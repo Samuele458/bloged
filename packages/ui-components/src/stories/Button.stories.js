@@ -16,5 +16,4 @@ Default.args = {
   type: "button",
   color: "#000000",
   backgroundColor: "#ffffff",
-  hoverBackgroundColor: "#dddddd",
 };

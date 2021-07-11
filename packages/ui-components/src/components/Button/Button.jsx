@@ -25,7 +25,11 @@ const Button = ({
   return (
     <ButtonTag
       className="button pt-1 pb-1 pr-4 pl-4"
-      style={{ color: "red", backgroundColor: backgroundColor }}
+      style={{
+        color: color,
+        backgroundColor: backgroundColor,
+        "&:hover": { backgroundColor: "green" },
+      }}
     >
       {text}
     </ButtonTag>
@@ -38,7 +42,6 @@ Button.propTypes = {
   type: PropTypes.oneOf(["button", "link", "submit"]),
   color: PropTypes.color,
   backgroundColor: PropTypes.color,
-  hoverBackgroundColor: PropTypes.color,
 };
 
 Button.defaultProps = {
@@ -47,7 +50,6 @@ Button.defaultProps = {
   type: "button",
   color: "#000000",
   backgroundColor: "#ffffff",
-  hoverBackgroundColor: "#dddddd",
 };
 
 export default Button;
