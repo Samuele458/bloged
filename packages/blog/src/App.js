@@ -1,6 +1,6 @@
 import "./App.css";
-import "@easyblog/ui-components";
-import { Button } from "@easyblog/ui-components";
+import "@bloged/ui-components";
+import { Button } from "@bloged/ui-components";
 
 function App() {
   return (

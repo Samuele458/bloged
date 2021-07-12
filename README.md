@@ -1,1 +1,1 @@
-# easyblog-cms
+# bloged

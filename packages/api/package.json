@@ -1,5 +1,5 @@
 {
-  "name": "@easyblog/api",
+  "name": "@bloged/api",
   "version": "1.0.0",
   "description": "Easy blog",
   "main": "index.js",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Samuele458/easyblog-cms.git"
+    "url": "git+https://github.com/Samuele458/bloged.git"
   },
   "author": "Samuele Girgenti",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Samuele458/easyblog-cms/issues"
+    "url": "https://github.com/Samuele458/bloged/issues"
   },
-  "homepage": "https://github.com/Samuele458/easyblog-cms#readme",
+  "homepage": "https://github.com/Samuele458/bloged#readme",
   "dependencies": {
     "aws-sdk": "^2.934.0",
     "base64url": "^3.0.1",

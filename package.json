@@ -1,12 +1,12 @@
 {
-  "name": "@easyblog/root",
+  "name": "@bloged/root",
   "private": true,
   "devDependencies": {
     "craco": "^0.0.3",
     "lerna": "^4.0.0"
   },
   "scripts": {
-    "start": "lerna exec --scope '{@easyblog/blog,@easyblog/api}' -- yarn start",
+    "start": "lerna exec --scope '{@bloged/blog,@bloged/api}' -- yarn start",
     "stop": "kill-port 3000 3001"
   },
   "workspaces": {
