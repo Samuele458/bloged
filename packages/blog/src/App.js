@@ -1,10 +1,15 @@
 import "@bloged/ui-components";
-import { Button } from "@bloged/ui-components";
-
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 function App() {
   return (
     <div>
-      <h1>Blog</h1>
+      <Router>
+        <Switch>
+          <Route path="/" exact component={() => <h1>Blog home</h1>} />
+          <Route path="/test" exact component={() => <h1>Blog test path</h1>} />
+        </Switch>
+      </Router>
+      <p>blog</p>
       <p>{window.location.host}</p>
       <p>{window.location.protocol}</p>
     </div>
