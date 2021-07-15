@@ -2,6 +2,7 @@
   "name": "@bloged/dashboard",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://bloged.co/dashboard",
   "dependencies": {
     "@bloged/ui-components": "1.0.0",
     "@testing-library/jest-dom": "^5.11.4",
