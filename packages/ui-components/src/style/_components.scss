@@ -7,10 +7,16 @@
   font-family: inherit;
   font-size: 14px;
   display: inline-block;
+  position: relative;
+  @extend .shadow-default;
 }
 
 .button:hover {
-  filter: brightness(85%);
+  filter: brightness(50%);
+}
+
+.button:active {
+  top: 0.2rem;
 }
 
 /* --- Authentication forms --- */
@@ -19,13 +25,15 @@
   max-width: 25rem;
   margin: auto;
 
-  .login-form {
+  .login-form,
+  .signup-form {
     .form-item {
       display: block;
-      @extend .pt-2;
+      @extend .pt-5;
 
       .form-label {
         display: inline-block;
+        padding-bottom: 0.5rem;
       }
 
       .form-input {
@@ -35,7 +43,7 @@
         transition: 0.2s;
         border: none;
         font-family: inherit;
-        border-bottom: 3px solid rgb(255, 72, 0);
+        border-bottom: 3px solid $primary-color;
         outline: none;
         background-color: whitesmoke;
         padding-right: 0px;
@@ -46,4 +54,10 @@
       }
     }
   }
+}
+
+/* --- Logo --- */
+.app-logo {
+  width: 100%;
+  height: auto;
 }

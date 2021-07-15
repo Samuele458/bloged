@@ -1,6 +1,10 @@
+import Logo from "../Logo";
+import Button from "../Button";
+
 const LoginForm = () => {
   return (
     <div className="form-box p-4 shadow-default">
+      <Logo />
       <h2>Login</h2>
       <form className="login-form vflex">
         <div className="form-item">
@@ -19,6 +23,14 @@ const LoginForm = () => {
             name="password"
             className="form-input"
             placeholder="Enter password"
+          />
+        </div>
+        <div className="toolbar pt-6 pb-3">
+          <Button
+            type="submit"
+            text="Submit"
+            color="white"
+            backgroundColor="#0454ed"
           />
         </div>
       </form>
