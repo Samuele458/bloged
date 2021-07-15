@@ -45,3 +45,25 @@
     margin-left: $i * 0.3rem;
   }
 }
+
+/* --- Flexbox --- */
+.flex {
+  display: flex;
+}
+
+.vflex {
+  @extend .flex;
+  flex-direction: column;
+}
+
+.hflex {
+  @extend .flex;
+  flex-direction: row;
+}
+
+/* --- Shadows --- */
+
+.shadow-default {
+  -webkit-box-shadow: 3px 8px 28px rgba(40, 60, 80, 0.15);
+  box-shadow: 3px 8px 28px rgba(40, 60, 80, 0.15);
+}
