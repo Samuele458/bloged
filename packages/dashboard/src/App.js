@@ -22,9 +22,6 @@ function App() {
           />
         </Switch>
       </Router>
-      <p>dashboard</p>
-      <p>{window.location.host}</p>
-      <p>{window.location.protocol}</p>
     </div>
   );
 }
