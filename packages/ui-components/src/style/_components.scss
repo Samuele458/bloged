@@ -36,6 +36,15 @@
         padding-bottom: 0.5rem;
       }
 
+      .form-error {
+        display: inline-block;
+        font-size: 80%;
+        color: rgb(206, 12, 12);
+        width: 60%;
+        text-align: right;
+        transition: 1s;
+      }
+
       .form-input {
         display: block;
         width: 98%;

@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "prop-types": "^15.7.2",
+    "react-hook-form": "^7.11.0",
     "rollup-plugin-terser": "^7.0.2"
   }
 }
