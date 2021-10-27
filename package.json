@@ -6,7 +6,7 @@
     "lerna": "^4.0.0"
   },
   "scripts": {
-    "start": "lerna exec --scope '{@bloged/blog,@bloged/api}' -- yarn start",
+    "start": "lerna exec --scope '{@bloged/blog,@bloged/dashboard}' -- yarn start",
     "stop": "kill-port 3000 3001",
     "build": "lerna exec --scope '{@bloged/blog,@bloged/dashboard}' -- yarn build"
   },

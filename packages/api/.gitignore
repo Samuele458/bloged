@@ -1,7 +1,0 @@
-node_modules
-
-*.pem
-
-*.env
-
-uploads
