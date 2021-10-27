@@ -48,7 +48,7 @@ Button.defaultProps = {
   text: "Button",
   url: null,
   type: "button",
-  color: PropTypes.color(),
+  color: "#000000",
   backgroundColor: "#ffffff",
 };
 
