@@ -2,6 +2,7 @@
   "name": "@bloged/dashboard",
   "version": "0.1.0",
   "private": true,
+  "homepage": "dashboard",
   "dependencies": {
     "@bloged/ui-components": "1.0.0",
     "@testing-library/jest-dom": "^5.11.4",
@@ -14,10 +15,11 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "cross-env PORT=3001 craco start",
+    "start": "../../node_modules/.bin/craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "craco eject"
+    "eject": "craco eject",
+    "start-from-aspnet": "yarn start"
   },
   "eslintConfig": {
     "extends": [

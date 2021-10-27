@@ -1,6 +1,6 @@
 using System;
 
-namespace bloged_webapp
+namespace BlogedWebapp
 {
     public class WeatherForecast
     {

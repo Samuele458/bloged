@@ -8,14 +8,14 @@ function App() {
       <Router>
         <Switch>
           <Route
-            path="/login"
+            path="/dashboard/login"
             component={() => {
               return <AuthenticationPage type="login" />;
             }}
           />
 
           <Route
-            path="/signup"
+            path="/dashboard/signup"
             component={() => {
               return <AuthenticationPage type="signup" />;
             }}

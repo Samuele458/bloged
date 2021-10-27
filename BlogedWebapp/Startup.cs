@@ -1,18 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace bloged_webapp
+namespace BlogedWebapp
 {
     public class Startup
     {
@@ -30,7 +24,7 @@ namespace bloged_webapp
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "bloged_webapp", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BlogedWebapp", Version = "v1" });
             });
         }
 
@@ -41,7 +35,7 @@ namespace bloged_webapp
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "bloged_webapp v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BlogedWebapp v1"));
             }
 
             app.UseHttpsRedirection();
@@ -54,6 +48,24 @@ namespace bloged_webapp
             {
                 endpoints.MapControllers();
             });
+
+            const string dashboardPath = "/dashboard";
+            if (env.IsDevelopment())
+            {
+                app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(dashboardPath)
+                                   || ctx.Request.Path.StartsWithSegments("/sockjs-node"),
+                    client =>
+                    {
+                        client.UseSpa(spa =>
+                        {
+                            spa.Options.SourcePath = "Client/packages/dashboard";
+                            spa.UseReactDevelopmentServer("start-from-aspnet");
+                            //spa.UseProxyToSpaDevelopmentServer("http://localhost:3006");
+                        });
+                    });
+
+
+            }
         }
     }
 }
