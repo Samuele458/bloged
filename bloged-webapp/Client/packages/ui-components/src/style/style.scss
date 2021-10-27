@@ -1,0 +1,12 @@
+$primary-color: #1ac1eb;
+$secondary-color: #0454ed;
+$tertiary-color: #78d97f;
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
+html {
+  font-family: "Montserrat", sans-serif;
+}
+
+@import "./common";
+@import "./components";
