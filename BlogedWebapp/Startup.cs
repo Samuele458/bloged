@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
+using System;
 
 namespace BlogedWebapp
 {
@@ -65,6 +68,57 @@ namespace BlogedWebapp
                     });
 
 
+            }
+            else
+            {
+                app.Map(new PathString(dashboardPath), client =>
+                {
+                    // `https://github.com/dotnet/aspnetcore/issues/3147`
+                    client.UseSpaStaticFiles(new StaticFileOptions()
+                    {
+                        OnPrepareResponse = ctx =>
+                        {
+                            if (ctx.Context.Request.Path.StartsWithSegments($"{dashboardPath}/static"))
+                            {
+                                // Cache all static resources for 1 year (versioned file names)
+                                var headers = ctx.Context.Response.GetTypedHeaders();
+                                headers.CacheControl = new CacheControlHeaderValue
+                                {
+                                    Public = true,
+                                    MaxAge = System.TimeSpan.FromDays(365)
+                                };
+                            }
+                            else
+                            {
+                                // Do not cache explicit `/index.html` or any other files.  See also: `DefaultPageStaticFileOptions` below for implicit "/index.html"
+                                var headers = ctx.Context.Response.GetTypedHeaders();
+                                headers.CacheControl = new CacheControlHeaderValue
+                                {
+                                    Public = true,
+                                    MaxAge = TimeSpan.FromDays(0)
+                                };
+                            }
+                        }
+                    });
+
+                    client.UseSpa(spa =>
+                    {
+                        spa.Options.SourcePath = "ClientApp";
+                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
+                        {
+                            OnPrepareResponse = ctx =>
+                            {
+                                // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
+                                var headers = ctx.Context.Response.GetTypedHeaders();
+                                headers.CacheControl = new CacheControlHeaderValue
+                                {
+                                    Public = true,
+                                    MaxAge = TimeSpan.FromDays(0)
+                                };
+                            }
+                        };
+                    });
+                });
             }
         }
     }
