@@ -15,10 +15,11 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "cross-env PORT=3000 craco start",
+    "start": "../../node_modules/.bin/craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "craco eject"
+    "eject": "craco eject",
+    "start-from-aspnet": "yarn start"
   },
   "eslintConfig": {
     "extends": [

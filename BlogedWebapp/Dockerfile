@@ -9,8 +9,7 @@ RUN apt-get install -y curl
 RUN apt-get install -y libpng-dev libjpeg-dev curl libxi6 build-essential libgl1-mesa-glx
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
-RUN npm install -g yarn
-RUN npm install -g lerna
+
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 RUN apt-get update
@@ -18,8 +17,7 @@ RUN apt-get install -y curl
 RUN apt-get install -y libpng-dev libjpeg-dev curl libxi6 build-essential libgl1-mesa-glx
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
-RUN npm install -g yarn
-RUN npm install -g lerna
+
 WORKDIR /src
 COPY ["BlogedWebapp/BlogedWebapp.csproj", "BlogedWebapp/"]
 RUN dotnet restore "BlogedWebapp/BlogedWebapp.csproj"
