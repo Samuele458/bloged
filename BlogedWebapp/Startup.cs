@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,9 +13,50 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace BlogedWebapp
 {
+
+    public static class MvcOptionsExtensions
+    {
+        public static void UseGeneralRoutePrefix(this MvcOptions opts, IRouteTemplateProvider routeAttribute)
+        {
+            opts.Conventions.Add(new RoutePrefixConvention(routeAttribute));
+        }
+
+        public static void UseGeneralRoutePrefix(this MvcOptions opts, string
+        prefix)
+        {
+            opts.UseGeneralRoutePrefix(new RouteAttribute(prefix));
+        }
+    }
+
+    public class RoutePrefixConvention : IApplicationModelConvention
+    {
+        private readonly AttributeRouteModel _routePrefix;
+
+        public RoutePrefixConvention(IRouteTemplateProvider route)
+        {
+            _routePrefix = new AttributeRouteModel(route);
+        }
+
+        public void Apply(ApplicationModel application)
+        {
+            foreach (var selector in application.Controllers.SelectMany(c => c.Selectors))
+            {
+                if (selector.AttributeRouteModel != null)
+                {
+                    selector.AttributeRouteModel = AttributeRouteModel.CombineAttributeRouteModel(_routePrefix, selector.AttributeRouteModel);
+                }
+                else
+                {
+                    selector.AttributeRouteModel = _routePrefix;
+                }
+            }
+        }
+    }
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -26,7 +70,12 @@ namespace BlogedWebapp
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllersWithViews(o =>
+            {
+                o.UseGeneralRoutePrefix("api");
+            });
+
+            //Adding swagger API documentation
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BlogedWebapp", Version = "v1" });
@@ -57,13 +106,19 @@ namespace BlogedWebapp
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
 
             });
 
+            //Dashbord SPA path
             const string dashboardPath = "/dashboard";
+
             if (env.IsDevelopment())
             {
+
+                //map dashboard spa in development
                 app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(dashboardPath)
                                    || ctx.Request.Path.StartsWithSegments("/sockjs-node"),
                     client =>
@@ -76,6 +131,7 @@ namespace BlogedWebapp
                         });
                     });
 
+                //map blog spa in development
                 app.UseSpa(spa =>
                 {
                     spa.Options.SourcePath = "Client/packages/blog";
@@ -86,37 +142,39 @@ namespace BlogedWebapp
             }
             else
             {
+                //serve static files on wwwroot folder
                 app.UseStaticFiles();
 
+                //map dashboard SPA in production
                 app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(dashboardPath)
                                        || ctx.Request.Path.StartsWithSegments("/sockjs-node"),
-                        client =>
+                client =>
+                {
+                    client.UseSpa(spa =>
+                    {
+
+                        spa.Options.SourcePath = "wwwroot/dashboard";
+                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
                         {
-                            client.UseSpa(spa =>
+                            OnPrepareResponse = ctx =>
                             {
-
-                                spa.Options.SourcePath = "wwwroot/dashboard";
-                                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
+                                // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
+                                var headers = ctx.Context.Response.GetTypedHeaders();
+                                headers.CacheControl = new CacheControlHeaderValue
                                 {
-                                    OnPrepareResponse = ctx =>
-                                    {
-                                        // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
-                                        var headers = ctx.Context.Response.GetTypedHeaders();
-                                        headers.CacheControl = new CacheControlHeaderValue
-                                        {
-                                            Public = true,
-                                            MaxAge = TimeSpan.FromDays(0)
-                                        };
-                                    }
+                                    Public = true,
+                                    MaxAge = TimeSpan.FromDays(0)
                                 };
-                                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-                                {
-                                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "dashboard"))
-                                };
-                            });
-                        });
+                            }
+                        };
+                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+                        {
+                            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "dashboard"))
+                        };
+                    });
+                });
 
-
+                //map blog spa in production
                 app.UseSpa(spa =>
                 {
 
