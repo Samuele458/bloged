@@ -16,7 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="wwwroot\" />
+		<Folder Include="wwwroot\dashboard\" />
 	</ItemGroup>
 
 	<Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug'  And !Exists('$(ClientFolder)node_modules')">
@@ -75,16 +75,16 @@
 		<Exec WorkingDirectory="$(BlogSpaRoot)" Command="yarn build" />
 
 
-
 		<!-- Include the newly-built files in the publish output -->
 		<MakeDir Directories="$(PublishUrl)wwwroot" />
-		<Exec Command="xcopy.exe  $(BlogSpaRoot)\build\ $(PublishUrl)wwwroot\ /e /Y" Condition=" '$(OS)' == 'Windows_NT' " />
-		<Exec Command="cp -r $(BlogSpaRoot)build/ $(PublishUrl)wwwroot/ " Condition=" '$(OS)' != 'Windows_NT' " />
-
-
 		<MakeDir Directories="$(PublishUrl)wwwroot\dashboard" />
+		<Exec Command="mkdir -p /app/publish/wwwroot/dashboard" Condition=" '$(OS)' != 'Windows_NT' " />
+
+		<Exec Command="xcopy.exe  $(BlogSpaRoot)\build\ $(PublishUrl)wwwroot\ /e /Y" Condition=" '$(OS)' == 'Windows_NT' " />
+		<Exec Command="cp -r $(BlogSpaRoot)build/* /app/publish/wwwroot/ " Condition=" '$(OS)' != 'Windows_NT' " />
+
 		<Exec Command="xcopy.exe  $(DashboardSpaRoot)\build\ $(PublishUrl)wwwroot\dashboard /e /Y" Condition=" '$(OS)' == 'Windows_NT' " />
-		<Exec Command="cp -r $(DashboardSpaRoot)build/* $(PublishUrl)wwwroot/dashboard/ " Condition=" '$(OS)' != 'Windows_NT' " />
+		<Exec Command="cp -r $(DashboardSpaRoot)build/* /app/publish/wwwroot/dashboard/ " Condition=" '$(OS)' != 'Windows_NT' " />
 
 	</Target>
 
