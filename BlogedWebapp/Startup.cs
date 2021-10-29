@@ -64,7 +64,6 @@ namespace BlogedWebapp
             });
 
             const string dashboardPath = "/dashboard";
-            const string blogPath = "";
             if (env.IsDevelopment())
             {
                 app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(dashboardPath)
@@ -86,193 +85,64 @@ namespace BlogedWebapp
                     //spa.UseProxyToSpaDevelopmentServer("http://localhost:3006");
                 });
 
-
             }
-
-
-
-            /*app.Map("/dashboard",
-               adminApp =>
-               {
-                   adminApp.UseSpa(spa =>
-                   {
-                       spa.Options.SourcePath = "Client/packages/dashboard/build";
-                       spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-                       {
-                           FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Client", "packages", "dashboard", "build"))
-                       };
-
-                   });
-               });*/
-
-            app.UseStaticFiles();
-
-            app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(dashboardPath)
-                                   || ctx.Request.Path.StartsWithSegments("/sockjs-node"),
-                    client =>
-                    {
-                        client.UseSpa(spa =>
-                        {
-
-                            spa.Options.SourcePath = "wwwroot/dashboard";
-                            spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
-                            {
-                                OnPrepareResponse = ctx =>
-                                {
-                                    // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
-                                    var headers = ctx.Context.Response.GetTypedHeaders();
-                                    headers.CacheControl = new CacheControlHeaderValue
-                                    {
-                                        Public = true,
-                                        MaxAge = TimeSpan.FromDays(0)
-                                    };
-                                }
-                            };
-                            spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-                            {
-                                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "dashboard"))
-                            };
-                        });
-                    });
-
-
-            app.UseSpa(spa =>
-            {
-
-                spa.Options.SourcePath = "wwwroot";
-                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
-                {
-                    OnPrepareResponse = ctx =>
-                    {
-                        // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
-                        var headers = ctx.Context.Response.GetTypedHeaders();
-                        headers.CacheControl = new CacheControlHeaderValue
-                        {
-                            Public = true,
-                            MaxAge = TimeSpan.FromDays(0)
-                        };
-                    }
-                };
-                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
-                };
-            });
-
-
-
-            /*
             else
             {
-                app.Map(new PathString(dashboardPath), client =>
+                app.UseStaticFiles();
+
+                app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(dashboardPath)
+                                       || ctx.Request.Path.StartsWithSegments("/sockjs-node"),
+                        client =>
+                        {
+                            client.UseSpa(spa =>
+                            {
+
+                                spa.Options.SourcePath = "wwwroot/dashboard";
+                                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
+                                {
+                                    OnPrepareResponse = ctx =>
+                                    {
+                                        // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
+                                        var headers = ctx.Context.Response.GetTypedHeaders();
+                                        headers.CacheControl = new CacheControlHeaderValue
+                                        {
+                                            Public = true,
+                                            MaxAge = TimeSpan.FromDays(0)
+                                        };
+                                    }
+                                };
+                                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+                                {
+                                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "dashboard"))
+                                };
+                            });
+                        });
+
+
+                app.UseSpa(spa =>
                 {
-                    // `https://github.com/dotnet/aspnetcore/issues/3147`
-                    client.UseSpaStaticFiles(new StaticFileOptions()
+
+                    spa.Options.SourcePath = "wwwroot";
+                    spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
                     {
                         OnPrepareResponse = ctx =>
                         {
-                            if (ctx.Context.Request.Path.StartsWithSegments($"{dashboardPath}/static"))
+                            // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
+                            var headers = ctx.Context.Response.GetTypedHeaders();
+                            headers.CacheControl = new CacheControlHeaderValue
                             {
-                                // Cache all static resources for 1 year (versioned file names)
-                                var headers = ctx.Context.Response.GetTypedHeaders();
-                                headers.CacheControl = new CacheControlHeaderValue
-                                {
-                                    Public = true,
-                                    MaxAge = System.TimeSpan.FromDays(365)
-                                };
-                            }
-                            else
-                            {
-                                // Do not cache explicit `/index.html` or any other files.  See also: `DefaultPageStaticFileOptions` below for implicit "/index.html"
-                                var headers = ctx.Context.Response.GetTypedHeaders();
-                                headers.CacheControl = new CacheControlHeaderValue
-                                {
-                                    Public = true,
-                                    MaxAge = TimeSpan.FromDays(0)
-                                };
-                            }
+                                Public = true,
+                                MaxAge = TimeSpan.FromDays(0)
+                            };
                         }
-                    });
-
-                    client.UseSpa(spa =>
+                    };
+                    spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
                     {
-
-                        spa.Options.SourcePath = "Client/packages/dashboard/build";
-                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
-                        {
-                            OnPrepareResponse = ctx =>
-                            {
-                                // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
-                                var headers = ctx.Context.Response.GetTypedHeaders();
-                                headers.CacheControl = new CacheControlHeaderValue
-                                {
-                                    Public = true,
-                                    MaxAge = TimeSpan.FromDays(0)
-                                };
-                            }
-                        };
-                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-                        {
-                            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Client", "packages", "dashboard", "build"))
-                        };
-                    });
+                        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
+                    };
                 });
+            }
 
-
-                app.Map(new PathString(blogPath), client =>
-                {
-                    // `https://github.com/dotnet/aspnetcore/issues/3147`
-                    client.UseSpaStaticFiles(new StaticFileOptions()
-                    {
-                        OnPrepareResponse = ctx =>
-                        {
-                            if (ctx.Context.Request.Path.StartsWithSegments($"/static"))
-                            {
-                                // Cache all static resources for 1 year (versioned file names)
-                                var headers = ctx.Context.Response.GetTypedHeaders();
-                                headers.CacheControl = new CacheControlHeaderValue
-                                {
-                                    Public = true,
-                                    MaxAge = System.TimeSpan.FromDays(365)
-                                };
-                            }
-                            else
-                            {
-                                // Do not cache explicit `/index.html` or any other files.  See also: `DefaultPageStaticFileOptions` below for implicit "/index.html"
-                                var headers = ctx.Context.Response.GetTypedHeaders();
-                                headers.CacheControl = new CacheControlHeaderValue
-                                {
-                                    Public = true,
-                                    MaxAge = TimeSpan.FromDays(0)
-                                };
-                            }
-                        }
-                    });
-
-                    client.UseSpa(spa =>
-                    {
-
-                        spa.Options.SourcePath = "Client/packages/blog/build";
-                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
-                        {
-                            OnPrepareResponse = ctx =>
-                            {
-                                // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
-                                var headers = ctx.Context.Response.GetTypedHeaders();
-                                headers.CacheControl = new CacheControlHeaderValue
-                                {
-                                    Public = true,
-                                    MaxAge = TimeSpan.FromDays(0)
-                                };
-                            }
-                        };
-                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-                        {
-                            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Client", "packages", "blog", "build"))
-                        };
-                    });
-                });
-            }*/
         }
     }
 }

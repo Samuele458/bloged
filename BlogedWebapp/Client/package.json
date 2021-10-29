@@ -4,6 +4,7 @@
   "devDependencies": {
     "craco": "^0.0.3",
     "lerna": "^4.0.0"
+
   },
   "scripts": {
     "start": "lerna exec --scope '{@bloged/blog,@bloged/dashboard}' -- yarn start",
@@ -16,6 +17,8 @@
     ]
   },
   "dependencies": {
-    "kill-port": "^1.6.1"
+    "kill-port": "^1.6.1",
+    "babel-loader": "8.1.0",
+    "webpack": "4.44.2"
   }
 }

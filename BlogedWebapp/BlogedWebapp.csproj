@@ -69,33 +69,27 @@
 		<Exec WorkingDirectory="$(ClientFolder)" Command="lerna bootstrap" />
 
 		<!-- Building frontend packages -->
-		<Message Importance="high" Text="Building frontend packages" />
-		<Exec WorkingDirectory="$(ClientFolder)" Command="yarn build" />
+		<Message Importance="high" Text="Building dashboard SPA" />
+		<Exec WorkingDirectory="$(DashboardSpaRoot)" Command="yarn build" />
+		<Message Importance="high" Text="Building blog SPA" />
+		<Exec WorkingDirectory="$(BlogSpaRoot)" Command="yarn build" />
+
+
 
 		<!-- Include the newly-built files in the publish output -->
 		<MakeDir Directories="$(PublishUrl)wwwroot" />
-		<Exec Command="xcopy.exe  $(BlogSpaRoot)\build\ $(PublishUrl)wwwroot\ /e /Y" />
+		<Exec Command="xcopy.exe  $(BlogSpaRoot)\build\ $(PublishUrl)wwwroot\ /e /Y" Condition=" '$(OS)' == 'Windows_NT' " />
+		<Exec Command="cp -r $(BlogSpaRoot)build/ $(PublishUrl)wwwroot/ " Condition=" '$(OS)' != 'Windows_NT' " />
+
+
 		<MakeDir Directories="$(PublishUrl)wwwroot\dashboard" />
-		<Exec Command="xcopy.exe  $(DashboardSpaRoot)\build\ $(PublishUrl)wwwroot\dashboard /e /Y" />
-
-		<ItemGroup>
-			<DistFiles Include="$(DashboardSpaRoot)build\**" />
-			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-				<RelativePath>%(DistFiles.Identity)</RelativePath>
-				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-				<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-			</ResolvedFileToPublish>
-		</ItemGroup>
-
-		<ItemGroup>
-			<DistFiles Include="$(BlogSpaRoot)build\**" />
-			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-				<RelativePath>%(DistFiles.Identity)</RelativePath>
-				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-				<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-			</ResolvedFileToPublish>
-		</ItemGroup>
+		<Exec Command="xcopy.exe  $(DashboardSpaRoot)\build\ $(PublishUrl)wwwroot\dashboard /e /Y" Condition=" '$(OS)' == 'Windows_NT' " />
+		<Exec Command="cp -r $(DashboardSpaRoot)build/* $(PublishUrl)wwwroot/dashboard/ " Condition=" '$(OS)' != 'Windows_NT' " />
 
 	</Target>
+
+	<ItemGroup>
+		<None Remove="..\.dockerignore" />
+	</ItemGroup>
 
 </Project>
