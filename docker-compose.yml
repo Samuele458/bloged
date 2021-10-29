@@ -11,5 +11,12 @@ services:
     environment:
      - ASPNETCORE_ENVIRONMENT=Production
      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+  unit_tests:
+    build:
+      context: .
+      dockerfile: tests/UnitTests/Dockerfile
+    container_name: UnitTests
+    depends_on:
+     - web
 
    
