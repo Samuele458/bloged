@@ -16,7 +16,6 @@ services:
       context: .
       dockerfile: tests/UnitTests/Dockerfile
     container_name: UnitTests
-    depends_on:
-     - web
+
 
    
