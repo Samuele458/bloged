@@ -1,0 +1,10 @@
+version: 0.0
+os: linux
+files:
+  - source: .
+    destination: /home/ubuntu/bloged
+hooks:
+  ApplicationStart:
+    - location: scripts/start_server
+      timeout: 1800
+      runas: root
