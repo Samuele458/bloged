@@ -17,3 +17,5 @@ jobs:
       run: docker-compose -f docker-compose.yml build
     - name: Running unit-tests
       run: docker-compose -f docker-compose.yml up unit_tests
+    - name: Checking unit tests
+      run: exit $(docker container inspect UnitTests --format '{{.State.ExitCode}}')
