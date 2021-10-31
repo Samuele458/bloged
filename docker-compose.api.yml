@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  web:
+  api:
     build:
       context: .
       dockerfile: BlogedWebapp/Dockerfile
@@ -14,20 +14,11 @@ services:
      - ASPNETCORE_ENVIRONMENT=Production
      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
     
-  unit_tests:
+  api_unit_tests:
     build:
       context: .
       dockerfile: tests/UnitTests/Dockerfile
-    container_name: UnitTests
-
-  frontend:
-    build:
-      context: Frontend
-      dockerfile: Dockerfile
-    container_name: BlogedFrontend
-    volumes:
-     - wwwroot-folder:/app/wwwroot
-    entrypoint: /bin/sh /app/deploy.sh
+    container_name: ApiUnitTests
 
 volumes:
   wwwroot-folder:

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: Frontend
+      dockerfile: Dockerfile
+    container_name: BlogedFrontend
+    volumes:
+     - wwwroot-folder:/app/wwwroot
+    entrypoint: /bin/sh /app/deploy.sh
+
+volumes:
+  wwwroot-folder:
