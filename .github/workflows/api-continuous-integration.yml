@@ -7,19 +7,9 @@ on:
     branches: [ api ]
     
 env:
-  # replace "github_username" with your GitHub username
-  # replace "github.com/username/repo.git" with your GitHub repo path
-  # do NOT replace ${{secrets.GITHUB_TOKEN}}, GitHub will take care of it
-  MY_REPO: https://Samuele458:${{secrets.GITHUB_TOKEN}}@github.com/Samuele458/bloged.git
-
-  # replace "long-lived_branch_name" with your branch name
-  MY_BRANCH: api
-
-  # replace it with the path to master repo
+  REPO: https://Samuele458:${{secrets.GITHUB_TOKEN}}@github.com/Samuele458/bloged.git
   MASTER_REPO: https://github.com/samuele458/bloged.git
-
-  # replace "master" with your master branch name
-  MASTER_BRANCH: main
+  MASTER_BRANCH: preproduction
  
 jobs:
   continuous-integration:
@@ -34,14 +24,14 @@ jobs:
       run: exit $(docker container inspect ApiUnitTests --format '{{.State.ExitCode}}')
     - name: Merging to preproduction branch
       run: |
-            git clone ${{env.MY_REPO}} -b ${{env.MY_BRANCH}} tmp
+            git clone ${{env.REPO}} -b ${GITHUB_REF##*/} tmp
             cd tmp
             git config user.name "Samuele458"
             git config user.email "samuele.girgenti458@gmail.com"
             git config pull.rebase false
             git pull ${{env.MASTER_REPO}} ${{env.MASTER_BRANCH}}
             git checkout main
-            git merge api
+            git merge ${GITHUB_REF##*/}
             git push --all origin
             
 
