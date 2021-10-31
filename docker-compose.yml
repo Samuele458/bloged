@@ -7,15 +7,30 @@ services:
       dockerfile: BlogedWebapp/Dockerfile
     container_name: BlogedWebapp
     ports:
-     - 8888:80
+     - 8080:80
+    volumes:
+     - wwwroot-folder:/app/wwwroot
     environment:
      - ASPNETCORE_ENVIRONMENT=Production
      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+    
   unit_tests:
     build:
       context: .
       dockerfile: tests/UnitTests/Dockerfile
     container_name: UnitTests
+
+  frontend:
+    build:
+      context: Frontend
+      dockerfile: Dockerfile
+    container_name: BlogedFrontend
+    volumes:
+     - wwwroot-folder:/app/wwwroot
+    entrypoint: /bin/sh /app/deploy.sh
+
+volumes:
+  wwwroot-folder:
 
 
    

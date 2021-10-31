@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -125,18 +124,18 @@ namespace BlogedWebapp
                     {
                         client.UseSpa(spa =>
                         {
-                            spa.Options.SourcePath = "Client/packages/dashboard";
-                            spa.UseReactDevelopmentServer("start-from-aspnet");
-                            //spa.UseProxyToSpaDevelopmentServer("http://localhost:3006");
+                            //spa.Options.SourcePath = "Client/packages/dashboard";
+                            //spa.UseReactDevelopmentServer("start-from-aspnet");
+                            spa.UseProxyToSpaDevelopmentServer("http://localhost:3001");
                         });
                     });
 
                 //map blog spa in development
                 app.UseSpa(spa =>
                 {
-                    spa.Options.SourcePath = "Client/packages/blog";
-                    spa.UseReactDevelopmentServer("start-from-aspnet");
-                    //spa.UseProxyToSpaDevelopmentServer("http://localhost:3006");
+                    //spa.Options.SourcePath = "Client/packages/blog";
+                    //spa.UseReactDevelopmentServer("start-from-aspnet");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3002");
                 });
 
             }

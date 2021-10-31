@@ -20,72 +20,14 @@
 	</ItemGroup>
 
 	<Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug'  And !Exists('$(ClientFolder)node_modules')">
-		<!-- Ensure Node.js is installed -->
-		<Exec Command="node --version" ContinueOnError="true" StandardOutputImportance="low">
-			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-		</Exec>
-		<Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-
-		<!-- Ensure Yarn is installed -->
-		<Exec Command="yarn --version" ContinueOnError="true" StandardOutputImportance="low">
-			<Output TaskParameter="ExitCode" PropertyName="YarnErrorCode" />
-		</Exec>
-		<Message Condition="'$(YarnErrorCode)' != '0'" Text="Installing Yarn..." Importance="High" />
-		<Exec Condition="'$(YarnErrorCode)' != '0'" Command="npm install -g yarn" StandardOutputImportance="low" />
-
-		<!-- Ensure Lerna is installed -->
-		<Exec Command="lerna --version" ContinueOnError="true" StandardOutputImportance="low">
-			<Output TaskParameter="ExitCode" PropertyName="LernaErrorCode" />
-		</Exec>
-		<Message Condition="'$(LernaErrorCode)' != '0'" Text="Installing Lerna..." Importance="High" />
-		<Exec Condition="'$(LernaErrorCode)' != '0'" Command="npm install -g lerna" StandardOutputImportance="low" />
-
-		<!-- Installing client dependencies -->
-		<Message Importance="high" Text="Restoring dependencies using 'yarn'. This may take several minutes..." />
-		<Exec WorkingDirectory="$(ClientFolder)" Command="yarn" />
-		<Exec WorkingDirectory="$(ClientFolder)" Command="lerna bootstrap" />
-
+		<MakeDir Directories="$(PublishUrl)wwwroot" />
+		<MakeDir Directories="$(PublishUrl)wwwroot\dashboard" />
 	</Target>
 
 	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-
-		<!-- Ensure Yarn is installed -->
-		<Exec Command="yarn --version" ContinueOnError="true" StandardOutputImportance="low">
-			<Output TaskParameter="ExitCode" PropertyName="YarnErrorCode" />
-		</Exec>
-		<Message Condition="'$(YarnErrorCode)' != '0'" Text="Installing Yarn..." Importance="High" />
-		<Exec Condition="'$(YarnErrorCode)' != '0'" Command="npm install -g yarn" StandardOutputImportance="low" />
-
-		<!-- Ensure Lerna is installed -->
-		<Exec Command="lerna --version" ContinueOnError="true" StandardOutputImportance="low">
-			<Output TaskParameter="ExitCode" PropertyName="LernaErrorCode" />
-		</Exec>
-		<Message Condition="'$(LernaErrorCode)' != '0'" Text="Installing Lerna..." Importance="High" />
-		<Exec Condition="'$(LernaErrorCode)' != '0'" Command="npm install -g lerna" StandardOutputImportance="low" />
-
-		<!-- Installing client dependencies -->
-		<Message Importance="high" Text="Restoring dependencies using 'yarn'. This may take several minutes..." />
-		<Exec WorkingDirectory="$(ClientFolder)" Command="yarn" />
-		<Exec WorkingDirectory="$(ClientFolder)" Command="lerna bootstrap" />
-
-		<!-- Building frontend packages -->
-		<Message Importance="high" Text="Building dashboard SPA" />
-		<Exec WorkingDirectory="$(DashboardSpaRoot)" Command="yarn build" />
-		<Message Importance="high" Text="Building blog SPA" />
-		<Exec WorkingDirectory="$(BlogSpaRoot)" Command="yarn build" />
-
-
-		<!-- Include the newly-built files in the publish output -->
 		<MakeDir Directories="$(PublishUrl)wwwroot" />
 		<MakeDir Directories="$(PublishUrl)wwwroot\dashboard" />
 		<Exec Command="mkdir -p /app/publish/wwwroot/dashboard" Condition=" '$(OS)' != 'Windows_NT' " />
-
-		<Exec Command="xcopy.exe  $(BlogSpaRoot)\build\ $(PublishUrl)wwwroot\ /e /Y" Condition=" '$(OS)' == 'Windows_NT' " />
-		<Exec Command="cp -r $(BlogSpaRoot)build/* /app/publish/wwwroot/ " Condition=" '$(OS)' != 'Windows_NT' " />
-
-		<Exec Command="xcopy.exe  $(DashboardSpaRoot)\build\ $(PublishUrl)wwwroot\dashboard /e /Y" Condition=" '$(OS)' == 'Windows_NT' " />
-		<Exec Command="cp -r $(DashboardSpaRoot)build/* /app/publish/wwwroot/dashboard/ " Condition=" '$(OS)' != 'Windows_NT' " />
-
 	</Target>
 
 	<ItemGroup>
