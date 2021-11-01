@@ -1,6 +1,5 @@
 #!/bin/bash
 
 cd /home/ubuntu/bloged
-docker stop BlogedWebapp
-docker-compose -f docker-compose.yml build
-docker-compose -f docker-compose.yml up -d
+docker-compose -f docker-compose.api.yml -f docker-compose.frontend.yml build
+docker-compose -f docker-compose.api.yml -f docker-compose.frontend.yml up -d
