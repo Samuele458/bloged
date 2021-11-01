@@ -2,11 +2,6 @@ FROM node:14-alpine
 
 WORKDIR /app
 
-
-COPY ./packages /app/packages
-COPY . .
-
-
 RUN npm update -g yarn
 RUN npm install -g lerna
 RUN yarn
