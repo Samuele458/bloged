@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY . .
 
+RUN npm update -g yarn
 RUN npm install -g lerna
 RUN yarn
 RUN lerna bootstrap
