@@ -30,7 +30,7 @@ jobs:
             git config user.email "samuele.girgenti458@gmail.com"
             git config pull.rebase false
             git pull ${{env.MASTER_REPO}} ${{env.MASTER_BRANCH}}
-            git checkout main
+            git checkout ${{env.MASTER_BRANCH}}
             git merge ${GITHUB_REF##*/}
             git push --all origin
             
