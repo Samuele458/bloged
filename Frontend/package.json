@@ -9,7 +9,7 @@
   "scripts": {
     "start": "lerna exec --scope '{@bloged/blog,@bloged/dashboard}' -- yarn start",
     "stop": "kill-port 3001 3002",
-    "build": "lerna exec --scope '{@bloged/blog,@bloged/dashboard}' -- yarn build"
+    "build": "lerna exec -- yarn build"
   },
   "workspaces": {
     "packages": [
