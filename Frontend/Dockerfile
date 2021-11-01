@@ -2,11 +2,11 @@ FROM node:14-alpine
 
 WORKDIR /app
 
+
+COPY ./packages /app/packages
 COPY . .
 
-RUN echo $(ls -1 /app)
-RUN echo $(ls -1 /app/packages/dashboard)
-RUN echo $(ls -1 /app/packages/blog)
+
 RUN npm update -g yarn
 RUN npm install -g lerna
 RUN yarn
