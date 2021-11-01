@@ -4,6 +4,9 @@ WORKDIR /app
 
 COPY . .
 
+RUN echo $(ls -1 /app)
+RUN echo $(ls -1 /app/packages/dashboard)
+RUN echo $(ls -1 /app/packages/blog)
 RUN npm update -g yarn
 RUN npm install -g lerna
 RUN yarn
