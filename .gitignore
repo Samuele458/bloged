@@ -389,4 +389,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 # except lerna packages
-!**/Client/packages/*
+!**/Frontend/packages/*
