@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#stopping containers in execution
+docker stop BlogedWebapp
+
+#removing containers
+docker rm --force BlogedWebapp
+docker rm --force ApiUnitTests
+docker rm --force BlogedFrontend
+
+
+rm -r /home/ubuntu/bloged
+mkdir /home/ubuntu/bloged
