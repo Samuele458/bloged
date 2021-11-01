@@ -1,10 +1,10 @@
-name: Api Continuous Integration
+name: Frontend Continuous Integration
 
 on:
   push:
-    branches: [api]
+    branches: [blog, dashboard]
   pull_request:
-    branches: [api]
+    branches: [blog, dashboard]
 
 env:
   REPO: https://Samuele458:${{secrets.GITHUB_TOKEN}}@github.com/Samuele458/bloged.git
@@ -17,11 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Building stack
-        run: docker-compose -f docker-compose.api.yml build
-      - name: Running unit-tests
-        run: docker-compose -f docker-compose.api.yml up api_unit_tests
-      - name: Checking unit tests
-        run: exit $(docker container inspect ApiUnitTests --format '{{.State.ExitCode}}')
+        run: docker-compose -f docker-compose.frontend.yml build
+      - name: Building frontend dist
+        run: docker-compose -f docker-compose.frontend.yml up
+      - name: Checking frontend container status
+        run: exit $(docker container inspect BlogedFrontend --format '{{.State.ExitCode}}')
       - name: Merging to preproduction branch
         run: |
           git clone ${{env.REPO}} -b ${GITHUB_REF##*/} tmp
