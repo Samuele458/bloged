@@ -13,6 +13,7 @@ services:
     environment:
      - ASPNETCORE_ENVIRONMENT=Production
      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+     - BLOGED_DB_CONN=${BLOGED_DB_CONN}
     
   api_unit_tests:
     build:
