@@ -20,7 +20,7 @@ RUN dotnet tool install --global dotnet-ef
 RUN chmod +x Scripts/migrate_db.sh
 ARG BLOGED_DB_CONN
 ENV BLOGED_DB_CONN ${BLOGED_DB_CONN}
-RUN dotnet ef database update
+RUN /bin/bash Scripts/migrate_db.sh
 
 FROM build AS publish
 RUN dotnet publish "BlogedWebapp.csproj" -c Release -o /app/publish
