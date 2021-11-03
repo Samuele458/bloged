@@ -1,15 +1,18 @@
+using BlogedWebapp.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
 using System.Linq;
@@ -77,6 +80,7 @@ namespace BlogedWebapp
         {
             System.Diagnostics.Debug.WriteLine("Connection string: " + Environment.GetEnvironmentVariable("BLOGED_DB_CONN"));
 
+            services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Environment.GetEnvironmentVariable("BLOGED_DB_CONN")));
 
             services.AddCors(c =>
             {
@@ -84,6 +88,14 @@ namespace BlogedWebapp
             });
 
 
+            //JSON serializer
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
+                .Json.ReferenceLoopHandling.Ignore)
+                .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver
+                = new DefaultContractResolver()
+                );
 
 
             services.AddControllersWithViews(o =>
