@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace BlogedWebapp.Entities
 {
     [Owned]
-    public  class RefreshTokens
+    public class RefreshTokens
     {
 
         [Key]

@@ -80,6 +80,8 @@ namespace BlogedWebapp
         {
             System.Diagnostics.Debug.WriteLine("Connection string: " + Environment.GetEnvironmentVariable("BLOGED_DB_CONN"));
 
+            //System.Diagnostics.Debug.WriteLine("Jwt: " + SecretsManager.GetSecret("prod/Bloged/secrets", "sdasdasd"));
+
             services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Environment.GetEnvironmentVariable("BLOGED_DB_CONN")));
 
             services.AddCors(c =>
@@ -114,14 +116,19 @@ namespace BlogedWebapp
             {
                 configuration.RootPath = "wwwroot";
             });
+
+
+            services.Configure<AppSettings>((AppSettings) =>
+            {
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-
-
+      
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
