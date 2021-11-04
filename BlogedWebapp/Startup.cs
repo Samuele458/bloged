@@ -1,3 +1,4 @@
+using BlogedWebapp.Data;
 using BlogedWebapp.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -117,11 +118,15 @@ namespace BlogedWebapp
                 configuration.RootPath = "wwwroot";
             });
 
+            services.AddScoped<IUserRepository, UserRepository>();
+
 
             services.Configure<AppSettings>((AppSettings) =>
             {
-
+                AppSettings.JwtSecret = SecretsManager.GetSecret("prod/Bloged/secrets", "JwtSecret");
             });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
