@@ -1,11 +1,14 @@
 ﻿using BlogedWebapp.Entities;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlogedWebapp.Models
 {
     public class AuthenticateResponse
     {
-        public int Id { get; set; }
+
+        [Key]
+        public Guid Id { get; set; }
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public String Username { get; set; }
