@@ -1,12 +1,6 @@
 ﻿using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
-using BlogedWebapp.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlogedWebapp.Controllers
 {
@@ -17,7 +11,7 @@ namespace BlogedWebapp.Controllers
         private IUserRepository UserRepository;
 
 
-        public UsersController( IUserRepository userRepository )
+        public UsersController(IUserRepository userRepository)
         {
             this.UserRepository = userRepository;
         }

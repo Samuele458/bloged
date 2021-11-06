@@ -79,7 +79,7 @@ namespace BlogedWebapp.Helpers
             }
 
             //if key is not set return thw whole secret as plaintext
-            if ( key.Length == 0 )
+            if (key.Length == 0)
             {
                 return secret;
             }
@@ -90,7 +90,8 @@ namespace BlogedWebapp.Helpers
             if (secretObject.ContainsKey(key))
             {
                 return (string)secretObject[key];
-            } else
+            }
+            else
             {
                 throw new KeyNotFoundException(key);
             }

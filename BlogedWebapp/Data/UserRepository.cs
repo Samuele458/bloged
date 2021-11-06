@@ -1,10 +1,6 @@
 ﻿using BlogedWebapp.Entities;
 using BlogedWebapp.Helpers;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlogedWebapp.Data
 {
@@ -19,7 +15,7 @@ namespace BlogedWebapp.Data
         private readonly AppSettings AppSettings;
         private readonly DataContext Context;
 
-        public UserRepository(DataContext context, IOptions<AppSettings> appSettings )
+        public UserRepository(DataContext context, IOptions<AppSettings> appSettings)
         {
             this.Context = context;
             this.AppSettings = appSettings.Value;
