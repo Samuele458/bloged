@@ -13,7 +13,7 @@ namespace BlogedWebapp.Data
     public interface IUsersRepository : IGenericRepository<User>
     {
 
-        Task<User> GetUserByEmailAddress(string email);
+        //sTask<User> GetUserByEmailAddress(string email);
     }
 
     public class UsersRepository : GenericRepository<User>, IUsersRepository

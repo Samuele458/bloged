@@ -1,6 +1,8 @@
 ﻿using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
+using BlogedWebapp.Models.Dtos.Requests;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace BlogedWebapp.Controllers
 {
@@ -8,38 +10,43 @@ namespace BlogedWebapp.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUsersRepository UserRepository;
+        private IUnitOfWork unitOfWork;
 
-
-        public UsersController(IUsersRepository userRepository)
+        public UsersController( IUnitOfWork unitOfWork )
         {
-            this.UserRepository = userRepository;
+            this.unitOfWork = unitOfWork;
         }
 
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate(AuthenticateRequest model)
+        [HttpGet]
+        [HttpHead]
+        public async Task<IActionResult> GetUsers()
         {
-
-            return Ok();
+            var users = await unitOfWork.Users.All();
+            return Ok(users);
         }
 
-        [HttpPost("register")]
-        public IActionResult Register(RegisterRequest model)
-        {
 
-            User user = new User
+        [HttpPost]
+        public async Task<IActionResult> AddUser( CreateUserRequestDto request )
+        {
+            User user = new User()
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Username = model.Username,
-                Password = BCrypt.Net.BCrypt.HashPassword(model.Password)
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Username = request.Username,
+                Email = request.Email,
+                Status = 1,
+                Password = request.Password
             };
 
-            UserRepository.Create(user);
+            await unitOfWork.Users.Add(user);
+            await unitOfWork.CompleteAsync();
 
-            return Ok();
 
+            return CreatedAtRoute("GetUser", user.Id, request);
         }
+
+
 
     }
 }
