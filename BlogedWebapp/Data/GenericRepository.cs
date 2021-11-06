@@ -1,5 +1,6 @@
 ﻿using BlogedWebapp.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -57,10 +58,16 @@ namespace BlogedWebapp.Data
 
         internal DbSet<T> dbSet;
 
-        public GenericRepository( DataContext context )
+        protected readonly ILogger logger;
+
+        public GenericRepository(
+                DataContext context,
+                ILogger logger
+            )
         {
             this.dataContext = context;
             this.dbSet = context.Set<T>();
+            this.logger = logger;
         }
 
         /// <inheritdoc/>

@@ -8,10 +8,10 @@ namespace BlogedWebapp.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserRepository UserRepository;
+        private IUsersRepository UserRepository;
 
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IUsersRepository userRepository)
         {
             this.UserRepository = userRepository;
         }

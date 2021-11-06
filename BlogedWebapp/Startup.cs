@@ -118,7 +118,7 @@ namespace BlogedWebapp
                 configuration.RootPath = "wwwroot";
             });
 
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
 
 
             services.Configure<AppSettings>((AppSettings) =>
