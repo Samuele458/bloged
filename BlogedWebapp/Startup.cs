@@ -1,6 +1,7 @@
 using BlogedWebapp.Data;
 using BlogedWebapp.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +18,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using Swashbuckle.AspNetCore.Filters;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -63,6 +66,15 @@ namespace BlogedWebapp
             }
         }
     }
+
+    /*public class SecurityRequirementsOperationFilter
+    {
+        public SecurityRequirementsOperationFilter(bool includeUnauthorizedAndForbiddenResponses = true, string securitySchemaName = "oauth2")
+    {
+        Func<IEnumerable<AuthorizeAttribute>, IEnumerable<string>> policySelector = (IEnumerable<AuthorizeAttribute> authAttributes) => authAttributes.Where((Func<AuthorizeAttribute, bool>)((AuthorizeAttribute a) => !string.IsNullOrEmpty(a.Policy))).Select((Func<AuthorizeAttribute, string>)((AuthorizeAttribute a) => a.Policy));
+        filter = new SecurityRequirementsOperationFilter<AuthorizeAttribute>(policySelector, includeUnauthorizedAndForbiddenResponses, securitySchemaName);
+    }
+}*/
 
     public class Startup
     {
@@ -112,6 +124,17 @@ namespace BlogedWebapp
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BlogedWebapp", Version = "v1" });
 
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                // Add this filter as well.
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
+
             });
 
             // In production, the React files will be served from this directory
@@ -148,7 +171,7 @@ namespace BlogedWebapp
             .AddJwtBearer(jwt =>
             {
                 //getting jwt secret
-                var key = Encoding.ASCII.GetBytes("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                var key = Encoding.ASCII.GetBytes(SecretsManager.GetSecret("prod/Bloged/secrets", "JwtSecret"));
 
                 jwt.SaveToken = true;
                 jwt.TokenValidationParameters = new TokenValidationParameters
@@ -178,12 +201,10 @@ namespace BlogedWebapp
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BlogedWebapp v1"));
             }
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
