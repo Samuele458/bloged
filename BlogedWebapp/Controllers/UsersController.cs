@@ -2,6 +2,7 @@
 using BlogedWebapp.Entities;
 using BlogedWebapp.Models.Dtos.Requests;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace BlogedWebapp.Controllers
@@ -12,7 +13,7 @@ namespace BlogedWebapp.Controllers
     {
         private IUnitOfWork unitOfWork;
 
-        public UsersController( IUnitOfWork unitOfWork )
+        public UsersController(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
         }
@@ -27,7 +28,7 @@ namespace BlogedWebapp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddUser( CreateUserRequestDto request )
+        public async Task<IActionResult> AddUser(CreateUserRequestDto request)
         {
             User user = new User()
             {
@@ -43,9 +44,15 @@ namespace BlogedWebapp.Controllers
             await unitOfWork.CompleteAsync();
 
 
-            return CreatedAtRoute("GetUser", user.Id, request);
+            return CreatedAtRoute("GetUser", new { id = user.Id }, request);
         }
 
+        [HttpGet]
+        [Route("GetUser", Name = "GetUser")]
+        public IActionResult GetUser(Guid id)
+        {
+            return Ok();
+        }
 
 
     }
