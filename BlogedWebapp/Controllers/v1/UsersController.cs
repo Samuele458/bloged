@@ -1,23 +1,31 @@
 ﻿using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
 using BlogedWebapp.Models.Dtos.Requests;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
-namespace BlogedWebapp.Controllers
+namespace BlogedWebapp.Controllers.v1
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
-    {
-        private IUnitOfWork unitOfWork;
 
-        public UsersController(IUnitOfWork unitOfWork)
+    /// <summary>
+    ///  Users controller
+    /// </summary>
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public class UsersController : BaseController
+    {
+
+        public UsersController(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
-            this.unitOfWork = unitOfWork;
+
         }
 
+        /// <summary>
+        ///  Get all users
+        /// </summary>
+        /// <returns>List of all users</returns>
         [HttpGet]
         [HttpHead]
         public async Task<IActionResult> GetUsers()
@@ -26,7 +34,11 @@ namespace BlogedWebapp.Controllers
             return Ok(users);
         }
 
-
+        /// <summary>
+        ///  Add a new user
+        /// </summary>
+        /// <param name="request">Request DTO</param>
+        /// <returns>Created user info</returns>
         [HttpPost]
         public async Task<IActionResult> AddUser(CreateUserRequestDto request)
         {
@@ -47,6 +59,11 @@ namespace BlogedWebapp.Controllers
             return CreatedAtRoute("GetUser", new { id = user.Id }, request);
         }
 
+        /// <summary>
+        ///  Get a specified user by id
+        /// </summary>
+        /// <param name="id">User id</param>
+        /// <returns>Selected user</returns>
         [HttpGet]
         [Route("GetUser", Name = "GetUser")]
         public IActionResult GetUser(Guid id)

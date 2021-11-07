@@ -27,6 +27,7 @@ namespace BlogedWebapp.Data
 
         }
 
+        /// <inheritdoc/>
         public override async Task<IEnumerable<User>> All()
         {
             try

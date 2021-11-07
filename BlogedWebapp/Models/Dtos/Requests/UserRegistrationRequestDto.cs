@@ -2,10 +2,7 @@
 
 namespace BlogedWebapp.Models.Dtos.Requests
 {
-    /// <summary>
-    ///  Request Data Transfer Object for creating new user
-    /// </summary>
-    public class CreateUserRequestDto
+    public class UserRegistrationRequestDto
     {
         [Required]
         public string Email { get; set; }

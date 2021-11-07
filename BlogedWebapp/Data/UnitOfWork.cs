@@ -6,13 +6,23 @@ using System.Threading.Tasks;
 namespace BlogedWebapp.Data
 {
 
+    /// <summary>
+    ///  UnitOfWork Interface
+    /// </summary>
     public interface IUnitOfWork
     {
         IUsersRepository Users { get; }
 
+        /// <summary>
+        ///  Save db changes on context asynchronously
+        /// </summary>
+        /// <returns>Completed task</returns>
         Task CompleteAsync();
     }
 
+    /// <summary>
+    ///  UnitOfWork class
+    /// </summary>
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
 
@@ -30,11 +40,15 @@ namespace BlogedWebapp.Data
             Users = new UsersRepository(context, logger);
         }
 
+        /// <inheritdoc/>
         public async Task CompleteAsync()
         {
             await context.SaveChangesAsync();
         }
 
+        /// <summary>
+        ///  Dispose resources
+        /// </summary>
         public void Dispose()
         {
             context.Dispose();

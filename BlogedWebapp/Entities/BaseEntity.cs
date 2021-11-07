@@ -3,6 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlogedWebapp.Entities
 {
+
+    /// <summary>
+    ///  Base entity
+    /// </summary>
     public abstract class BaseEntity
     {
         [Key]

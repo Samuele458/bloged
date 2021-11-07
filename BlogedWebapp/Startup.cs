@@ -1,8 +1,10 @@
 using BlogedWebapp.Data;
 using BlogedWebapp.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -11,12 +13,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace BlogedWebapp
 {
@@ -67,10 +71,11 @@ namespace BlogedWebapp
             System.Diagnostics.Debug.WriteLine("Current environment: " + env.EnvironmentName);
 
             var builder = new ConfigurationBuilder()
-            .SetBasePath(env.ContentRootPath)
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-            .AddEnvironmentVariables();
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+
             Configuration = builder.Build();
         }
 
@@ -79,9 +84,6 @@ namespace BlogedWebapp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            System.Diagnostics.Debug.WriteLine("Connection string: " + Environment.GetEnvironmentVariable("BLOGED_DB_CONN"));
-
-            //System.Diagnostics.Debug.WriteLine("Jwt: " + SecretsManager.GetSecret("prod/Bloged/secrets", "sdasdasd"));
 
             services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Environment.GetEnvironmentVariable("BLOGED_DB_CONN")));
 
@@ -94,13 +96,12 @@ namespace BlogedWebapp
             //JSON serializer
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
-                .Json.ReferenceLoopHandling.Ignore)
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
+                    .Json.ReferenceLoopHandling.Ignore)
                 .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver
-                = new DefaultContractResolver()
-                );
+                                                            = new DefaultContractResolver());
 
-
+            //apply "api" prefix on routes
             services.AddControllersWithViews(o =>
             {
                 o.UseGeneralRoutePrefix("api");
@@ -110,6 +111,7 @@ namespace BlogedWebapp
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BlogedWebapp", Version = "v1" });
+
             });
 
             // In production, the React files will be served from this directory
@@ -118,15 +120,51 @@ namespace BlogedWebapp
                 configuration.RootPath = "wwwroot";
             });
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.Configure<AppSettings>((AppSettings) =>
             {
                 AppSettings.JwtSecret = SecretsManager.GetSecret("prod/Bloged/secrets", "JwtSecret");
             });
 
+            services.AddApiVersioning(opt =>
+            {
+                //report api versions on response
+                opt.ReportApiVersions = true;
 
+                //if not specified, assume default api version
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = ApiVersion.Default;
+            });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
+            .AddJwtBearer(jwt =>
+            {
+                //getting jwt secret
+                var key = Encoding.ASCII.GetBytes("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+                jwt.SaveToken = true;
+                jwt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    RequireExpirationTime = false,
+                    ValidateLifetime = true
+                };
+            });
+
+            services
+                .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<DataContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -143,6 +181,7 @@ namespace BlogedWebapp
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

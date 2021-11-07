@@ -2,8 +2,13 @@
 
 namespace BlogedWebapp.Entities
 {
+    /// <summary>
+    ///  User entity
+    /// </summary>
     public class User : BaseEntity
     {
+
+        public Guid IdentityId { get; set; }
 
         public string FirstName { get; set; }
 
