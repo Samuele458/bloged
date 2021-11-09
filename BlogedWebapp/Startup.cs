@@ -1,4 +1,5 @@
 using BlogedWebapp.Data;
+using BlogedWebapp.Entities;
 using BlogedWebapp.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

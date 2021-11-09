@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace BlogedWebapp.Entities
 {
@@ -8,7 +9,7 @@ namespace BlogedWebapp.Entities
     public class User : BaseEntity
     {
 
-        public Guid IdentityId { get; set; }
+        public IdentityUser Identity { get; set; }
 
         public string FirstName { get; set; }
 

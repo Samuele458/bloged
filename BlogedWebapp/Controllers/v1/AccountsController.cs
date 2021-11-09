@@ -85,7 +85,7 @@ namespace BlogedWebapp.Controllers.v1
 
                 User user = new User()
                 {
-                    IdentityId = new Guid(newUser.Id),
+                    Identity = newUser,
                     FirstName = registrationDto.FirstName,
                     LastName = registrationDto.LastName,
                     Username = registrationDto.Username,

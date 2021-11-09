@@ -31,6 +31,7 @@ namespace BlogedWebapp.Controllers.v1
         public async Task<IActionResult> GetUsers()
         {
             var users = await unitOfWork.Users.All();
+            System.Diagnostics.Debug.WriteLine("Identity: ", users);
             return Ok(users);
         }
 

@@ -33,6 +33,7 @@ namespace BlogedWebapp.Data
             try
             {
                 return await dbSet.Where(x => x.Status == 1)
+                                .Include(u => u.Identity)
                                 .AsNoTracking()
                                 .ToListAsync();
             }
