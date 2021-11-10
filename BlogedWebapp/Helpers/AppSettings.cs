@@ -1,4 +1,6 @@
-﻿namespace BlogedWebapp.Helpers
+﻿using System;
+
+namespace BlogedWebapp.Helpers
 {
     /// <summary>
     ///  App settings
@@ -6,6 +8,8 @@
     public class AppSettings
     {
         public string JwtSecret { get; set; }
+
+        public TimeSpan JwtExpiryTimeFrame { get; set; }
 
     }
 }

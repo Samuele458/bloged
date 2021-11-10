@@ -25,14 +25,20 @@ namespace BlogedWebapp.Controllers.v1
 
         private readonly UserManager<IdentityUser> userManager;
 
+        private readonly TokenValidationParameters tokenValidationParameters;
+
+        private readonly IUnitOfWork unitOfWork;
+
         private readonly AppSettings appSettings;
         public AccountsController(
             IUnitOfWork unitOfWork,
             UserManager<IdentityUser> userManager,
+            TokenValidationParameters tokenValidationParameters,
             IOptionsMonitor<AppSettings> optionsMonitor) : base(unitOfWork)
         {
             this.userManager = userManager;
             this.appSettings = optionsMonitor.CurrentValue;
+            this.tokenValidationParameters = tokenValidationParameters;
         }
 
         /// <summary>
@@ -206,7 +212,7 @@ namespace BlogedWebapp.Controllers.v1
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }),
-                Expires = DateTime.UtcNow.AddHours(3),
+                Expires = DateTime.UtcNow.Add(appSettings.JwtExpiryTimeFrame),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

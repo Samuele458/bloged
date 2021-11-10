@@ -150,6 +150,8 @@ namespace BlogedWebapp
             services.Configure<AppSettings>((AppSettings) =>
             {
                 AppSettings.JwtSecret = SecretsManager.GetSecret("prod/Bloged/secrets", "JwtSecret");
+                AppSettings.JwtExpiryTimeFrame = TimeSpan.Parse(Configuration.GetSection("JwtSettings").GetValue<string>("ExpiryTimeFrame"));
+
             });
 
             services.AddApiVersioning(opt =>
@@ -162,6 +164,22 @@ namespace BlogedWebapp
                 opt.DefaultApiVersion = ApiVersion.Default;
             });
 
+            //getting jwt secret key
+            var key = Encoding.ASCII.GetBytes(SecretsManager.GetSecret("prod/Bloged/secrets", "JwtSecret"));
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = false,
+                ValidateLifetime = true
+            };
+
+            //Injecting to Dependency Injection conatainer
+            services.AddSingleton(tokenValidationParameters);
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -171,19 +189,8 @@ namespace BlogedWebapp
             })
             .AddJwtBearer(jwt =>
             {
-                //getting jwt secret
-                var key = Encoding.ASCII.GetBytes(SecretsManager.GetSecret("prod/Bloged/secrets", "JwtSecret"));
-
                 jwt.SaveToken = true;
-                jwt.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RequireExpirationTime = false,
-                    ValidateLifetime = true
-                };
+                jwt.TokenValidationParameters = tokenValidationParameters;
             });
 
             services

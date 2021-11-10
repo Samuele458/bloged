@@ -13,6 +13,8 @@ namespace BlogedWebapp.Data
     {
         IUsersRepository Users { get; }
 
+        IRefreshTokensRepository RefreshTokens { get; }
+
         /// <summary>
         ///  Save db changes on context asynchronously
         /// </summary>
@@ -32,12 +34,15 @@ namespace BlogedWebapp.Data
 
         public IUsersRepository Users { get; private set; }
 
+        public IRefreshTokensRepository RefreshTokens { get; private set; }
+
         public UnitOfWork(DataContext context, ILoggerFactory loggerFactory)
         {
             this.context = context;
             this.logger = loggerFactory.CreateLogger("db_logs");
 
             Users = new UsersRepository(context, logger);
+            RefreshTokens = new RefreshTokensRepository(context, logger);
         }
 
         /// <inheritdoc/>

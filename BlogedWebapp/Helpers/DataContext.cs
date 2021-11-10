@@ -10,6 +10,7 @@ namespace BlogedWebapp.Helpers
 
         public virtual DbSet<User> Users { get; set; }
 
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
