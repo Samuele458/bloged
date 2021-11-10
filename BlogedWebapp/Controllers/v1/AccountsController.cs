@@ -83,6 +83,7 @@ namespace BlogedWebapp.Controllers.v1
                     });
                 }
 
+                //creting new user object
                 User user = new User()
                 {
                     Identity = newUser,

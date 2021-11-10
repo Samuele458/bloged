@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 using System;
 
 namespace BlogedWebapp.Entities
@@ -9,6 +10,7 @@ namespace BlogedWebapp.Entities
     public class User : BaseEntity
     {
 
+        [JsonIgnore]
         public IdentityUser Identity { get; set; }
 
         public string FirstName { get; set; }

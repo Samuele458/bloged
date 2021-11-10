@@ -73,7 +73,7 @@ namespace BlogedWebapp.Data
         /// <inheritdoc/>
         public virtual async Task<bool> Add(T entity)
         {
-            await dataContext.AddAsync(entity);
+            await dbSet.AddAsync(entity);
             return true;
         }
 

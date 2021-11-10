@@ -43,6 +43,21 @@ namespace BlogedWebapp.Data
                 return new List<User>();
             }
         }
+
+        /// <inheritdoc/>
+        public override async Task<User> GetById(Guid Id)
+        {
+            try
+            {
+                return await dbSet
+                                .FirstOrDefaultAsync(u => u.Id == Id);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(UsersRepository));
+                return new User();
+            }
+        }
     }
 
 }

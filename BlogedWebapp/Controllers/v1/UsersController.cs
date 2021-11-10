@@ -67,9 +67,10 @@ namespace BlogedWebapp.Controllers.v1
         /// <returns>Selected user</returns>
         [HttpGet]
         [Route("GetUser", Name = "GetUser")]
-        public IActionResult GetUser(Guid id)
+        public async Task<IActionResult> GetUser(Guid id)
         {
-            return Ok();
+            
+            return Ok(await unitOfWork.Users.GetById(id));
         }
 
 
