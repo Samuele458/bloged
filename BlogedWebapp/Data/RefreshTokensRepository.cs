@@ -11,6 +11,21 @@ namespace BlogedWebapp.Data
 {
     public interface IRefreshTokensRepository : IGenericRepository<RefreshToken>
     {
+        /// <summary>
+        ///  Get refresh token object by its string
+        /// </summary>
+        /// <param name="refreshToken">Refresh token string</param>
+        /// <returns>Refresh token object (null if not found)</returns>
+        Task<RefreshToken> GetByRefreshToken(string refreshToken);
+
+
+        /// <summary>
+        ///  Mark a specified refresh token as used
+        /// </summary>
+        /// <param name="refreshToken">Refresh token to be marked as used</param>
+        /// <returns>True if success, false otherwise</returns>
+        Task<bool> MarkRefreshTokenAsUsed(RefreshToken refreshToken);
+
 
     }
 
@@ -53,6 +68,44 @@ namespace BlogedWebapp.Data
             {
                 logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(RefreshTokensRepository));
                 return new RefreshToken();
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<RefreshToken> GetByRefreshToken(string refreshToken)
+        {
+            try
+            {
+                return await dbSet.Where(x => x.Token.ToLower() == refreshToken.ToLower() )
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(RefreshTokensRepository));
+                return new RefreshToken();
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> MarkRefreshTokenAsUsed(RefreshToken refreshToken)
+        {
+            try
+            {
+                var token = await dbSet.Where(x => x.Token.ToLower() == refreshToken.Token.ToLower())
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync();
+                
+                if (token == null) return false;
+
+                token.IsUsed = refreshToken.IsUsed;
+                return true;
+
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(RefreshTokensRepository));
+                return false;
             }
         }
     }
