@@ -173,8 +173,9 @@ namespace BlogedWebapp
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                RequireExpirationTime = false,
-                ValidateLifetime = true
+                RequireExpirationTime = true,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
             };
 
             //Injecting to Dependency Injection conatainer
@@ -186,6 +187,8 @@ namespace BlogedWebapp
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
+                
+               
             })
             .AddJwtBearer(jwt =>
             {

@@ -237,11 +237,16 @@ namespace BlogedWebapp.Controllers.v1
 
             try
             {
+
+                var tokenValidationParametersClone = this.tokenValidationParameters.Clone();
+                tokenValidationParametersClone.ValidateLifetime = false;
+
                 // checking token validity
                 var principal = tokenHandler.ValidateToken(
-                                                tokenRequestDto.Token,
-                                                this.tokenValidationParameters,
-                                                out var validatedToken );
+                                                    tokenRequestDto.Token,
+                                                    tokenValidationParametersClone,
+                                                    out var validatedToken);
+                
 
                 // Check if the validated token is a valid jwt token (and not a random string)
                 if( validatedToken is JwtSecurityToken jwtSecurityToken )
@@ -274,10 +279,12 @@ namespace BlogedWebapp.Controllers.v1
                         Success = false,
                         Errors = new List<string>()
                         {
-                            "Jwt token has expired."
+                            "Jwt token has not expired."
                         }
                     };
                 }
+
+                Console.WriteLine("Token has expired");
 
                 // Checking if refresh token exists
                 var existingRefreshToken = await unitOfWork
