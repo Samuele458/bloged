@@ -26,6 +26,14 @@ namespace BlogedWebapp.Data
         /// <returns>True if success, false otherwise</returns>
         Task<bool> MarkRefreshTokenAsUsed(RefreshToken refreshToken);
 
+        /// <summary>
+        ///  Mark a specified refresh token as revoked
+        /// </summary>
+        /// <param name="refreshToken">Refresh token to be marked as revoked</param>
+        /// <returns>True if success, false otherwise</returns>
+        Task<bool> MarkRefreshTokenAsRevoked(RefreshToken refreshToken);
+
+
 
     }
 
@@ -93,12 +101,34 @@ namespace BlogedWebapp.Data
             try
             {
                 var token = await dbSet.Where(x => x.Token.ToLower() == refreshToken.Token.ToLower())
-                                .AsNoTracking()
                                 .FirstOrDefaultAsync();
-                
+
                 if (token == null) return false;
 
                 token.IsUsed = refreshToken.IsUsed;
+
+                return true;
+
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(RefreshTokensRepository));
+                return false;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> MarkRefreshTokenAsRevoked(RefreshToken refreshToken)
+        {
+            try
+            {
+                var token = await dbSet.Where(x => x.Token.ToLower() == refreshToken.Token.ToLower())
+                                .FirstOrDefaultAsync();
+
+                if (token == null) return false;
+
+                token.IsRevoked = refreshToken.IsRevoked;
+
                 return true;
 
             }

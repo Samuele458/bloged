@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -19,12 +20,15 @@ using System.Threading.Tasks;
 namespace BlogedWebapp.Controllers.v1
 {
     /// <summary>
-    ///  Authentication handling
+    ///  Accounts handling
     /// </summary>
+    [Route("v{version:apiVersion}/accounts")]
     public class AccountsController : BaseController
     {
 
         private readonly UserManager<IdentityUser> userManager;
+
+        private readonly RoleManager<IdentityRole> roleManager;
 
         private readonly TokenValidationParameters tokenValidationParameters;
 
@@ -33,10 +37,12 @@ namespace BlogedWebapp.Controllers.v1
         public AccountsController(
             IUnitOfWork unitOfWork,
             UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             TokenValidationParameters tokenValidationParameters,
             IOptionsMonitor<AppSettings> optionsMonitor) : base(unitOfWork)
         {
             this.userManager = userManager;
+            this.roleManager = roleManager;
             this.appSettings = optionsMonitor.CurrentValue;
             this.tokenValidationParameters = tokenValidationParameters;
         }
@@ -368,6 +374,7 @@ namespace BlogedWebapp.Controllers.v1
                 bool updateResult = await unitOfWork
                                             .RefreshTokens
                                             .MarkRefreshTokenAsUsed(existingRefreshToken);
+                
 
                 if(!updateResult)
                 {
@@ -443,15 +450,13 @@ namespace BlogedWebapp.Controllers.v1
             //getting security key
             var key = Encoding.ASCII.GetBytes(appSettings.JwtSecret);
 
+            // Getting claims
+            var claims = await GetAllValidClaims(user);
+
             //creating token descriptor
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] {
-                    new Claim("Id", user.Id),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.Add(appSettings.JwtExpiryTimeFrame),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -492,6 +497,184 @@ namespace BlogedWebapp.Controllers.v1
             };
             
             return tokenData;
+        }
+
+        private async Task<List<Claim>> GetAllValidClaims(IdentityUser user)
+        {
+
+            var claims = new List<Claim>
+            {
+                new Claim("Id", user.Id),
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            // Adding claims assigned to the user
+            var userClaims = await userManager.GetClaimsAsync(user);
+            claims.AddRange(userClaims);
+
+            // Getting roles
+            var userRoles = await userManager.GetRolesAsync(user);
+            
+            foreach( string userRole in userRoles )
+            {
+                var role = await roleManager.FindByNameAsync(userRole);
+
+                if( role != null)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, userRole));
+
+                    var roleClaims = await roleManager.GetClaimsAsync(role);
+
+                    foreach( var roleClaim in roleClaims )
+                    {
+                        claims.Add(roleClaim);
+                    }
+                }
+            }
+
+            return claims;
+        }
+
+        [HttpPost]
+        [Route("{userId}/roles")]
+        public async Task<IActionResult> AddToRole(string userId, RoleDto roleDto)
+        {
+
+            // Getting user object
+            var user = await userManager.FindByIdAsync(userId);
+
+            //Checking user
+            if (user == null)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "User id does not exist."
+                    }
+                });
+            }
+
+            // Getting role object
+            var role = await roleManager.FindByNameAsync(roleDto.RoleName);
+
+            // Checking role
+            if (role == null)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Role does not exist."
+                    }
+                });
+            }
+
+            // Adding role to user
+            var result = await userManager.AddToRoleAsync(user, roleDto.RoleName);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Cannot add role to user."
+                    }
+                });
+            }
+
+            return Ok(new GenericResponseDto
+            {
+                Success = true
+            });
+        }
+
+        [HttpGet]
+        [Route("{userId}/roles")]
+        public async Task<IActionResult> GetUserRoles(string userId)
+        {
+            // Getting user object
+            var user = await userManager.FindByIdAsync(userId);
+
+            //Checking user
+            if (user == null)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "User email does not exist."
+                    }
+                });
+            }
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            return Ok(roles);
+        }
+
+        [HttpDelete]
+        [Route("{userId}/roles/{roleName}")]
+        public async Task<IActionResult> RemoveFromRole(string userId, string roleName)
+        {
+            // Getting user object
+            var user = await userManager.FindByIdAsync(userId);
+
+            //Checking user
+            if (user == null)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "User id does not exist."
+                    }
+                });
+            }
+
+            // Getting role object
+            var role = await roleManager.FindByNameAsync(roleName);
+
+            // Checking role
+            if (role == null)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Role does not exist."
+                    }
+                });
+            }
+
+            // Removing role from user
+            var result = await userManager.RemoveFromRoleAsync(user, roleName);
+
+            if(!result.Succeeded)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Cannot remove role."
+                    }
+                });
+            }
+
+            return Ok(new GenericResponseDto
+            {
+                Success = true
+            });
         }
     }
 }

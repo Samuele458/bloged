@@ -145,6 +145,9 @@ namespace BlogedWebapp
             });
 
 
+
+
+            //services.AddSingleton<IAuthorizationHandler, DocumentAuthorizationHandler>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.Configure<AppSettings>((AppSettings) =>
@@ -197,7 +200,7 @@ namespace BlogedWebapp
             });
 
             services
-                .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>();
         }
 

@@ -13,7 +13,7 @@ namespace BlogedWebapp.Controllers.v1
     /// <summary>
     ///  Users controller
     /// </summary>
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
     public class UsersController : BaseController
     {
 
