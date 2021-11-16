@@ -1,3 +1,5 @@
+using BlogedWebapp.Authorizations.Handlers;
+using BlogedWebapp.Authorizations.Requirements;
 using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
 using BlogedWebapp.Helpers;
@@ -184,6 +186,25 @@ namespace BlogedWebapp
             //Injecting to Dependency Injection conatainer
             services.AddSingleton(tokenValidationParameters);
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("TestPolicy", options =>
+                {
+                    /*options
+                        .AuthenticationSchemes
+                        .Add(JwtBearerDefaults.AuthenticationScheme);
+                    */
+
+                    options
+                        .RequireAuthenticatedUser()
+                        .RequireRole("admin");
+                    
+                    options.Requirements.Add(new SameAuthorRequirement());
+                });       
+            });
+
+            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -202,6 +223,8 @@ namespace BlogedWebapp
             services
                 .AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>();
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

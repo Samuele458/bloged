@@ -13,13 +13,14 @@ namespace BlogedWebapp.Controllers.v1
     /// <summary>
     ///  Users controller
     /// </summary>
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : BaseController
     {
+        private readonly IAuthorizationService authorizationService;
 
-        public UsersController(IUnitOfWork unitOfWork) : base(unitOfWork)
+        public UsersController(IUnitOfWork unitOfWork, IAuthorizationService authorizationService) : base(unitOfWork)
         {
-
+            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -67,10 +68,27 @@ namespace BlogedWebapp.Controllers.v1
         /// <returns>Selected user</returns>
         [HttpGet]
         [Route("GetUser", Name = "GetUser")]
+        //[Authorize(Roles = "Admin")]
+        //[Authorize( Policy = "TestPolicy")]
         public async Task<IActionResult> GetUser(Guid id)
         {
+            User user = await unitOfWork.Users.GetById(id);
+            //return Ok(user);
             
-            return Ok(await unitOfWork.Users.GetById(id));
+            var authorizationResult = await authorizationService
+                                                .AuthorizeAsync(User, user, "TestPolicy");
+
+            System.Diagnostics.Debug.WriteLine("Succeed: " + authorizationResult.ToString() );
+            System.Diagnostics.Debug.WriteLine("Failure: " + authorizationResult.Failure );
+
+            if (authorizationResult.Succeeded)
+                return Ok(user);
+
+            else return BadRequest(new
+            {
+                Error = "AAA"
+            });
+            
         }
 
 

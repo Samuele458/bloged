@@ -1,4 +1,5 @@
 ﻿using BlogedWebapp.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +37,11 @@ namespace BlogedWebapp.Data
 
         public IRefreshTokensRepository RefreshTokens { get; private set; }
 
-        public UnitOfWork(DataContext context, ILoggerFactory loggerFactory)
+        
+
+        public UnitOfWork(
+            DataContext context, 
+            ILoggerFactory loggerFactory)
         {
             this.context = context;
             this.logger = loggerFactory.CreateLogger("db_logs");
