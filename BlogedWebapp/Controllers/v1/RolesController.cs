@@ -29,7 +29,10 @@ namespace BlogedWebapp.Controllers.v1
             this.userManager = userManager;
         }
 
-
+        /// <summary>
+        ///  Gets all existing roles
+        /// </summary>
+        /// <returns>List of all existing roles</returns>
         [HttpGet]
         [Route("")]
         public IActionResult GetAllRoles()
@@ -39,6 +42,11 @@ namespace BlogedWebapp.Controllers.v1
             return Ok(roles);
         }
 
+        /// <summary>
+        ///  Creates a new role
+        /// </summary>
+        /// <param name="roleDto">Role Data Transfer Object containing role information</param>
+        /// <returns>Generic DTO for handling success state and errors</returns>
         [HttpPost]
         [Route("")]
         public async Task<IActionResult> CreateRole(RoleDto roleDto)
@@ -78,6 +86,13 @@ namespace BlogedWebapp.Controllers.v1
             
         }
 
+
+        /// <summary>
+        ///  Deletes a specified role.
+        ///  The role will also be removed from every user who is attached to
+        /// </summary>
+        /// <param name="roleName">Role name</param>
+        /// <returns>Generic DTO for handling success state and errors</returns>
         [HttpDelete]
         [Route("{roleName}")]
         public async Task<IActionResult> DeleteRole(string roleName)

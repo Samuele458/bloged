@@ -11,14 +11,15 @@ namespace BlogedWebapp.Controllers.v1
 {
 
     /// <summary>
-    ///  Users controller
+    ///  Profiles controller
     /// </summary>
+    [Route("v{version:apiVersion}/profiles")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class UsersController : BaseController
+    public class ProfilesController : BaseController
     {
         private readonly IAuthorizationService authorizationService;
 
-        public UsersController(IUnitOfWork unitOfWork, IAuthorizationService authorizationService) : base(unitOfWork)
+        public ProfilesController(IUnitOfWork unitOfWork, IAuthorizationService authorizationService) : base(unitOfWork)
         {
             this.authorizationService = authorizationService;
         }
@@ -28,11 +29,9 @@ namespace BlogedWebapp.Controllers.v1
         /// </summary>
         /// <returns>List of all users</returns>
         [HttpGet]
-        [HttpHead]
         public async Task<IActionResult> GetUsers()
         {
-            var users = await unitOfWork.Users.All();
-            System.Diagnostics.Debug.WriteLine("Identity: ", users);
+            var users = await unitOfWork.Profiles.All();
             return Ok(users);
         }
 
@@ -44,7 +43,7 @@ namespace BlogedWebapp.Controllers.v1
         [HttpPost]
         public async Task<IActionResult> AddUser(CreateUserRequestDto request)
         {
-            User user = new User()
+            Profile user = new Profile()
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
@@ -54,7 +53,7 @@ namespace BlogedWebapp.Controllers.v1
                 Password = request.Password
             };
 
-            await unitOfWork.Users.Add(user);
+            await unitOfWork.Profiles.Add(user);
             await unitOfWork.CompleteAsync();
 
 
@@ -64,15 +63,13 @@ namespace BlogedWebapp.Controllers.v1
         /// <summary>
         ///  Get a specified user by id
         /// </summary>
-        /// <param name="id">User id</param>
+        /// <param name="id">Profile id</param>
         /// <returns>Selected user</returns>
         [HttpGet]
-        [Route("GetUser", Name = "GetUser")]
-        //[Authorize(Roles = "Admin")]
-        //[Authorize( Policy = "TestPolicy")]
-        public async Task<IActionResult> GetUser(Guid id)
+        [Route("{userId}")]
+        public async Task<IActionResult> GetUser(Guid userId)
         {
-            User user = await unitOfWork.Users.GetById(id);
+            Profile user = await unitOfWork.Profiles.GetById(userId);
             //return Ok(user);
             
             var authorizationResult = await authorizationService

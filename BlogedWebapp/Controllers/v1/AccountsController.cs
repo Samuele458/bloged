@@ -53,7 +53,7 @@ namespace BlogedWebapp.Controllers.v1
         /// <param name="registrationDto">Registration Data Transfer Object</param>
         /// <returns>User Registration response DTO</returns>
         [HttpPost]
-        [Route("Register")]
+        [Route("register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationRequestDto registrationDto)
         {
             if (ModelState.IsValid)
@@ -96,7 +96,7 @@ namespace BlogedWebapp.Controllers.v1
                 }
 
                 //creting new user object
-                User user = new User()
+                Profile user = new Profile()
                 {
                     Identity = newUser,
                     FirstName = registrationDto.FirstName,
@@ -108,7 +108,7 @@ namespace BlogedWebapp.Controllers.v1
                     UpdatedOn = DateTime.UtcNow
                 };
 
-                await unitOfWork.Users.Add(user);
+                await unitOfWork.Profiles.Add(user);
                 await unitOfWork.CompleteAsync();
 
                 //generating new JWT
@@ -135,8 +135,13 @@ namespace BlogedWebapp.Controllers.v1
             }
         }
 
+        /// <summary>
+        ///  User login
+        /// </summary>
+        /// <param name="loginDto">Login Data Transfer Object</param>
+        /// <returns>User Login response DTO</returns>
         [HttpPost]
-        [Route("Login")]
+        [Route("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequestDto loginDto)
         {
             if (ModelState.IsValid)
@@ -198,8 +203,14 @@ namespace BlogedWebapp.Controllers.v1
             }
         }
 
+
+        /// <summary>
+        ///  Refresh token endpoint
+        /// </summary>
+        /// <param name="tokenRequestDto">Token request Data Transfer Object</param>
+        /// <returns>Refresh token DTO</returns>
         [HttpPost]
-        [Route("RefreshToken")]
+        [Route("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto tokenRequestDto)
         {
             if( ModelState.IsValid )
@@ -237,6 +248,11 @@ namespace BlogedWebapp.Controllers.v1
             }
         }
 
+        /// <summary>
+        ///  Verifies tokens
+        /// </summary>
+        /// <param name="tokenRequestDto">Token request Data Transfer Object</param>
+        /// <returns>Auth response DTO</returns>
         private async Task<AuthResponseDto> VerifyToken(TokenRequestDto tokenRequestDto)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -438,7 +454,7 @@ namespace BlogedWebapp.Controllers.v1
         }
 
         /// <summary>
-        ///  Generate new JWT
+        ///  Generates new JWT
         /// </summary>
         /// <param name="user">User object</param>
         /// <returns>JWT string</returns>
@@ -499,6 +515,11 @@ namespace BlogedWebapp.Controllers.v1
             return tokenData;
         }
 
+        /// <summary>
+        ///  Gets all valid claims for a specified user
+        /// </summary>
+        /// <param name="user">Identity user</param>
+        /// <returns>A list of claims</returns>
         private async Task<List<Claim>> GetAllValidClaims(IdentityUser user)
         {
 
@@ -537,6 +558,12 @@ namespace BlogedWebapp.Controllers.v1
             return claims;
         }
 
+        /// <summary>
+        ///  Adds a user to a role
+        /// </summary>
+        /// <param name="userId">Identity user Id</param>
+        /// <param name="roleDto">Role name</param>
+        /// <returns>Generic DTO for handling success state and errors</returns>
         [HttpPost]
         [Route("{userId}/roles")]
         public async Task<IActionResult> AddToRole(string userId, RoleDto roleDto)
@@ -595,6 +622,11 @@ namespace BlogedWebapp.Controllers.v1
             });
         }
 
+        /// <summary>
+        ///  Gets user roles
+        /// </summary>
+        /// <param name="userId">Identity User id</param>
+        /// <returns>List of role names related to user</returns>
         [HttpGet]
         [Route("{userId}/roles")]
         public async Task<IActionResult> GetUserRoles(string userId)
@@ -620,6 +652,12 @@ namespace BlogedWebapp.Controllers.v1
             return Ok(roles);
         }
 
+        /// <summary>
+        ///  Removes a specified role from a user
+        /// </summary>
+        /// <param name="userId">Identity user Id</param>
+        /// <param name="roleName">Role name to be removed</param>
+        /// <returns>Generic DTO for handling success state and errors</returns>
         [HttpDelete]
         [Route("{userId}/roles/{roleName}")]
         public async Task<IActionResult> RemoveFromRole(string userId, string roleName)

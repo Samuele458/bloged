@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace BlogedWebapp.Entities
 {
-    public class RefreshToken : BaseEntity
+    public class RefreshToken : OwnableEntity
     {
-        //User id when logged in
-        public string UserId { get; set; }
 
         public string Token { get; set; }
 
@@ -25,7 +23,6 @@ namespace BlogedWebapp.Entities
 
         public DateTime ExpiryDate { get; set; }
 
-        [ForeignKey(nameof(UserId))]
-        public IdentityUser User { get; set; }
+        
     }
 }

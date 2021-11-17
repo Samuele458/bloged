@@ -12,7 +12,7 @@ namespace BlogedWebapp.Data
     /// </summary>
     public interface IUnitOfWork
     {
-        IUsersRepository Users { get; }
+        IProfilesRepository Profiles { get; }
 
         IRefreshTokensRepository RefreshTokens { get; }
 
@@ -33,7 +33,7 @@ namespace BlogedWebapp.Data
 
         private readonly ILogger logger;
 
-        public IUsersRepository Users { get; private set; }
+        public IProfilesRepository Profiles { get; private set; }
 
         public IRefreshTokensRepository RefreshTokens { get; private set; }
 
@@ -46,7 +46,7 @@ namespace BlogedWebapp.Data
             this.context = context;
             this.logger = loggerFactory.CreateLogger("db_logs");
 
-            Users = new UsersRepository(context, logger);
+            Profiles = new ProfilesRepository(context, logger);
             RefreshTokens = new RefreshTokensRepository(context, logger);
         }
 

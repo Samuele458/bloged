@@ -5,9 +5,9 @@ using System;
 namespace BlogedWebapp.Entities
 {
     /// <summary>
-    ///  User entity
+    ///  Profile entity
     /// </summary>
-    public class User : BaseEntity
+    public class Profile : BaseEntity
     {
 
         [JsonIgnore]

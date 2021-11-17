@@ -9,14 +9,12 @@ using System.Threading.Tasks;
 
 namespace BlogedWebapp.Authorizations.Handlers
 {
-    public class UserAuthorizationHandler : AuthorizationHandler<SameAuthorRequirement, User>
+    public class UserAuthorizationHandler : AuthorizationHandler<SameAuthorRequirement, Profile>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
                                                        SameAuthorRequirement requirement,
-                                                       User resource)
+                                                       Profile resource)
         {
-            System.Diagnostics.Debug.WriteLine("UserId" + context.User.Claims);
-
             
             context.Succeed(requirement);
             

@@ -38,7 +38,7 @@ namespace BlogedWebapp.Data
         ///  Delete a specified entity
         /// </summary>
         /// <param name="id">Entity Id</param>
-        /// <param name="userId">User Id</param>
+        /// <param name="userId">Profile Id</param>
         /// <returns>True if success, false otherwise</returns>
         Task<bool> Delete(Guid id, string userId);
 

@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 namespace BlogedWebapp.Data
 {
 
-    public interface IUsersRepository : IGenericRepository<User>
+    public interface IProfilesRepository : IGenericRepository<Profile>
     {
 
-        //sTask<User> GetUserByEmailAddress(string email);
+        //sTask<Profile> GetUserByEmailAddress(string email);
     }
 
-    public class UsersRepository : GenericRepository<User>, IUsersRepository
+    public class ProfilesRepository : GenericRepository<Profile>, IProfilesRepository
     {
 
-        public UsersRepository(
+        public ProfilesRepository(
                 DataContext context,
                 ILogger logger
             ) : base(context, logger)
@@ -28,7 +28,7 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<User>> All()
+        public override async Task<IEnumerable<Profile>> All()
         {
             try
             {
@@ -39,13 +39,13 @@ namespace BlogedWebapp.Data
             }
             catch (Exception e)
             {
-                logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(UsersRepository));
-                return new List<User>();
+                logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(ProfilesRepository));
+                return new List<Profile>();
             }
         }
 
         /// <inheritdoc/>
-        public override async Task<User> GetById(Guid Id)
+        public override async Task<Profile> GetById(Guid Id)
         {
             try
             {
@@ -54,8 +54,8 @@ namespace BlogedWebapp.Data
             }
             catch (Exception e)
             {
-                logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(UsersRepository));
-                return new User();
+                logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(ProfilesRepository));
+                return new Profile();
             }
         }
     }
