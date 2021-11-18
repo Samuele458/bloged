@@ -58,10 +58,11 @@ namespace BlogedWebapp.Controllers.v1
         {
             if (ModelState.IsValid)
             {
+                int nUsers = userManager.Users.ToList().Count;
 
                 //checking if email was already taken
                 var userExists = await userManager.FindByEmailAsync(registrationDto.Email);
-
+                
                 if (userExists != null)
                 {
                     //email already taken
@@ -95,6 +96,12 @@ namespace BlogedWebapp.Controllers.v1
                     });
                 }
 
+                //if it is the first user, it will be the superadmin
+                if (nUsers == 0)
+                {
+                    await userManager.AddToRoleAsync(newUser, "Superadmin");
+                }
+
                 //creting new user object
                 Profile user = new Profile()
                 {
@@ -110,6 +117,8 @@ namespace BlogedWebapp.Controllers.v1
 
                 await unitOfWork.Profiles.Add(user);
                 await unitOfWork.CompleteAsync();
+
+                
 
                 //generating new JWT
                 var token = await GenerateJwtToken(newUser);

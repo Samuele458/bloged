@@ -103,7 +103,7 @@ namespace BlogedWebapp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            
             //services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Environment.GetEnvironmentVariable("BLOGED_DB_CONN")));
 
             AppSettings currentSettings = new AppSettings();
@@ -132,7 +132,9 @@ namespace BlogedWebapp
 
             services.Configure<AppSettings>((AppSettings) =>
             {
-                AppSettings = currentSettings;
+                AppSettings.JwtSecret = currentSettings.JwtSecret;
+                AppSettings.JwtExpiryTimeFrame = currentSettings.JwtExpiryTimeFrame;
+                AppSettings.ConnectionString = currentSettings.ConnectionString;
 
             });
 
@@ -256,11 +258,14 @@ namespace BlogedWebapp
             
         }
 
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(  IApplicationBuilder app, 
+                                IWebHostEnvironment env, 
+                                IServiceProvider serviceProvider )
         {
 
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -366,6 +371,24 @@ namespace BlogedWebapp
                 });
             }
 
+            
+            CreateRoles(serviceProvider);
+            //var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
+        }
+
+        private void CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
+            List<String> rolesList = new List<string> { "Superadmin", "Admin" };
+
+            foreach (string roleName in rolesList)
+            {
+                var roleExists = roleManager.RoleExistsAsync(roleName).Result;
+                if (!roleExists)
+                {
+                    var created = roleManager.CreateAsync(new IdentityRole(roleName)).Result;
+                }
+            }
         }
     }
 }
