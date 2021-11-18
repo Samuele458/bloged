@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogedWebapp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20211117104356_InitializeBaseEntities")]
-    partial class InitializeBaseEntities
+    [Migration("20211117205955_InitBaseEntities")]
+    partial class InitBaseEntities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -58,7 +58,7 @@ namespace BlogedWebapp.Migrations
 
                     b.HasIndex("IdentityId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Profiles");
                 });
 
             modelBuilder.Entity("BlogedWebapp.Entities.RefreshToken", b =>

@@ -6,7 +6,8 @@ services:
       context: .
       dockerfile: BlogedWebapp/Dockerfile
       args:
-       - BLOGED_DB_CONN=${BLOGED_DB_CONN}
+       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     container_name: BlogedWebapp
     ports:
      - 8080:80
@@ -15,9 +16,10 @@ services:
     environment:
      - ASPNETCORE_ENVIRONMENT=Production
      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
-     - BLOGED_DB_CONN=${BLOGED_DB_CONN}
-    
-    
+     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+
+
   api_unit_tests:
     build:
       context: .

@@ -56,7 +56,7 @@ namespace BlogedWebapp.Migrations
 
                     b.HasIndex("IdentityId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Profiles");
                 });
 
             modelBuilder.Entity("BlogedWebapp.Entities.RefreshToken", b =>

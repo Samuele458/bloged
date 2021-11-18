@@ -11,5 +11,7 @@ namespace BlogedWebapp.Helpers
 
         public TimeSpan JwtExpiryTimeFrame { get; set; }
 
+        public string  ConnectionString { get; set; }
+
     }
 }

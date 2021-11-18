@@ -8,7 +8,7 @@ namespace BlogedWebapp.Helpers
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        public virtual DbSet<Profile> Users { get; set; }
+        public virtual DbSet<Profile> Profiles { get; set; }
 
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 

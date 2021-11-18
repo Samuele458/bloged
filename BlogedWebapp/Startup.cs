@@ -20,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Filters;
 using System;
@@ -81,9 +82,12 @@ namespace BlogedWebapp
 
     public class Startup
     {
+        private IWebHostEnvironment CurrentEnvironment { get; set; }
+
         public Startup(IWebHostEnvironment env)
         {
             System.Diagnostics.Debug.WriteLine("Current environment: " + env.EnvironmentName);
+            CurrentEnvironment = env;
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -100,7 +104,41 @@ namespace BlogedWebapp
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Environment.GetEnvironmentVariable("BLOGED_DB_CONN")));
+            //services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Environment.GetEnvironmentVariable("BLOGED_DB_CONN")));
+
+            AppSettings currentSettings = new AppSettings();
+
+
+            if (CurrentEnvironment.EnvironmentName == "Production")
+            {
+                JObject secrets = null;
+
+                string secretsString = SecretsManager.GetSecret("prod/Bloged/secrets");
+                
+                secrets = JObject.Parse(secretsString);
+
+                currentSettings.JwtSecret = secrets["JwtSecret"].ToString();
+                currentSettings.ConnectionString = secrets["ConnectionString"].ToString();
+            }
+
+            if (CurrentEnvironment.EnvironmentName == "Development")
+            {
+                currentSettings.JwtSecret = Configuration.GetSection("JwtSettings").GetValue<string>("JwtSecret");
+                currentSettings.ConnectionString = Configuration.GetSection("Database").GetValue<string>("ConnectionString");
+            }
+
+            currentSettings.JwtExpiryTimeFrame = TimeSpan.Parse(Configuration.GetSection("JwtSettings").GetValue<string>("ExpiryTimeFrame"));
+
+
+            services.Configure<AppSettings>((AppSettings) =>
+            {
+                AppSettings = currentSettings;
+
+            });
+
+
+            //Creating db connection for Entity Framework Core
+            services.AddDbContext<DataContext>(opt => opt.UseSqlServer(currentSettings.ConnectionString));
 
             services.AddCors(c =>
             {
@@ -146,18 +184,9 @@ namespace BlogedWebapp
                 configuration.RootPath = "wwwroot";
             });
 
-
-
-
             //services.AddSingleton<IAuthorizationHandler, DocumentAuthorizationHandler>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.Configure<AppSettings>((AppSettings) =>
-            {
-                AppSettings.JwtSecret = SecretsManager.GetSecret("prod/Bloged/secrets", "JwtSecret");
-                AppSettings.JwtExpiryTimeFrame = TimeSpan.Parse(Configuration.GetSection("JwtSettings").GetValue<string>("ExpiryTimeFrame"));
-
-            });
 
             services.AddApiVersioning(opt =>
             {
@@ -170,7 +199,7 @@ namespace BlogedWebapp
             });
 
             //getting jwt secret key
-            var key = Encoding.ASCII.GetBytes(SecretsManager.GetSecret("prod/Bloged/secrets", "JwtSecret"));
+            var key = Encoding.ASCII.GetBytes(currentSettings.JwtSecret);
 
             var tokenValidationParameters = new TokenValidationParameters
             {

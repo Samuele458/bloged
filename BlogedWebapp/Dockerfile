@@ -18,8 +18,10 @@ ENV PATH="/root/.dotnet/tools:${PATH}"
 RUN dotnet build "BlogedWebapp.csproj" -c Release -o /app/build
 RUN dotnet tool install --global dotnet-ef
 RUN chmod +x Scripts/migrate_db.sh
-ARG BLOGED_DB_CONN
-ENV BLOGED_DB_CONN ${BLOGED_DB_CONN}
+ARG AWS_ACCESS_KEY_ID
+ENV AWS_ACCESS_KEY_ID ${AWS_ACCESS_KEY_ID}
+ARG AWS_SECRET_ACCESS_KEY
+ENV AWS_SECRET_ACCESS_KEY ${AWS_SECRET_ACCESS_KEY}
 RUN /bin/bash Scripts/migrate_db.sh
 
 FROM build AS publish
