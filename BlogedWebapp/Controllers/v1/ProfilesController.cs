@@ -73,10 +73,7 @@ namespace BlogedWebapp.Controllers.v1
             //return Ok(user);
             
             var authorizationResult = await authorizationService
-                                                .AuthorizeAsync(User, user, "TestPolicy");
-
-            System.Diagnostics.Debug.WriteLine("Succeed: " + authorizationResult.ToString() );
-            System.Diagnostics.Debug.WriteLine("Failure: " + authorizationResult.Failure );
+                                                .AuthorizeAsync(User, user, "AllowedToUse");
 
             if (authorizationResult.Succeeded)
                 return Ok(user);

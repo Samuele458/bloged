@@ -219,7 +219,7 @@ namespace BlogedWebapp
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("TestPolicy", options =>
+                options.AddPolicy("AllowedToUse", options =>
                 {
                     /*options
                         .AuthenticationSchemes
@@ -227,14 +227,21 @@ namespace BlogedWebapp
                     */
 
                     options
-                        .RequireAuthenticatedUser()
-                        .RequireRole("admin");
+                        .RequireAuthenticatedUser();
                     
-                    options.Requirements.Add(new SameAuthorRequirement());
+                    
+                    options
+                        .Requirements
+                        .Add(new MinimumRoleRequirement("Superadmin"));
+                    
+                    options
+                        .Requirements
+                        .Add(new AllowedToUseRequirement());
                 });       
             });
 
             services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, RolesAuthorizationHandler>();
 
             services.AddAuthentication(options =>
             {

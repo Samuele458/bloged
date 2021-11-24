@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace BlogedWebapp.Authorizations.Handlers
 {
-    public class UserAuthorizationHandler : AuthorizationHandler<SameAuthorRequirement, Profile>
+    public class UserAuthorizationHandler : AuthorizationHandler<AllowedToUseRequirement, Profile>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                                       SameAuthorRequirement requirement,
+                                                       AllowedToUseRequirement requirement,
                                                        Profile resource)
         {
             
