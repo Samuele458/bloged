@@ -28,19 +28,10 @@ namespace BlogedWebapp.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IdentityId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -49,12 +40,12 @@ namespace BlogedWebapp.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdentityId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Profiles");
                 });
@@ -297,11 +288,11 @@ namespace BlogedWebapp.Migrations
 
             modelBuilder.Entity("BlogedWebapp.Entities.Profile", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Identity")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
-                        .HasForeignKey("IdentityId");
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("Identity");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BlogedWebapp.Entities.RefreshToken", b =>

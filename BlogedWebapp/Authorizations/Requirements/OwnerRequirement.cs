@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlogedWebapp.Authorizations.Requirements
 {
-    public class AllowedToUseRequirement : IAuthorizationRequirement
+    public class OwnerRequirement : IAuthorizationRequirement
     {
     
     }

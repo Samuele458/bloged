@@ -232,15 +232,25 @@ namespace BlogedWebapp
                     
                     options
                         .Requirements
-                        .Add(new MinimumRoleRequirement("Superadmin"));
+                        .Add(new MinimumRoleRequirement("Admin"));
                     
                     options
                         .Requirements
-                        .Add(new AllowedToUseRequirement());
-                });       
+                        .Add(new OwnerRequirement());
+                });
+
+                options.AddPolicy("AdminOrSuperadmin", options =>
+                {
+                    options
+                        .RequireAuthenticatedUser();
+
+                    options
+                        .Requirements
+                        .Add(new MinimumRoleRequirement("Admin"));
+                });
             });
 
-            services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, OwnerAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, RolesAuthorizationHandler>();
 
             services.AddAuthentication(options =>
