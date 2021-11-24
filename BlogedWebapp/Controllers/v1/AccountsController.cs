@@ -105,13 +105,10 @@ namespace BlogedWebapp.Controllers.v1
                 //creting new user object
                 Profile user = new Profile()
                 {
-                    Identity = newUser,
+                    User = newUser,
                     FirstName = registrationDto.FirstName,
                     LastName = registrationDto.LastName,
-                    Username = registrationDto.Username,
-                    Email = registrationDto.Email,
                     Status = 1,
-                    Password = registrationDto.Password,
                     UpdatedOn = DateTime.UtcNow
                 };
 

@@ -1,10 +1,12 @@
 ﻿using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
 using BlogedWebapp.Models.Dtos.Requests;
+using BlogedWebapp.Models.Dtos.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BlogedWebapp.Controllers.v1
@@ -29,35 +31,11 @@ namespace BlogedWebapp.Controllers.v1
         /// </summary>
         /// <returns>List of all users</returns>
         [HttpGet]
+        [Authorize(Policy = "AdminOrSuperadmin")]
         public async Task<IActionResult> GetUsers()
         {
             var users = await unitOfWork.Profiles.All();
             return Ok(users);
-        }
-
-        /// <summary>
-        ///  Add a new user
-        /// </summary>
-        /// <param name="request">Request DTO</param>
-        /// <returns>Created user info</returns>
-        [HttpPost]
-        public async Task<IActionResult> AddUser(CreateUserRequestDto request)
-        {
-            Profile user = new Profile()
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Username = request.Username,
-                Email = request.Email,
-                Status = 1,
-                Password = request.Password
-            };
-
-            await unitOfWork.Profiles.Add(user);
-            await unitOfWork.CompleteAsync();
-
-
-            return CreatedAtRoute("GetUser", new { id = user.Id }, request);
         }
 
         /// <summary>
@@ -70,18 +48,15 @@ namespace BlogedWebapp.Controllers.v1
         public async Task<IActionResult> GetUser(Guid userId)
         {
             Profile user = await unitOfWork.Profiles.GetById(userId);
-            //return Ok(user);
             
             var authorizationResult = await authorizationService
                                                 .AuthorizeAsync(User, user, "AllowedToUse");
 
             if (authorizationResult.Succeeded)
-                return Ok(user);
-
-            else return BadRequest(new
             {
-                Error = "AAA"
-            });
+                return Ok(user);
+            }
+            else return Unauthorized();
             
         }
 
