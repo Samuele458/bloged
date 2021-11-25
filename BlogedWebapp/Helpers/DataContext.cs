@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogedWebapp.Helpers
 {
-    public class DataContext : IdentityDbContext
+    public class DataContext : IdentityDbContext<AppUser>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        public virtual DbSet<Profile> Profiles { get; set; }
+        public virtual DbSet<ProfileData> ProfilesData { get; set; }
 
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 

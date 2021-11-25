@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 namespace BlogedWebapp.Data
 {
 
-    public interface IProfilesRepository : IGenericRepository<Profile>
+    public interface IProfilesRepository : IGenericRepository<ProfileData>
     {
 
-        //sTask<Profile> GetUserByEmailAddress(string email);
+        //sTask<ProfileData> GetUserByEmailAddress(string email);
     }
 
-    public class ProfilesRepository : GenericRepository<Profile>, IProfilesRepository
+    public class ProfilesRepository : GenericRepository<ProfileData>, IProfilesRepository
     {
 
         public ProfilesRepository(
@@ -28,7 +28,7 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<Profile>> All()
+        public override async Task<IEnumerable<ProfileData>> All()
         {
             try
             {
@@ -40,12 +40,12 @@ namespace BlogedWebapp.Data
             catch (Exception e)
             {
                 logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(ProfilesRepository));
-                return new List<Profile>();
+                return new List<ProfileData>();
             }
         }
 
         /// <inheritdoc/>
-        public override async Task<Profile> GetById(Guid Id)
+        public override async Task<ProfileData> GetById(Guid Id)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace BlogedWebapp.Data
             catch (Exception e)
             {
                 logger.LogError(e, "{Repo} \"All\" method has generated an error.", typeof(ProfilesRepository));
-                return new Profile();
+                return new ProfileData();
             }
         }
     }

@@ -1,12 +1,10 @@
 ﻿using BlogedWebapp.Data;
+using BlogedWebapp.Entities;
 using BlogedWebapp.Models.Dtos.Generic;
 using BlogedWebapp.Models.Dtos.Responses;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,12 +16,12 @@ namespace BlogedWebapp.Controllers.v1
     {
         private readonly RoleManager<IdentityRole> roleManager;
 
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<AppUser> userManager;
 
         public RolesController(
                     IUnitOfWork unitOfWork,
                     RoleManager<IdentityRole> roleManager,
-                    UserManager<IdentityUser> userManager) : base(unitOfWork)
+                    UserManager<AppUser> userManager) : base(unitOfWork)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
@@ -53,7 +51,7 @@ namespace BlogedWebapp.Controllers.v1
         {
             var roleExists = await roleManager.RoleExistsAsync(roleDto.RoleName);
 
-            if(roleExists)
+            if (roleExists)
             {
                 return BadRequest(new GenericResponseDto
                 {
@@ -67,7 +65,7 @@ namespace BlogedWebapp.Controllers.v1
 
             var roleCreated = await roleManager.CreateAsync(new IdentityRole(roleDto.RoleName));
 
-            if(!roleCreated.Succeeded)
+            if (!roleCreated.Succeeded)
             {
                 return BadRequest(new GenericResponseDto
                 {
@@ -83,7 +81,7 @@ namespace BlogedWebapp.Controllers.v1
             {
                 Success = true
             });
-            
+
         }
 
 
@@ -102,7 +100,7 @@ namespace BlogedWebapp.Controllers.v1
             var role = await roleManager.FindByNameAsync(roleName);
 
             // Checking if role exists or not
-            if( role == null )
+            if (role == null)
             {
                 return BadRequest(new GenericResponseDto
                 {
@@ -117,7 +115,7 @@ namespace BlogedWebapp.Controllers.v1
             // Deleting role
             var result = await roleManager.DeleteAsync(role);
 
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
                 return BadRequest(new GenericResponseDto
                 {

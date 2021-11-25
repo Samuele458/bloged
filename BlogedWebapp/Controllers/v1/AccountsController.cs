@@ -10,7 +10,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -26,7 +25,7 @@ namespace BlogedWebapp.Controllers.v1
     public class AccountsController : BaseController
     {
 
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<AppUser> userManager;
 
         private readonly RoleManager<IdentityRole> roleManager;
 
@@ -36,7 +35,7 @@ namespace BlogedWebapp.Controllers.v1
         private readonly AppSettings appSettings;
         public AccountsController(
             IUnitOfWork unitOfWork,
-            UserManager<IdentityUser> userManager,
+            UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
             TokenValidationParameters tokenValidationParameters,
             IOptionsMonitor<AppSettings> optionsMonitor) : base(unitOfWork)
@@ -62,7 +61,7 @@ namespace BlogedWebapp.Controllers.v1
 
                 //checking if email was already taken
                 var userExists = await userManager.FindByEmailAsync(registrationDto.Email);
-                
+
                 if (userExists != null)
                 {
                     //email already taken
@@ -77,7 +76,7 @@ namespace BlogedWebapp.Controllers.v1
                 }
 
                 //Adding new user
-                var newUser = new IdentityUser()
+                var newUser = new AppUser()
                 {
                     Email = registrationDto.Email,
                     UserName = registrationDto.Username,
@@ -86,6 +85,7 @@ namespace BlogedWebapp.Controllers.v1
 
                 //creating new user
                 var userCreated = await userManager.CreateAsync(newUser, registrationDto.Password);
+
                 if (!userCreated.Succeeded)
                 {
                     //errors on user creation
@@ -103,7 +103,7 @@ namespace BlogedWebapp.Controllers.v1
                 }
 
                 //creting new user object
-                Profile user = new Profile()
+                ProfileData user = new ProfileData()
                 {
                     User = newUser,
                     FirstName = registrationDto.FirstName,
@@ -115,7 +115,9 @@ namespace BlogedWebapp.Controllers.v1
                 await unitOfWork.Profiles.Add(user);
                 await unitOfWork.CompleteAsync();
 
-                
+                newUser.ProfileData = user;
+                await userManager.UpdateAsync(newUser);
+
 
                 //generating new JWT
                 var token = await GenerateJwtToken(newUser);
@@ -186,7 +188,7 @@ namespace BlogedWebapp.Controllers.v1
                 }
 
                 //generating new JWT
-                var token = await  GenerateJwtToken(userExists);
+                var token = await GenerateJwtToken(userExists);
 
                 return Ok(new UserLoginResponseDto
                 {
@@ -219,14 +221,14 @@ namespace BlogedWebapp.Controllers.v1
         [Route("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto tokenRequestDto)
         {
-            if( ModelState.IsValid )
+            if (ModelState.IsValid)
             {
                 //model is valid
 
                 //checking if token is valid
                 var result = await VerifyToken(tokenRequestDto);
 
-                if( result == null )
+                if (result == null)
                 {
                     return BadRequest(new UserLoginResponseDto
                     {
@@ -240,7 +242,8 @@ namespace BlogedWebapp.Controllers.v1
 
                 return Ok(result);
 
-            } else
+            }
+            else
             {
                 //model is not valid
                 return BadRequest(new UserLoginResponseDto
@@ -274,33 +277,36 @@ namespace BlogedWebapp.Controllers.v1
                                                     tokenRequestDto.Token,
                                                     tokenValidationParametersClone,
                                                     out var validatedToken);
-                
+
 
                 // Check if the validated token is a valid jwt token (and not a random string)
-                if( validatedToken is JwtSecurityToken jwtSecurityToken )
+                if (validatedToken is JwtSecurityToken jwtSecurityToken)
                 {
 
                     // Check if the encryption algorithm used is correct
                     var isAlgorithmCorrect = jwtSecurityToken.Header.Alg.Equals(
-                        SecurityAlgorithms.HmacSha256, 
+                        SecurityAlgorithms.HmacSha256,
                         StringComparison.CurrentCultureIgnoreCase);
 
-                    if (!isAlgorithmCorrect) return null;
+                    if (!isAlgorithmCorrect)
+                    {
+                        return null;
+                    }
                 }
 
                 // Check if token expired
-                var tokenExpiryTimestamp = 
+                var tokenExpiryTimestamp =
                     long.Parse(
                         principal
                             .Claims
                             .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp)
-                            .Value                  
+                            .Value
                     );
 
                 var tokenExpiryDateTime = UnixTimestampToDateTime(tokenExpiryTimestamp);
 
                 // Checking if jwt token has expired
-                if( tokenExpiryDateTime > DateTime.UtcNow )
+                if (tokenExpiryDateTime > DateTime.UtcNow)
                 {
                     return new AuthResponseDto
                     {
@@ -319,7 +325,7 @@ namespace BlogedWebapp.Controllers.v1
                                                     .RefreshTokens
                                                     .GetByRefreshToken(tokenRequestDto.RefreshToken);
 
-                if( existingRefreshToken == null )
+                if (existingRefreshToken == null)
                 {
                     return new AuthResponseDto
                     {
@@ -375,10 +381,10 @@ namespace BlogedWebapp.Controllers.v1
                 var jti = principal
                             .Claims
                             .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti)
-                            .Value; 
-    
+                            .Value;
+
                 // Checking Jwt sent matches the one referenced by the refresh token
-                if( existingRefreshToken.JwtId != jti )
+                if (existingRefreshToken.JwtId != jti)
                 {
                     return new AuthResponseDto
                     {
@@ -396,9 +402,9 @@ namespace BlogedWebapp.Controllers.v1
                 bool updateResult = await unitOfWork
                                             .RefreshTokens
                                             .MarkRefreshTokenAsUsed(existingRefreshToken);
-                
 
-                if(!updateResult)
+
+                if (!updateResult)
                 {
                     return new AuthResponseDto
                     {
@@ -409,12 +415,12 @@ namespace BlogedWebapp.Controllers.v1
                         }
                     };
                 }
-                
+
                 await unitOfWork.CompleteAsync();
 
                 // Getting the user in order to generate a new jwt token
                 var dbUser = await userManager.FindByIdAsync(existingRefreshToken.UserId);
-                if( dbUser == null )
+                if (dbUser == null)
                 {
                     return new AuthResponseDto
                     {
@@ -437,7 +443,7 @@ namespace BlogedWebapp.Controllers.v1
                 };
 
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return null;
             }
@@ -455,7 +461,7 @@ namespace BlogedWebapp.Controllers.v1
 
             // Converts to DateTime
             dateTime = dateTime.AddSeconds(unixDate).ToUniversalTime();
-            
+
             return dateTime;
         }
 
@@ -464,7 +470,7 @@ namespace BlogedWebapp.Controllers.v1
         /// </summary>
         /// <param name="user">User object</param>
         /// <returns>JWT string</returns>
-        private async Task<TokenData> GenerateJwtToken(IdentityUser user)
+        private async Task<TokenData> GenerateJwtToken(AppUser user)
         {
             //token handler
             var jwtHandler = new JwtSecurityTokenHandler();
@@ -517,7 +523,7 @@ namespace BlogedWebapp.Controllers.v1
                 JwtToken = jwtToken,
                 RefreshToken = refreshToken.Token
             };
-            
+
             return tokenData;
         }
 
@@ -526,7 +532,7 @@ namespace BlogedWebapp.Controllers.v1
         /// </summary>
         /// <param name="user">Identity user</param>
         /// <returns>A list of claims</returns>
-        private async Task<List<Claim>> GetAllValidClaims(IdentityUser user)
+        private async Task<List<Claim>> GetAllValidClaims(AppUser user)
         {
 
             var claims = new List<Claim>
@@ -543,18 +549,18 @@ namespace BlogedWebapp.Controllers.v1
 
             // Getting roles
             var userRoles = await userManager.GetRolesAsync(user);
-            
-            foreach( string userRole in userRoles )
+
+            foreach (string userRole in userRoles)
             {
                 var role = await roleManager.FindByNameAsync(userRole);
 
-                if( role != null)
+                if (role != null)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, userRole));
 
                     var roleClaims = await roleManager.GetClaimsAsync(role);
 
-                    foreach( var roleClaim in roleClaims )
+                    foreach (var roleClaim in roleClaims)
                     {
                         claims.Add(roleClaim);
                     }
@@ -703,7 +709,7 @@ namespace BlogedWebapp.Controllers.v1
             // Removing role from user
             var result = await userManager.RemoveFromRoleAsync(user, roleName);
 
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
                 return BadRequest(new GenericResponseDto
                 {

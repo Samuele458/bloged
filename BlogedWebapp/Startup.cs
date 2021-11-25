@@ -103,7 +103,7 @@ namespace BlogedWebapp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
             //services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Environment.GetEnvironmentVariable("BLOGED_DB_CONN")));
 
             AppSettings currentSettings = new AppSettings();
@@ -114,7 +114,7 @@ namespace BlogedWebapp
                 JObject secrets = null;
 
                 string secretsString = SecretsManager.GetSecret("prod/Bloged/secrets");
-                
+
                 secrets = JObject.Parse(secretsString);
 
                 currentSettings.JwtSecret = secrets["JwtSecret"].ToString();
@@ -228,12 +228,7 @@ namespace BlogedWebapp
 
                     options
                         .RequireAuthenticatedUser();
-                    
-                    
-                    options
-                        .Requirements
-                        .Add(new MinimumRoleRequirement("Admin"));
-                    
+
                     options
                         .Requirements
                         .Add(new OwnerRequirement());
@@ -259,8 +254,8 @@ namespace BlogedWebapp
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-                
-               
+
+
             })
             .AddJwtBearer(jwt =>
             {
@@ -269,20 +264,20 @@ namespace BlogedWebapp
             });
 
             services
-                .AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>();
 
-            
+
         }
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(  IApplicationBuilder app, 
-                                IWebHostEnvironment env, 
-                                IServiceProvider serviceProvider )
+        public void Configure(IApplicationBuilder app,
+                                IWebHostEnvironment env,
+                                IServiceProvider serviceProvider)
         {
 
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -292,7 +287,7 @@ namespace BlogedWebapp
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -388,7 +383,7 @@ namespace BlogedWebapp
                 });
             }
 
-            
+
             CreateRoles(serviceProvider);
             //var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
         }

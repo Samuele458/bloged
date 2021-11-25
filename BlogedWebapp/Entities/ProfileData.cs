@@ -5,9 +5,9 @@ using System;
 namespace BlogedWebapp.Entities
 {
     /// <summary>
-    ///  Profile entity
+    ///  ProfileData entity
     /// </summary>
-    public class Profile : OwnableEntity
+    public class ProfileData : OwnableEntity
     {
 
         public string FirstName { get; set; }

@@ -41,13 +41,13 @@ namespace BlogedWebapp.Controllers.v1
         /// <summary>
         ///  Get a specified user by id
         /// </summary>
-        /// <param name="id">Profile id</param>
+        /// <param name="id">ProfileData id</param>
         /// <returns>Selected user</returns>
         [HttpGet]
         [Route("{userId}")]
         public async Task<IActionResult> GetUser(Guid userId)
         {
-            Profile user = await unitOfWork.Profiles.GetById(userId);
+            ProfileData user = await unitOfWork.Profiles.GetById(userId);
             
             var authorizationResult = await authorizationService
                                                 .AuthorizeAsync(User, user, "AllowedToUse");
