@@ -49,8 +49,8 @@ namespace BlogedWebbapp.UnitTests.Helpers
             alphabet.AddSpecials();
 
             System.Diagnostics.Debug.WriteLine("Alphabet: \"" + alphabet.ToString() + "\"");
-            System.Diagnostics.Debug.WriteLine("Expected: \"£$%&/()=-_.;,+*\"");
-            System.Diagnostics.Debug.WriteLine("Equals: " + alphabet.ToString().Equals("£$%&/()=-_.;,+*"));
+            System.Diagnostics.Debug.WriteLine("Expected: \"$%&/()=-_.;,+*\"");
+            System.Diagnostics.Debug.WriteLine("Equals: " + alphabet.ToString().Equals("$%&/()=-_.;,+*"));
             Assert.IsTrue(alphabet.ToString().Equals("£$%&/()=-_.;,+*"));
         }
 
@@ -62,7 +62,7 @@ namespace BlogedWebbapp.UnitTests.Helpers
 
             string alphabetString = alphabet.ToString();
 
-            Assert.IsTrue(alphabetString.Contains("£$%&/()=-_.;,+*"));
+            Assert.IsTrue(alphabetString.Contains("$%&/()=-_.;,+*"));
             Assert.IsTrue(alphabetString.Contains("0123456789"));
             Assert.IsTrue(alphabetString.Contains("abcdefghijklmnopqrstuvwxyz"));
             Assert.IsTrue(alphabetString.Contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ"));

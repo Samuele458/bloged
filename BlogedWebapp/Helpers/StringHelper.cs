@@ -61,7 +61,7 @@ namespace BlogedWebapp.Helpers
         /// <returns>Current alphabet reference</returns>
         public Alphabet AddSpecials()
         {
-            this.alphabet += "£$%&/()=-_.;,+*";
+            this.alphabet += "$%&/()=-_.;,+*";
             return this;
         }
 
