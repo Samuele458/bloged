@@ -51,7 +51,7 @@ namespace BlogedWebbapp.UnitTests.Helpers
             System.Diagnostics.Debug.WriteLine("Alphabet: \"" + alphabet.ToString() + "\"");
             System.Diagnostics.Debug.WriteLine("Expected: \"$%&/()=-_.;,+*\"");
             System.Diagnostics.Debug.WriteLine("Equals: " + alphabet.ToString().Equals("$%&/()=-_.;,+*"));
-            Assert.IsTrue(alphabet.ToString().Equals("£$%&/()=-_.;,+*"));
+            Assert.IsTrue(alphabet.ToString().Equals("$%&/()=-_.;,+*"));
         }
 
         [TestMethod]
