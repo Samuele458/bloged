@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlogedWebapp.Helpers
 {
@@ -22,7 +20,7 @@ namespace BlogedWebapp.Helpers
         ///  Convert to string
         /// </summary>
         /// <returns>Current alphabet characters set</returns>
-        public string toString()
+        public string ToString()
         {
             return this.alphabet;
         }
@@ -67,9 +65,28 @@ namespace BlogedWebapp.Helpers
             return this;
         }
 
+        /// <summary>
+        ///  Add all characters to alphabet
+        /// </summary>
+        /// <returns>Current alphabet reference</returns>
+        public Alphabet AddAllCharacters()
+        {
+            this.AddLettersLowerCase()
+                .AddLettersUppercase()
+                .AddNumbers()
+                .AddSpecials();
 
+            return this;
+        }
+
+        public Alphabet AddCustom(string v)
+        {
+            this.alphabet += v;
+
+            return this;
+        }
     }
- 
+
     /// <summary>
     ///  Utils for handling strings
     /// </summary>
@@ -82,15 +99,26 @@ namespace BlogedWebapp.Helpers
         /// <param name="length">String length</param>
         /// <param name="alphabet">Alphabet on which base the random generation</param>
         /// <returns>Random string</returns>
-        public static string GenerateRandomString( int length, Alphabet alphabet )
+        public static string GenerateRandomString(int length, Alphabet alphabet)
         {
             var random = new Random();
-            var chars = alphabet.toString();
+            var chars = alphabet.ToString();
+
+            // Alphabet must not be empty
+            if (chars.Length == 0)
+            {
+                throw new ArgumentException("Length must be greater than zero.");
+            }
 
             return new string(Enumerable
                                 .Repeat(chars, length)
                                 .Select(s => s[random.Next(s.Length)]).ToArray());
-            
+
+        }
+
+        private static Exception ArgumentException(string v)
+        {
+            throw new NotImplementedException();
         }
     }
 }
