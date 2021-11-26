@@ -48,7 +48,9 @@ namespace BlogedWebbapp.UnitTests.Helpers
             Alphabet alphabet = new Alphabet();
             alphabet.AddSpecials();
 
-            System.Diagnostics.Debug.WriteLine("text: " + alphabet.ToString());
+            System.Diagnostics.Debug.WriteLine("Alphabet: \"" + alphabet.ToString() + "\"");
+            System.Diagnostics.Debug.WriteLine("Expected: \"£$%&/()=-_.;,+*\"");
+            System.Diagnostics.Debug.WriteLine("Equals: " + alphabet.ToString().Equals("£$%&/()=-_.;,+*"));
             Assert.IsTrue(alphabet.ToString().Equals("£$%&/()=-_.;,+*"));
         }
 
