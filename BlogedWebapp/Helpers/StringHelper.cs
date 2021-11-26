@@ -20,7 +20,7 @@ namespace BlogedWebapp.Helpers
         ///  Convert to string
         /// </summary>
         /// <returns>Current alphabet characters set</returns>
-        public string ToString()
+        public override string ToString()
         {
             return this.alphabet;
         }
