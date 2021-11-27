@@ -12,6 +12,9 @@ namespace BlogedWebapp.Helpers
 
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
+        public virtual DbSet<Blog> Blogs { get; set; }
+
+        public virtual DbSet<UsersBlog> UsersBlog { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

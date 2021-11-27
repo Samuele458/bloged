@@ -16,6 +16,8 @@ namespace BlogedWebapp.Data
 
         IRefreshTokensRepository RefreshTokens { get; }
 
+        IBlogsRepository Blogs { get; }
+
         /// <summary>
         ///  Save db changes on context asynchronously
         /// </summary>
@@ -37,7 +39,7 @@ namespace BlogedWebapp.Data
 
         public IRefreshTokensRepository RefreshTokens { get; private set; }
 
-        
+        public IBlogsRepository Blogs { get; private set; }
 
         public UnitOfWork(
             DataContext context, 
@@ -48,6 +50,7 @@ namespace BlogedWebapp.Data
 
             Profiles = new ProfilesRepository(context, logger);
             RefreshTokens = new RefreshTokensRepository(context, logger);
+            Blogs = new BlogsRepository(context, logger);
         }
 
         /// <inheritdoc/>

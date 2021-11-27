@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -12,5 +13,8 @@ namespace BlogedWebapp.Entities
         [ForeignKey(nameof(ProfileDataId))]
         [JsonIgnore]
         public ProfileData ProfileData { get; set; }
+
+
+        public virtual ICollection<UsersBlog> UsersBlog { get; set; }
     }
 }

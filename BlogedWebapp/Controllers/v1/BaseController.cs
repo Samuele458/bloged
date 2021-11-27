@@ -12,7 +12,7 @@ namespace BlogedWebapp.Controllers.v1
     public class BaseController : ControllerBase
     {
         protected IUnitOfWork unitOfWork;
-
+        
         public BaseController(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;

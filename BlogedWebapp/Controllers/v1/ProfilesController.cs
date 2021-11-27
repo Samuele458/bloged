@@ -21,7 +21,10 @@ namespace BlogedWebapp.Controllers.v1
     {
         private readonly IAuthorizationService authorizationService;
 
-        public ProfilesController(IUnitOfWork unitOfWork, IAuthorizationService authorizationService) : base(unitOfWork)
+        public ProfilesController(
+                IUnitOfWork unitOfWork, 
+                IAuthorizationService authorizationService
+            ) : base(unitOfWork)
         {
             this.authorizationService = authorizationService;
         }

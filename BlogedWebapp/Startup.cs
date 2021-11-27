@@ -233,7 +233,7 @@ namespace BlogedWebapp
                         .Requirements
                         .Add(new OwnerRequirement());
                 });
-
+                
                 options.AddPolicy("AdminOrSuperadmin", options =>
                 {
                     options
