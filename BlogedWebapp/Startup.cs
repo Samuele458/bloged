@@ -1,5 +1,5 @@
+using BlogedWebapp.Authorizations;
 using BlogedWebapp.Authorizations.Handlers;
-using BlogedWebapp.Authorizations.Requirements;
 using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
 using BlogedWebapp.Helpers;
@@ -108,7 +108,7 @@ namespace BlogedWebapp
 
             AppSettings currentSettings = new AppSettings();
 
-
+            // In production reads config from AWS SecretsManager
             if (CurrentEnvironment.EnvironmentName == "Production")
             {
                 JObject secrets = null;
@@ -121,13 +121,21 @@ namespace BlogedWebapp
                 currentSettings.ConnectionString = secrets["ConnectionString"].ToString();
             }
 
+            // In development reads config from appsettings files
             if (CurrentEnvironment.EnvironmentName == "Development")
             {
-                currentSettings.JwtSecret = Configuration.GetSection("JwtSettings").GetValue<string>("JwtSecret");
-                currentSettings.ConnectionString = Configuration.GetSection("Database").GetValue<string>("ConnectionString");
+                currentSettings.JwtSecret = Configuration
+                                                .GetSection("JwtSettings")
+                                                .GetValue<string>("JwtSecret");
+
+                currentSettings.ConnectionString = Configuration
+                                                        .GetSection("Database")
+                                                        .GetValue<string>("ConnectionString");
             }
 
-            currentSettings.JwtExpiryTimeFrame = TimeSpan.Parse(Configuration.GetSection("JwtSettings").GetValue<string>("ExpiryTimeFrame"));
+            currentSettings.JwtExpiryTimeFrame = TimeSpan.Parse(Configuration
+                                                                    .GetSection("JwtSettings")
+                                                                    .GetValue<string>("ExpiryTimeFrame"));
 
 
             services.Configure<AppSettings>((AppSettings) =>
@@ -214,48 +222,28 @@ namespace BlogedWebapp
                 ClockSkew = TimeSpan.Zero
             };
 
-            //Injecting to Dependency Injection conatainer
+            // Injecting token options
             services.AddSingleton(tokenValidationParameters);
 
+            // Adding authorization policies
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AllowedToUse", options =>
-                {
-                    /*options
-                        .AuthenticationSchemes
-                        .Add(JwtBearerDefaults.AuthenticationScheme);
-                    */
-
-                    options
-                        .RequireAuthenticatedUser();
-
-                    options
-                        .Requirements
-                        .Add(new OwnerRequirement());
-                });
-                
-                options.AddPolicy("AdminOrSuperadmin", options =>
-                {
-                    options
-                        .RequireAuthenticatedUser();
-
-                    options
-                        .Requirements
-                        .Add(new MinimumRoleRequirement("Admin"));
-                });
+                options.AddPolicy("AllowedToUse", Policies.AllowedToUse());
+                options.AddPolicy("AdminOrSuperadmin", Policies.AdminOrSuperadmin());
+                options.AddPolicy("AllowedToUseBlog", Policies.AllowedToUseBlog());
             });
 
+            // Adding policy handlers
             services.AddSingleton<IAuthorizationHandler, OwnerAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, RolesAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, BlogRolesAuthorizationHandler>();
 
+            // Adding JWT authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-
-
             })
             .AddJwtBearer(jwt =>
             {
@@ -263,10 +251,10 @@ namespace BlogedWebapp
                 jwt.TokenValidationParameters = tokenValidationParameters;
             });
 
+            // Adding identities
             services
                 .AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>();
-
 
         }
 

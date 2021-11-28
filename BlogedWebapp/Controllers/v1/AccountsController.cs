@@ -105,7 +105,7 @@ namespace BlogedWebapp.Controllers.v1
                 //creting new user object
                 ProfileData user = new ProfileData()
                 {
-                    User = newUser,
+                    Owner = newUser,
                     FirstName = registrationDto.FirstName,
                     LastName = registrationDto.LastName,
                     Status = 1,
@@ -419,7 +419,7 @@ namespace BlogedWebapp.Controllers.v1
                 await unitOfWork.CompleteAsync();
 
                 // Getting the user in order to generate a new jwt token
-                var dbUser = await userManager.FindByIdAsync(existingRefreshToken.UserId);
+                var dbUser = await userManager.FindByIdAsync(existingRefreshToken.OwnerId);
                 if (dbUser == null)
                 {
                     return new AuthResponseDto
@@ -507,7 +507,7 @@ namespace BlogedWebapp.Controllers.v1
             {
                 CreatedOn = DateTime.UtcNow,
                 Token = $"{StringHelper.GenerateRandomString(25, alphabet)}_{Guid.NewGuid()}",
-                UserId = user.Id,
+                OwnerId = user.Id,
                 IsRevoked = false,
                 IsUsed = false,
                 Status = 1,

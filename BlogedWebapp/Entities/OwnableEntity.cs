@@ -3,14 +3,28 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlogedWebapp.Entities
 {
-    public class OwnableEntity : BaseEntity
+    /// <summary>
+    ///  Generic ownable entity. 
+    /// </summary>
+    /// <typeparam name="T">Owner type (Eg. AppUser)</typeparam>
+    public class OwnableEntity<T> : BaseEntity
     {
 
-        public string UserId { get; set; }
+        public string OwnerId { get; set; }
 
-        [ForeignKey(nameof(UserId))]
+        [ForeignKey(nameof(OwnerId))]
         [JsonIgnore]
-        public AppUser User { get; set; }
+        public T Owner { get; set; }
 
     }
+
+    /// <summary>
+    ///  Entity owned by AppUser
+    /// </summary>
+    public class UserOwnableEntity : OwnableEntity<AppUser>
+    {
+
+    }
+
+
 }

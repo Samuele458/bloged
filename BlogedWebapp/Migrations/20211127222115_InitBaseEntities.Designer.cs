@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogedWebapp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20211127084414_InitBaseEntities")]
+    [Migration("20211127222115_InitBaseEntities")]
     partial class InitBaseEntities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,6 +91,32 @@ namespace BlogedWebapp.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("BlogedWebapp.Entities.Blog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UrlName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Blogs");
+                });
+
             modelBuilder.Entity("BlogedWebapp.Entities.ProfileData", b =>
                 {
                     b.Property<Guid>("Id")
@@ -106,18 +132,18 @@ namespace BlogedWebapp.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("ProfilesData");
                 });
@@ -143,6 +169,9 @@ namespace BlogedWebapp.Migrations
                     b.Property<string>("JwtId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -152,14 +181,44 @@ namespace BlogedWebapp.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("BlogedWebapp.Entities.UsersBlog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BlogId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("BlogId");
 
-                    b.ToTable("RefreshTokens");
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("UsersBlog");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -304,20 +363,37 @@ namespace BlogedWebapp.Migrations
 
             modelBuilder.Entity("BlogedWebapp.Entities.ProfileData", b =>
                 {
-                    b.HasOne("BlogedWebapp.Entities.AppUser", "User")
+                    b.HasOne("BlogedWebapp.Entities.AppUser", "Owner")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("OwnerId");
 
-                    b.Navigation("User");
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("BlogedWebapp.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("BlogedWebapp.Entities.AppUser", "User")
+                    b.HasOne("BlogedWebapp.Entities.AppUser", "Owner")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("OwnerId");
 
-                    b.Navigation("User");
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("BlogedWebapp.Entities.UsersBlog", b =>
+                {
+                    b.HasOne("BlogedWebapp.Entities.Blog", "Blog")
+                        .WithMany("UsersBlog")
+                        .HasForeignKey("BlogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlogedWebapp.Entities.AppUser", "Owner")
+                        .WithMany("UsersBlog")
+                        .HasForeignKey("OwnerId");
+
+                    b.Navigation("Blog");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -369,6 +445,16 @@ namespace BlogedWebapp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BlogedWebapp.Entities.AppUser", b =>
+                {
+                    b.Navigation("UsersBlog");
+                });
+
+            modelBuilder.Entity("BlogedWebapp.Entities.Blog", b =>
+                {
+                    b.Navigation("UsersBlog");
                 });
 #pragma warning restore 612, 618
         }

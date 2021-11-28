@@ -62,7 +62,7 @@ namespace BlogedWebapp.Data
             }
         }
 
-        public async Task<Blog> GetByUrlName( string urlName )
+        public async Task<Blog> GetByUrlName(string urlName)
         {
             try
             {
@@ -85,14 +85,15 @@ namespace BlogedWebapp.Data
                 UsersBlog usersBlog = new UsersBlog()
                 {
                     Blog = blog,
-                    User = user,
-                    Role = "Owner"
+                    Owner = user,
+                    Role = BlogRoles.Owner
                 };
 
                 await this.dataContext.Set<UsersBlog>().AddAsync(usersBlog);
 
                 return usersBlog;
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 logger.LogError(e, "{Repo} \"SetBlogOwner\" method has generated an error.", typeof(BlogsRepository));
                 return new UsersBlog();

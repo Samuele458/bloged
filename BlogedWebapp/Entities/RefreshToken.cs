@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace BlogedWebapp.Entities
 {
-    public class RefreshToken : OwnableEntity
+    public class RefreshToken : UserOwnableEntity
     {
 
         public string Token { get; set; }
@@ -23,6 +18,6 @@ namespace BlogedWebapp.Entities
 
         public DateTime ExpiryDate { get; set; }
 
-        
+
     }
 }

@@ -1,22 +1,28 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlogedWebapp.Entities
 {
-    public class UsersBlog : IIdentificableEntity
+    public enum BlogRoles
     {
-        public Guid Id { get; set; }
+        Owner,
+        Admin,
+        Moderator,
+        Writer,
+        Subscriber
+    }
+
+    public class UsersBlog : UserOwnableEntity
+    {
+        /*public Guid Id { get; set; }
 
         public string UserId { get; set; }
 
         [ForeignKey(nameof(UserId))]
         [JsonIgnore]
         public AppUser User { get; set; }
-
+        */
 
         public Guid BlogId { get; set; }
 
@@ -24,7 +30,6 @@ namespace BlogedWebapp.Entities
         [JsonIgnore]
         public Blog Blog { get; set; }
 
-
-        public string Role { get; set; }
+        public BlogRoles Role { get; set; }
     }
 }

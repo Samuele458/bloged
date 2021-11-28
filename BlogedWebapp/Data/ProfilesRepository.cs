@@ -33,7 +33,7 @@ namespace BlogedWebapp.Data
             try
             {
                 return await dbSet.Where(x => x.Status == 1)
-                                .Include(u => u.User)
+                                .Include(u => u.Owner)
                                 .AsNoTracking()
                                 .ToListAsync();
             }
@@ -50,7 +50,7 @@ namespace BlogedWebapp.Data
             try
             {
                 return await dbSet
-                                .Include(u => u.User)
+                                .Include(u => u.Owner)
                                 .FirstOrDefaultAsync(u => u.Id == Id);
             }
             catch (Exception e)

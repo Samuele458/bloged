@@ -21,13 +21,17 @@ namespace BlogedWebapp.Controllers.v1
     {
         private readonly UserManager<AppUser> userManager;
 
+        private readonly IAuthorizationService authorizationService;
+
         public BlogsController(
             IUnitOfWork unitOfWork,
-            UserManager<AppUser> userManager
+            UserManager<AppUser> userManager,
+            IAuthorizationService authorizationService
         )
             : base(unitOfWork)
         {
             this.userManager = userManager;
+            this.authorizationService = authorizationService;
         }
 
         [HttpGet]
@@ -37,7 +41,7 @@ namespace BlogedWebapp.Controllers.v1
             return Ok(blogs);
         }
 
-       
+
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -46,21 +50,9 @@ namespace BlogedWebapp.Controllers.v1
             // Getting ID of user who made the request
             var IdentityId = User.Claims.FirstOrDefault(c => c.Type.Equals("Id"));
 
-            if( IdentityId == null )
-            {
-                return BadRequest(new GenericResponseDto()
-                {
-                    Success = false,
-                    Errors = new List<string>()
-                    {
-                        "Cannot detect user."
-                    }
-                });
-            }
-
             // Checking if blog already exists
             Blog existingBlog = await unitOfWork.Blogs.GetByUrlName(requestDto.UrlName);
-            if( existingBlog != null)
+            if (existingBlog != null)
             {
                 return BadRequest(new GenericResponseDto()
                 {
@@ -86,6 +78,41 @@ namespace BlogedWebapp.Controllers.v1
             await unitOfWork.CompleteAsync();
 
             return Ok(newBlog);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> UpdateBlog(Guid id, UpdateBlogRequestDto requestDto)
+        {
+
+            Blog blog = await unitOfWork.Blogs.GetById(id);
+
+            // Checks if blog exists
+            if (blog == null)
+            {
+                return NotFound(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Blog does not exist."
+                    }
+                });
+            }
+
+            // Getting ID of user who made the request
+            var UserId = User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var authorizationResult = await authorizationService
+                                                .AuthorizeAsync(User, blog, "AllowedToUseBlog");
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
+            return Unauthorized();
         }
     }
 }
