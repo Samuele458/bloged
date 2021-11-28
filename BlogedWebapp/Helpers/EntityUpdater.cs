@@ -3,8 +3,16 @@ using System.Reflection;
 
 namespace BlogedWebapp.Helpers
 {
+    /// <summary>
+    ///  Entity updater helper class
+    /// </summary>
     public static class EntityUpdater
     {
+        /// <summary>
+        ///  Update entity object fields with new fields contained in update object
+        /// </summary>
+        /// <param name="entityObject">Object to be updated</param>
+        /// <param name="updateObject">Object cointaining updated fields</param>
         public static void Update(object entityObject, object updateObject)
         {
             if (entityObject == null)
@@ -45,9 +53,11 @@ namespace BlogedWebapp.Helpers
                 var propertyType = propertyToUpdate.PropertyType;
                 var defaultValue = propertyType.IsValueType ? Activator.CreateInstance(propertyType) : null;
 
+                //Update field only if different from default value (null if reference)
                 if ((propertyType.IsValueType && updateValue != Activator.CreateInstance(propertyType)) ||
                    (!propertyType.IsValueType && updateValue != null))
                 {
+                    //Updating field
                     foreach (var propertyToBeUpdated in entityProperties)
                     {
                         if (propertyToBeUpdated.Name == propertyToUpdate.Name)

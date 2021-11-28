@@ -35,6 +35,13 @@ namespace BlogedWebapp.Data
         Task<bool> Add(T entity);
 
         /// <summary>
+        ///  Update entity
+        /// </summary>
+        /// <param name="entity">Entity object to update</param>
+        /// <returns>True if success, false otherwise</returns>
+        Task<bool> Update(T entity);
+
+        /// <summary>
         ///  Delete a specified entity
         /// </summary>
         /// <param name="id">Entity Id</param>
@@ -75,6 +82,11 @@ namespace BlogedWebapp.Data
         {
             await dbSet.AddAsync(entity);
             return true;
+        }
+
+        public virtual Task<bool> Update(T entity)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>

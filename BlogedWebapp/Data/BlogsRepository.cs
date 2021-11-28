@@ -100,5 +100,22 @@ namespace BlogedWebapp.Data
             }
 
         }
+
+        public async Task<bool> Update(Blog blog)
+        {
+            try
+            {
+                await dbSet
+                        .Include(u => u.UsersBlog)
+                        .FirstOrDefaultAsync(u => u.Id == blog.Id);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "{Repo} \"GetById\" method has generated an error.", typeof(BlogsRepository));
+                return false;
+            }
+        }
     }
 }

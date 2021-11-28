@@ -1,5 +1,6 @@
 ﻿using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
+using BlogedWebapp.Helpers;
 using BlogedWebapp.Models.Dtos.Requests;
 using BlogedWebapp.Models.Dtos.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -86,6 +87,18 @@ namespace BlogedWebapp.Controllers.v1
         public async Task<IActionResult> UpdateBlog(Guid id, UpdateBlogRequestDto requestDto)
         {
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Invalid parameters."
+                    }
+                });
+            }
+
             Blog blog = await unitOfWork.Blogs.GetById(id);
 
             // Checks if blog exists
@@ -112,7 +125,26 @@ namespace BlogedWebapp.Controllers.v1
                 return Unauthorized();
             }
 
-            return Unauthorized();
+            try
+            {
+                // Updating model object
+                EntityUpdater.Update(blog, requestDto);
+                await unitOfWork.Blogs.Update(blog);
+                await unitOfWork.CompleteAsync();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Invalid parameters."
+                    }
+                });
+            }
+
+            return Ok(blog);
         }
     }
 }
