@@ -35,6 +35,10 @@ namespace BlogedWebapp.Controllers.v1
             this.authorizationService = authorizationService;
         }
 
+        /// <summary>
+        ///  Gets all existing blogs
+        /// </summary>
+        /// <returns>List of blogs</returns>
         [HttpGet]
         public async Task<IActionResult> GetBlogs()
         {
@@ -43,7 +47,11 @@ namespace BlogedWebapp.Controllers.v1
         }
 
 
-
+        /// <summary>
+        ///  Creates new blog
+        /// </summary>
+        /// <param name="requestDto">Data Transfer Object for creating new blog</param>
+        /// <returns>Created blog</returns>
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateBlog(CreateBlogRequestDto requestDto)
@@ -81,6 +89,13 @@ namespace BlogedWebapp.Controllers.v1
             return Ok(newBlog);
         }
 
+
+        /// <summary>
+        ///  Update an existing blog
+        /// </summary>
+        /// <param name="id">Blog ID</param>
+        /// <param name="requestDto">Data Trasfer Object containing updated fields</param>
+        /// <returns>Updated blog</returns>
         [HttpPut]
         [Route("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

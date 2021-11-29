@@ -4,6 +4,8 @@ using BlogedWebapp.Helpers;
 using BlogedWebapp.Models.Dtos.Generic;
 using BlogedWebapp.Models.Dtos.Requests;
 using BlogedWebapp.Models.Dtos.Responses;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -578,6 +580,7 @@ namespace BlogedWebapp.Controllers.v1
         /// <returns>Generic DTO for handling success state and errors</returns>
         [HttpPost]
         [Route("{userId}/roles")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOrSuperadmin")]
         public async Task<IActionResult> AddToRole(string userId, RoleDto roleDto)
         {
 
@@ -641,6 +644,7 @@ namespace BlogedWebapp.Controllers.v1
         /// <returns>List of role names related to user</returns>
         [HttpGet]
         [Route("{userId}/roles")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUserRoles(string userId)
         {
             // Getting user object
@@ -672,6 +676,7 @@ namespace BlogedWebapp.Controllers.v1
         /// <returns>Generic DTO for handling success state and errors</returns>
         [HttpDelete]
         [Route("{userId}/roles/{roleName}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOrSuperadmin")]
         public async Task<IActionResult> RemoveFromRole(string userId, string roleName)
         {
             // Getting user object

@@ -61,6 +61,8 @@ namespace IntegrationTests
         {
             ClearGenericDbContext(context);
             Startup.CreateRoles(serviceProvider);
+
+            client.DefaultRequestHeaders.Clear();
         }
 
         public string UriPrefix

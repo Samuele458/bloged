@@ -25,10 +25,6 @@ namespace IntegrationTests
             this.roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
         }
 
-        public override void Reset()
-        {
-            base.Reset();
-        }
 
         public async Task<HttpResponseMessage> Register(CreateUserRequestDto requestDto)
         {

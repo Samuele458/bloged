@@ -2,6 +2,8 @@
 using BlogedWebapp.Entities;
 using BlogedWebapp.Models.Dtos.Generic;
 using BlogedWebapp.Models.Dtos.Responses;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -33,6 +35,7 @@ namespace BlogedWebapp.Controllers.v1
         /// <returns>List of all existing roles</returns>
         [HttpGet]
         [Route("")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetAllRoles()
         {
             var roles = roleManager.Roles.ToList();
@@ -47,6 +50,7 @@ namespace BlogedWebapp.Controllers.v1
         /// <returns>Generic DTO for handling success state and errors</returns>
         [HttpPost]
         [Route("")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOrSuperadmin")]
         public async Task<IActionResult> CreateRole(RoleDto roleDto)
         {
             var roleExists = await roleManager.RoleExistsAsync(roleDto.RoleName);
@@ -93,6 +97,7 @@ namespace BlogedWebapp.Controllers.v1
         /// <returns>Generic DTO for handling success state and errors</returns>
         [HttpDelete]
         [Route("{roleName}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOrSuperadmin")]
         public async Task<IActionResult> DeleteRole(string roleName)
         {
 
