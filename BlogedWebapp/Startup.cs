@@ -376,7 +376,7 @@ namespace BlogedWebapp
             //var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
         }
 
-        private void CreateRoles(IServiceProvider serviceProvider)
+        public static void CreateRoles(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
             List<String> rolesList = new List<string> { "Superadmin", "Admin" };

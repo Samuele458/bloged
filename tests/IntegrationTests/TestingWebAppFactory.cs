@@ -22,11 +22,13 @@ namespace IntegrationTestsProject
                     services.Remove(dbContext);
                 }
 
-                var serviceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
+                var serviceProvider = new ServiceCollection()
+                                            .AddEntityFrameworkInMemoryDatabase()
+                                            .BuildServiceProvider();
 
                 services.AddDbContext<DataContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryEmployeeTest");
+                    options.UseInMemoryDatabase("db");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
                 var sp = services.BuildServiceProvider();

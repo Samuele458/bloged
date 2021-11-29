@@ -1,27 +1,29 @@
 ﻿using BlogedWebapp;
+using BlogedWebapp.Models.Dtos.Requests;
+using BlogedWebapp.Models.Dtos.Responses;
 using IntegrationTestsProject;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace IntegrationTests
 {
-    public class AccountsControllerTests : IClassFixture<TestingWebAppFactory<Startup>>
+    public class AccountsControllerTests : AthenticatorIntegrationTest
     {
-        private readonly HttpClient _client;
 
         public AccountsControllerTests(TestingWebAppFactory<Startup> factory)
+            : base(factory)
         {
-            _client = factory.CreateClient();
+
         }
 
         [Fact]
-        public async Task Read_GET_Action()
+        public async Task Register_PassingValidFields_UserCreated()
         {
+            Reset();
 
-            var body = new
+
+            var body = new CreateUserRequestDto
             {
                 Email = "samuele@girgenti.com",
                 FirstName = "name",
@@ -30,16 +32,38 @@ namespace IntegrationTests
                 Password = "Qwe12345@"
             };
 
-            // Act
-            var response = await _client.PostAsync("/api/v1/accounts/register",
-                new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"));
-            string responseBodyString = await response.Content.ReadAsStringAsync();
-            // Assert
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
+            var response = await Register(body);
 
-            //Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
-            //Assert.Contains("<h1 class=\"bg-info text-white\">Records</h1>", responseString);
+            string responseBodyString = await response.Content.ReadAsStringAsync();
+            response.EnsureSuccessStatusCode();
+
+            AuthResponseDto responseObject = JsonConvert.DeserializeObject<AuthResponseDto>(responseBodyString);
+
+            Assert.NotNull(await userManager.FindByEmailAsync("samuele@girgenti.com"));
+
+        }
+
+        [Fact]
+        public async Task Login_PassingValidFields_UserLoggedIn()
+        {
+            Reset();
+
+            await Register_PassingValidFields_UserCreated();
+
+            var body = new UserLoginRequestDto
+            {
+                Email = "samuele@girgenti.com",
+                Password = "Qwe12345@"
+            };
+
+            var response = await Login(body);
+            response.EnsureSuccessStatusCode();
+
+            string responseBodyString = await response.Content.ReadAsStringAsync();
+            AuthResponseDto responseObject = JsonConvert.DeserializeObject<AuthResponseDto>(responseBodyString);
+
+            //Assert.NotNull(await userManager.FindByEmailAsync("samuele@girgenti.com"));
+
             Assert.True(true);
         }
     }
