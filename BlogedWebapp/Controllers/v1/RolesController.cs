@@ -38,7 +38,7 @@ namespace BlogedWebapp.Controllers.v1
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetAllRoles()
         {
-            var roles = roleManager.Roles.ToList();
+            var roles = roleManager.Roles.Select(r => r.Name).ToArray();
 
             return Ok(roles);
         }
@@ -100,6 +100,19 @@ namespace BlogedWebapp.Controllers.v1
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOrSuperadmin")]
         public async Task<IActionResult> DeleteRole(string roleName)
         {
+
+            if (roleName.ToLower().Equals("admin") ||
+                roleName.ToLower().Equals("superadmin"))
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        $"Cannot delete {roleName} role."
+                    }
+                });
+            }
 
             // Getting role object
             var role = await roleManager.FindByNameAsync(roleName);

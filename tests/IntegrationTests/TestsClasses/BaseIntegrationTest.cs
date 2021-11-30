@@ -38,6 +38,11 @@ namespace IntegrationTests
 
         }
 
+        /// <summary>
+        ///  Empties a DbSet
+        /// </summary>
+        /// <typeparam name="T">DbSet entity type</typeparam>
+        /// <param name="set">DbSet to empty</param>
         public static void GenericRemoveSet<T>(DbSet<T> set) where T : class
         {
             foreach (var item in set)
@@ -46,6 +51,10 @@ namespace IntegrationTests
             }
         }
 
+        /// <summary>
+        ///  Empties a DbCOntext
+        /// </summary>
+        /// <param name="context">DbContext to empty</param>
         public static void ClearGenericDbContext(DbContext context)
         {
             var removeMethod = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.GetMethod("GenericRemoveSet");
@@ -57,6 +66,9 @@ namespace IntegrationTests
             context.SaveChanges();
         }
 
+        /// <summary>
+        ///  Reset test state
+        /// </summary>
         public virtual void Reset()
         {
             ClearGenericDbContext(context);
@@ -65,6 +77,9 @@ namespace IntegrationTests
             client.DefaultRequestHeaders.Clear();
         }
 
+        /// <summary>
+        ///  ERI prefix containing api prefix and version
+        /// </summary>
         public string UriPrefix
         {
             get { return $"/{IntegrationTestSettings.ApiPrefix}/v{IntegrationTestSettings.ApiVersion}"; }
