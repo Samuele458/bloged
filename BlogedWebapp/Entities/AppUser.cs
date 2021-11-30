@@ -8,7 +8,7 @@ namespace BlogedWebapp.Entities
 {
     public class AppUser : IdentityUser
     {
-        public Guid? ProfileDataId { get; set; }
+        public string? ProfileDataId { get; set; }
 
         [ForeignKey(nameof(ProfileDataId))]
         [JsonIgnore]

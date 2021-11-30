@@ -53,8 +53,8 @@ namespace BlogedWebapp.Data
             {
                 return await dbSet
                                 .Include(u => u.UsersBlog)
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(u => u.Id == Id);
+                                //.AsNoTracking()
+                                .FirstOrDefaultAsync(u => u.Id == Id.ToString());
             }
             catch (Exception e)
             {

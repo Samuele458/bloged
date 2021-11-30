@@ -70,7 +70,7 @@ namespace BlogedWebapp.Data
             try
             {
                 return await dbSet
-                                .FirstOrDefaultAsync(u => u.Id == Id);
+                                .FirstOrDefaultAsync(u => u.Id == Id.ToString());
             }
             catch (Exception e)
             {

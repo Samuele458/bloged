@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogedWebapp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20211127222115_InitBaseEntities")]
-    partial class InitBaseEntities
+    [Migration("20211130120328_initBaseEntities")]
+    partial class initBaseEntities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -63,8 +63,8 @@ namespace BlogedWebapp.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("ProfileDataId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ProfileDataId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -93,9 +93,8 @@ namespace BlogedWebapp.Migrations
 
             modelBuilder.Entity("BlogedWebapp.Entities.Blog", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -119,9 +118,8 @@ namespace BlogedWebapp.Migrations
 
             modelBuilder.Entity("BlogedWebapp.Entities.ProfileData", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -150,9 +148,8 @@ namespace BlogedWebapp.Migrations
 
             modelBuilder.Entity("BlogedWebapp.Entities.RefreshToken", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -190,12 +187,11 @@ namespace BlogedWebapp.Migrations
 
             modelBuilder.Entity("BlogedWebapp.Entities.UsersBlog", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("BlogId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("BlogId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -383,9 +379,7 @@ namespace BlogedWebapp.Migrations
                 {
                     b.HasOne("BlogedWebapp.Entities.Blog", "Blog")
                         .WithMany("UsersBlog")
-                        .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BlogId");
 
                     b.HasOne("BlogedWebapp.Entities.AppUser", "Owner")
                         .WithMany("UsersBlog")

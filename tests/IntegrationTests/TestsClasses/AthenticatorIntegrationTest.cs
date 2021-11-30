@@ -49,6 +49,11 @@ namespace IntegrationTests
             SetJwtBearer(responseDto.Token);
         }
 
+        public void RemoveJwtBearer()
+        {
+            client.DefaultRequestHeaders.Clear();
+        }
+
         /// <summary>
         ///  Register utility method
         /// </summary>

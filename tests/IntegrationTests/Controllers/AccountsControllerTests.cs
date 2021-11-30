@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IntegrationTests
+namespace IntegrationTests.Controllers
 {
     public class AccountsControllerTests : AthenticatorIntegrationTest
     {

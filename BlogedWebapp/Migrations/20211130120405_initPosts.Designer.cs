@@ -4,14 +4,16 @@ using BlogedWebapp.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BlogedWebapp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20211130120405_initPosts")]
+    partial class initPosts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,9 +98,6 @@ namespace BlogedWebapp.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -403,7 +402,7 @@ namespace BlogedWebapp.Migrations
                         .HasForeignKey("AuthorId");
 
                     b.HasOne("BlogedWebapp.Entities.Blog", "Owner")
-                        .WithMany("Posts")
+                        .WithMany()
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Author");
@@ -502,8 +501,6 @@ namespace BlogedWebapp.Migrations
 
             modelBuilder.Entity("BlogedWebapp.Entities.Blog", b =>
                 {
-                    b.Navigation("Posts");
-
                     b.Navigation("UsersBlog");
                 });
 #pragma warning restore 612, 618

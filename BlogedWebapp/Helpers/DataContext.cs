@@ -15,6 +15,9 @@ namespace BlogedWebapp.Helpers
         public virtual DbSet<Blog> Blogs { get; set; }
 
         public virtual DbSet<UsersBlog> UsersBlog { get; set; }
+
+        public virtual DbSet<Post> Posts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -51,7 +51,7 @@ namespace BlogedWebapp.Data
             {
                 return await dbSet
                                 .Include(u => u.Owner)
-                                .FirstOrDefaultAsync(u => u.Id == Id);
+                                .FirstOrDefaultAsync(u => u.Id == Id.ToString());
             }
             catch (Exception e)
             {

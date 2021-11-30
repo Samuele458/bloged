@@ -24,7 +24,7 @@ namespace BlogedWebapp.Entities
         public AppUser User { get; set; }
         */
 
-        public Guid BlogId { get; set; }
+        public string BlogId { get; set; }
 
         [ForeignKey(nameof(BlogId))]
         [JsonIgnore]

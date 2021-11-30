@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace BlogedWebapp.Data
 {
-    public interface IPostsRepository
+    public interface IPostsRepository : IGenericRepository<Post>
     {
-
+        Task<Post> GetByUrlName(string urlName);
     }
 
     public class PostsRepository : GenericRepository<Post>, IPostsRepository
@@ -48,7 +48,7 @@ namespace BlogedWebapp.Data
             {
                 return await dbSet
                                 .AsNoTracking()
-                                .FirstOrDefaultAsync(u => u.Id == Id);
+                                .FirstOrDefaultAsync(u => u.Id == Id.ToString());
             }
             catch (Exception e)
             {
@@ -70,6 +70,21 @@ namespace BlogedWebapp.Data
             {
                 logger.LogError(e, "{Repo} \"GetById\" method has generated an error.", typeof(PostsRepository));
                 return false;
+            }
+        }
+
+        public async Task<Post> GetByUrlName(string urlName)
+        {
+            try
+            {
+                return await dbSet
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(u => u.UrlName.Equals(urlName));
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "{Repo} \"GetByUrlName\" method has generated an error.", typeof(PostsRepository));
+                return new Post();
             }
         }
     }

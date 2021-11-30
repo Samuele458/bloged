@@ -12,7 +12,12 @@ namespace BlogedWebapp.Entities
 
         public string UrlName { get; set; }
 
+        public string Description { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<UsersBlog> UsersBlog { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<Post> Posts { get; set; }
     }
 }

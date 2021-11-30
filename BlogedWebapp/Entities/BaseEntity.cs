@@ -16,7 +16,7 @@ namespace BlogedWebapp.Entities
 
     public interface IIdentificableEntity
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace BlogedWebapp.Entities
     public abstract class BaseEntity : IBaseEntity, IIdentificableEntity
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public int Status { get; set; } = 1;
 

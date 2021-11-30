@@ -18,6 +18,8 @@ namespace BlogedWebapp.Data
 
         IBlogsRepository Blogs { get; }
 
+        IPostsRepository Posts { get; }
+
         /// <summary>
         ///  Save db changes on context asynchronously
         /// </summary>
@@ -41,6 +43,8 @@ namespace BlogedWebapp.Data
 
         public IBlogsRepository Blogs { get; private set; }
 
+        public IPostsRepository Posts { get; private set; }
+
         public UnitOfWork(
             DataContext context, 
             ILoggerFactory loggerFactory)
@@ -51,6 +55,7 @@ namespace BlogedWebapp.Data
             Profiles = new ProfilesRepository(context, logger);
             RefreshTokens = new RefreshTokensRepository(context, logger);
             Blogs = new BlogsRepository(context, logger);
+            Posts = new PostsRepository(context, logger);
         }
 
         /// <inheritdoc/>
