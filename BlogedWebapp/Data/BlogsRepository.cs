@@ -12,6 +12,7 @@ namespace BlogedWebapp.Data
 
     public interface IBlogsRepository : IGenericRepository<Blog>
     {
+
         Task<UsersBlog> SetBlogOwner(Blog blog, AppUser user);
 
         Task<Blog> GetByUrlName(string urlName);
@@ -101,7 +102,7 @@ namespace BlogedWebapp.Data
 
         }
 
-        public async Task<bool> Update(Blog blog)
+        public override async Task<bool> Update(Blog blog)
         {
             try
             {
