@@ -15,7 +15,7 @@ namespace BlogedWebapp.Data
 
         Task<UsersBlog> SetBlogOwner(Blog blog, AppUser user);
 
-        Task<Blog> GetByUrlName(string urlName);
+        Task<Blog> GetByUrlName(string urlName, ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Default);
     }
 
     public class BlogsRepository : GenericRepository<Blog>, IBlogsRepository
@@ -30,12 +30,12 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<Blog>> All()
+        public override async Task<IEnumerable<Blog>> All(ProjectionBehaviour projectionBehaviour)
         {
             try
             {
-                return await dbSet.Where(x => x.Status == 1)
-                                .Include(b => b.UsersBlog)
+                return await MakeQueryProjection(projectionBehaviour)
+                                .Where(x => x.Status == 1)
                                 .AsNoTracking()
                                 .ToListAsync();
             }
@@ -47,14 +47,14 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public override async Task<Blog> GetById(Guid Id)
+        public override async Task<Blog> GetById(Guid Id, ProjectionBehaviour projectionBehaviour)
         {
             try
             {
-                return await dbSet
-                                .Include(u => u.UsersBlog)
-                                .Include(u => u.Posts)
-                                .FirstOrDefaultAsync(u => u.Id == Id.ToString());
+
+                return await MakeQueryProjection(projectionBehaviour)
+                            .FirstOrDefaultAsync(u => u.Id == Id.ToString());
+
             }
             catch (Exception e)
             {
@@ -63,12 +63,11 @@ namespace BlogedWebapp.Data
             }
         }
 
-        public async Task<Blog> GetByUrlName(string urlName)
+        public async Task<Blog> GetByUrlName(string urlName, ProjectionBehaviour projectionBehaviour)
         {
             try
             {
-                return await dbSet
-                                .Include(u => u.UsersBlog)
+                return await MakeQueryProjection(projectionBehaviour)
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(u => u.UrlName.Equals(urlName));
             }
@@ -123,7 +122,7 @@ namespace BlogedWebapp.Data
         {
             try
             {
-                var blogObj = await dbSet.
+                var blogObj = await dbSet
                         .FirstOrDefaultAsync(u => u.Id == blog.Id);
                 dbSet.Remove(blogObj);
 
@@ -134,6 +133,47 @@ namespace BlogedWebapp.Data
                 logger.LogError(e, "{Repo} \"Delete\" method has generated an error.", typeof(BlogsRepository));
                 return false;
             }
+        }
+
+        /// <inheritdoc/>
+        public override IQueryable<Blog> MakeQueryProjection(ProjectionBehaviour projectionBehaviour)
+        {
+            IQueryable<Blog> queryable = null;
+
+            switch (projectionBehaviour)
+            {
+                case ProjectionBehaviour.Minimal:
+                    queryable = dbSet.Select(b => new Blog()
+                    {
+                        Title = b.Title,
+                        UrlName = b.UrlName,
+                        Description = b.Description,
+                        Id = b.Id,
+                        Status = b.Status,
+                        CreatedOn = b.CreatedOn,
+                        UpdatedOn = b.UpdatedOn
+                    });
+                    break;
+
+
+                case ProjectionBehaviour.Default:
+                    queryable = dbSet;
+                    break;
+
+                case ProjectionBehaviour.IncludeRelated:
+                    queryable = dbSet
+                                .Include(u => u.UsersBlog)
+                                .Include(u => u.Posts);
+                    break;
+
+                case ProjectionBehaviour.IncludeRecursively:
+                    queryable = dbSet
+                                .Include(u => u.UsersBlog)
+                                .Include(u => u.Posts);
+                    break;
+            }
+
+            return queryable;
         }
     }
 }

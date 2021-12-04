@@ -60,7 +60,7 @@ namespace BlogedWebapp.Controllers.v1
             var IdentityId = User.Claims.FirstOrDefault(c => c.Type.Equals("Id"));
 
             // Checking if blog already exists
-            Blog existingBlog = await unitOfWork.Blogs.GetByUrlName(requestDto.UrlName);
+            Blog existingBlog = await unitOfWork.Blogs.GetByUrlName(requestDto.UrlName, ProjectionBehaviour.IncludeRelated);
             if (existingBlog != null)
             {
                 return BadRequest(new GenericResponseDto()
@@ -167,7 +167,7 @@ namespace BlogedWebapp.Controllers.v1
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteBlog(Guid blogId)
         {
-            Blog blog = await unitOfWork.Blogs.GetById(blogId);
+            Blog blog = await unitOfWork.Blogs.GetById(blogId, ProjectionBehaviour.IncludeRelated);
 
             // Checks if blog exists
             if (blog == null)
@@ -195,11 +195,12 @@ namespace BlogedWebapp.Controllers.v1
 
             try
             {
-                if(blog.Posts.Count == 0)
+                if (blog.Posts.Count == 0)
                 {
                     var deleted = await unitOfWork.Blogs.Delete(blog);
                     await unitOfWork.CompleteAsync();
-                } else
+                }
+                else
                 {
                     return BadRequest(new GenericResponseDto()
                     {

@@ -1,12 +1,9 @@
 ﻿using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
-using BlogedWebapp.Models.Dtos.Requests;
-using BlogedWebapp.Models.Dtos.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BlogedWebapp.Controllers.v1
@@ -22,7 +19,7 @@ namespace BlogedWebapp.Controllers.v1
         private readonly IAuthorizationService authorizationService;
 
         public ProfilesController(
-                IUnitOfWork unitOfWork, 
+                IUnitOfWork unitOfWork,
                 IAuthorizationService authorizationService
             ) : base(unitOfWork)
         {
@@ -51,7 +48,7 @@ namespace BlogedWebapp.Controllers.v1
         public async Task<IActionResult> GetUser(Guid userId)
         {
             ProfileData user = await unitOfWork.Profiles.GetById(userId);
-            
+
             var authorizationResult = await authorizationService
                                                 .AuthorizeAsync(User, user, "AllowedToUse");
 
@@ -59,8 +56,10 @@ namespace BlogedWebapp.Controllers.v1
             {
                 return Ok(user);
             }
-            else return Unauthorized();
-            
+            else
+            {
+                return Unauthorized();
+            }
         }
 
 

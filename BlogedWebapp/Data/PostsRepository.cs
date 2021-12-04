@@ -26,7 +26,7 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<Post>> All()
+        public override async Task<IEnumerable<Post>> All(ProjectionBehaviour projectionBehaviour)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public override async Task<Post> GetById(Guid Id)
+        public override async Task<Post> GetById(Guid Id, ProjectionBehaviour projectionBehaviour)
         {
             try
             {

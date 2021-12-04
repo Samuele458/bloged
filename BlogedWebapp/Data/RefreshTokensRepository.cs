@@ -49,7 +49,7 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<RefreshToken>> All()
+        public override async Task<IEnumerable<RefreshToken>> All(ProjectionBehaviour projectionBehaviour)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public override async Task<RefreshToken> GetById(Guid Id)
+        public override async Task<RefreshToken> GetById(Guid Id, ProjectionBehaviour projectionBehaviour)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace BlogedWebapp.Data
         {
             try
             {
-                return await dbSet.Where(x => x.Token.ToLower() == refreshToken.ToLower() )
+                return await dbSet.Where(x => x.Token.ToLower() == refreshToken.ToLower())
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync();
             }
@@ -103,7 +103,10 @@ namespace BlogedWebapp.Data
                 var token = await dbSet.Where(x => x.Token.ToLower() == refreshToken.Token.ToLower())
                                 .FirstOrDefaultAsync();
 
-                if (token == null) return false;
+                if (token == null)
+                {
+                    return false;
+                }
 
                 token.IsUsed = refreshToken.IsUsed;
 
@@ -125,7 +128,10 @@ namespace BlogedWebapp.Data
                 var token = await dbSet.Where(x => x.Token.ToLower() == refreshToken.Token.ToLower())
                                 .FirstOrDefaultAsync();
 
-                if (token == null) return false;
+                if (token == null)
+                {
+                    return false;
+                }
 
                 token.IsRevoked = refreshToken.IsRevoked;
 
