@@ -44,10 +44,9 @@ namespace BlogedWebapp.Data
         /// <summary>
         ///  Delete a specified entity
         /// </summary>
-        /// <param name="id">Entity Id</param>
-        /// <param name="userId">ProfileData Id</param>
+        /// <param name="entity">Entity Id</param>
         /// <returns>True if success, false otherwise</returns>
-        Task<bool> Delete(Guid id, string userId);
+        Task<bool> Delete(T entity);
 
         /// <summary>
         ///  Modify or add an entity (if not exists)
@@ -96,7 +95,7 @@ namespace BlogedWebapp.Data
         }
 
         /// <inheritdoc/>
-        public Task<bool> Delete(Guid id, string userId)
+        public virtual Task<bool> Delete(T entity)
         {
             throw new NotImplementedException();
         }

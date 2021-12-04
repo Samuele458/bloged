@@ -39,6 +39,7 @@ namespace BlogedWebapp.Authorizations.Handlers
                 context.Succeed(requirement);
             }
 
+
             return Task.CompletedTask;
         }
     }

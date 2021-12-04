@@ -70,7 +70,7 @@ namespace IntegrationTests.Controllers
             Assert.NotNull(context.Set<Blog>().FirstOrDefault(b => b.UrlName.Equals("tech-blog")));
         }
 
-        /*
+        
         [Fact]
         public async void DeleteBlog_ValidRequestFromAdmin_BlogDeleted()
         {
@@ -123,10 +123,10 @@ namespace IntegrationTests.Controllers
             //Creating normal user
             var authResponse = await Register(new CreateUserRequestDto
             {
-                Email = "samuele@girgenti.com",
+                Email = "samuele1@girgenti.com",
                 FirstName = "name",
                 LastName = "surname",
-                Username = "Samuele458",
+                Username = "Samuele4589",
                 Password = "Qwe12345@"
             });
 
@@ -229,6 +229,6 @@ namespace IntegrationTests.Controllers
 
             Assert.True(deleteRes.StatusCode != HttpStatusCode.OK);
             Assert.NotNull(context.Set<Blog>().FirstOrDefault(b => b.UrlName.Equals("tech-blog")));
-        }*/
+        }
     }
 }

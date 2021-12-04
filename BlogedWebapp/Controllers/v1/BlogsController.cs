@@ -161,5 +161,72 @@ namespace BlogedWebapp.Controllers.v1
 
             return Ok(blog);
         }
+
+        [HttpDelete]
+        [Route("{blogId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> DeleteBlog(Guid blogId)
+        {
+            Blog blog = await unitOfWork.Blogs.GetById(blogId);
+
+            // Checks if blog exists
+            if (blog == null)
+            {
+                return NotFound(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Blog does not exist."
+                    }
+                });
+            }
+
+            // Getting ID of user who made the request
+            var UserId = User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var authorizationResult = await authorizationService
+                                                .AuthorizeAsync(User, blog, "AllowedToUseBlog");
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                if(blog.Posts.Count == 0)
+                {
+                    var deleted = await unitOfWork.Blogs.Delete(blog);
+                    await unitOfWork.CompleteAsync();
+                } else
+                {
+                    return BadRequest(new GenericResponseDto()
+                    {
+                        Success = false,
+                        Errors = new List<string>()
+                        {
+                            "Cannot delete: blog is not empty."
+                        }
+                    });
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest(new GenericResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>
+                    {
+                        "Invalid parameters."
+                    }
+                });
+            }
+
+            return Ok(new GenericResponseDto()
+            {
+                Success = true
+            });
+        }
     }
 }

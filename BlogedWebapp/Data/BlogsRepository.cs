@@ -53,7 +53,7 @@ namespace BlogedWebapp.Data
             {
                 return await dbSet
                                 .Include(u => u.UsersBlog)
-                                //.AsNoTracking()
+                                .Include(u => u.Posts)
                                 .FirstOrDefaultAsync(u => u.Id == Id.ToString());
             }
             catch (Exception e)
@@ -114,7 +114,24 @@ namespace BlogedWebapp.Data
             }
             catch (Exception e)
             {
-                logger.LogError(e, "{Repo} \"GetById\" method has generated an error.", typeof(BlogsRepository));
+                logger.LogError(e, "{Repo} \"Update\" method has generated an error.", typeof(BlogsRepository));
+                return false;
+            }
+        }
+
+        public override async Task<bool> Delete(Blog blog)
+        {
+            try
+            {
+                var blogObj = await dbSet.
+                        .FirstOrDefaultAsync(u => u.Id == blog.Id);
+                dbSet.Remove(blogObj);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "{Repo} \"Delete\" method has generated an error.", typeof(BlogsRepository));
                 return false;
             }
         }
