@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace BlogedWebapp.Data
@@ -32,8 +32,43 @@ namespace BlogedWebapp.Data
         {
             try
             {
-                return await dbSet.Where(x => x.Status == 1)
-                                .Include(u => u.Owner)
+                Stopwatch sw = new Stopwatch();
+
+                sw.Start();
+
+                // ...
+
+
+                //System.Diagnostics.Debug.WriteLine(ProjectionHelper<ProfileData>
+                //    .BuildProjection(dbSet).ToQueryString());
+
+                /*
+                ProjectionHelper<ProfileData>
+                    .BuildProjection(dbSet);
+
+                sw.Stop();
+
+                System.Diagnostics.Debug.WriteLine("Elapsed={0}", sw.Elapsed);
+                */
+                /*
+                System.Diagnostics.Debug.WriteLine(
+                    dbSet
+                        .Select(o => new ProfileData()
+                        {
+                            FirstName = o.FirstName,
+                            Owner = new AppUser()
+                            {
+                                Email = o.Owner.Email
+                            }
+                        })
+                        .Include(o => o.Owner)
+
+                        .ToQueryString()
+                );*/
+
+
+                return await ProjectionHelper<ProfileData>
+                                  .BuildProjection(dbSet)
                                 .AsNoTracking()
                                 .ToListAsync();
             }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using BlogedWebapp.Helpers;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlogedWebapp.Entities
@@ -13,7 +13,9 @@ namespace BlogedWebapp.Entities
         public string OwnerId { get; set; }
 
         [ForeignKey(nameof(OwnerId))]
-        [JsonIgnore]
+        //[JsonIgnore]
+        //[Projection(ProjectionBehaviour.Normal)]
+        [RelatedEntity]
         public T Owner { get; set; }
 
     }

@@ -1,6 +1,5 @@
 ﻿using BlogedWebapp.Data;
 using BlogedWebapp.Entities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,7 +12,7 @@ namespace BlogedWebapp.Controllers.v1
     ///  Profiles controller
     /// </summary>
     [Route("v{version:apiVersion}/profiles")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProfilesController : BaseController
     {
         private readonly IAuthorizationService authorizationService;
@@ -31,7 +30,7 @@ namespace BlogedWebapp.Controllers.v1
         /// </summary>
         /// <returns>List of all users</returns>
         [HttpGet]
-        [Authorize(Policy = "AdminOrSuperadmin")]
+        //[Authorize(Policy = "AdminOrSuperadmin")]
         public async Task<IActionResult> GetUsers()
         {
             var users = await unitOfWork.Profiles.All();
