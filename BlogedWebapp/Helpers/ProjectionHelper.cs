@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -59,20 +60,26 @@ namespace BlogedWebapp.Helpers
 
         public ProjectionBehaviour Behaviour
         {
-            get { return this.Behaviour; }
+            get { return this.projectionBehaviour; }
         }
     }
 
     public static class ProjectionHelper<T> where T : class
     {
-        public static IQueryable<T> BuildProjection(IQueryable<T> dbset)
+        public static IQueryable<T> BuildProjection(
+            IQueryable<T> dbset,
+            ProjectionBehaviour projectionBehaviour
+        )
         {
             var entityType = typeof(T);
 
             var entityParameter = Expression.Parameter(typeof(T), "o");
 
-            var lambda = Expression.Lambda<Func<T, T>>(MakeEntityObject(entityType, entityParameter), entityParameter);
-            //System.Diagnostics.Debug.WriteLine(lambda.ToString());
+            var lambda = Expression.Lambda<Func<T, T>>(MakeEntityObject(entityType, entityParameter, projectionBehaviour), entityParameter);
+
+            System.Diagnostics.Debug.WriteLine(lambda.ToString());
+            System.Diagnostics.Debug.WriteLine(dbset.Select(lambda).ToQueryString());
+
             return dbset.Select(lambda);
 
         }
@@ -82,7 +89,11 @@ namespace BlogedWebapp.Helpers
 
         //}
 
-        public static Expression MakeEntityObject(Type entityType, Expression objectToAssign)
+        public static Expression MakeEntityObject(
+                Type entityType,
+                Expression objectToAssign,
+                ProjectionBehaviour projectionBehaviour
+            )
         {
             var properties = entityType.GetProperties();
             Dictionary<PropertyInfo, RelatedEntity> propertiesWithRelatedEntity =
@@ -100,24 +111,46 @@ namespace BlogedWebapp.Helpers
                 var relatedEntityAttribute = property.GetCustomAttribute<RelatedEntity>(true);
                 var projectionAttribute = property.GetCustomAttribute<Projection>(true);
 
-                if (relatedEntityAttribute == null)
+                if (projectionAttribute == null)
                 {
+                    projectionAttribute = new Projection(ProjectionBehaviour.Normal);
+                }
 
+
+                if (IsInProjection(projectionBehaviour, projectionAttribute.Behaviour))
+                {
                     var value = Expression.Property(objectToAssign, property);
-                    var assignment = Expression.Bind(property, value);
+                    MemberAssignment assignment;
+
+                    if (relatedEntityAttribute == null)
+                    {
+                        assignment = Expression.Bind(property, value);
+                    }
+                    else
+                    {
+                        assignment = Expression.Bind(property, MakeEntityObject(value.Type, value, projectionBehaviour));
+                    }
 
                     bindings.Add(assignment);
                 }
-                else
-                {
-                    var value = Expression.Property(objectToAssign, property);
-                    var assignment = Expression.Bind(property, MakeEntityObject(value.Type, value));
 
-                    bindings.Add(assignment);
-                }
             }
 
             return Expression.MemberInit(constructor, bindings);
+        }
+
+        /// <summary>
+        ///  Determines wether a property should be in projection or not
+        /// </summary>
+        /// <param name="projectionBehaviourToFollow">Projectionbehaviour to follow</param>
+        /// <param name="propertyProjectionBehaviour">ProjectionBehaviour of the resource to be checked</param>
+        /// <returns>True if property is in projection, false otherwise</returns>
+        public static bool IsInProjection(
+                ProjectionBehaviour projectionBehaviourToFollow,
+                ProjectionBehaviour propertyProjectionBehaviour
+            )
+        {
+            return projectionBehaviourToFollow >= propertyProjectionBehaviour;
         }
 
     }

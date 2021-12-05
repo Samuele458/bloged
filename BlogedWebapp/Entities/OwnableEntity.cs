@@ -9,7 +9,7 @@ namespace BlogedWebapp.Entities
     /// <typeparam name="T">Owner type (Eg. AppUser)</typeparam>
     public class OwnableEntity<T> : BaseEntity
     {
-
+        [Projection(ProjectionBehaviour.Preview)]
         public string OwnerId { get; set; }
 
         [ForeignKey(nameof(OwnerId))]
