@@ -33,7 +33,7 @@ namespace BlogedWebapp.Data
             {
 
                 return await ProjectionHelper<ProfileData>
-                                .BuildProjection(dbSet, ProjectionBehaviour.Normal)
+                                .BuildProjection(dbSet, ProjectionBehaviour.Preview)
                                 .AsNoTracking()
                                 .ToListAsync();
             }

@@ -117,8 +117,8 @@ namespace BlogedWebapp.Controllers.v1
                 await unitOfWork.Profiles.Add(user);
                 await unitOfWork.CompleteAsync();
 
-                newUser.ProfileData = user;
-                await userManager.UpdateAsync(newUser);
+                //newUser.ProfileData = user;
+                //await userManager.UpdateAsync(newUser);
 
 
                 //generating new JWT
