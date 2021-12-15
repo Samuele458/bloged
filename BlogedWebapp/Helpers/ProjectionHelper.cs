@@ -82,7 +82,6 @@ namespace BlogedWebapp.Helpers
     public static class ProjectionHelper<T> where T : class
     {
 
-
         public static Expression<Func<T, T>> BuildProjectionLambda(
             IQueryable<T> dbset,
             ProjectionBehaviour projectionBehaviour

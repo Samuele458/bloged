@@ -38,6 +38,28 @@ namespace UnitTests.Helpers
             public string Name { get; set; }
         }
 
+        public class TestEntity_WithoutFields
+        {
+
+        }
+
+        public class TestEntity_WithNormalField
+        {
+            [Projection(ProjectionBehaviour.Normal)]
+            public string Email { get; set; }
+        }
+
+        public class TestEntity_WithPreviewField
+        {
+            [Projection(ProjectionBehaviour.Preview)]
+            public string Email { get; set; }
+        }
+
+        public class TestEntity_WithFullField
+        {
+            [Projection(ProjectionBehaviour.Full)]
+            public string Email { get; set; }
+        }
 
         // --- Unit tests ---
 
@@ -78,7 +100,9 @@ namespace UnitTests.Helpers
         }
 
 
-        private static string StringifyProjectionLambda<T>() where T : class
+        private static string StringifyProjectionLambda<T>(
+            ProjectionBehaviour behaviour = ProjectionBehaviour.Normal
+        ) where T : class
         {
             List<T> list = new List<T>();
             IQueryable<T> queryable = list.AsQueryable();
@@ -90,10 +114,28 @@ namespace UnitTests.Helpers
         }
 
         [TestMethod]
-        public void BuildProjectionLambda()
+        public void BuildProjectionLambda_NormalAccessInNormalField_ResultCorrect()
         {
             var result = StringifyProjectionLambda<TestEntity_WithProjectionAttributeOnProperty>();
             var expectedResult = "o => new TestEntity_WithProjectionAttributeOnProperty() {Name = o.Name}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_EntityWithoutFields_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithoutFields>();
+            var expectedResult = "o => new TestEntity_WithoutFields() {}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_PreviewField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithoutFields>();
+            var expectedResult = "o => new TestEntity_WithoutFields() {}";
 
             Assert.IsTrue(result == expectedResult);
         }
