@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using BlogedWebapp.Helpers;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlogedWebapp.Entities
@@ -24,12 +24,15 @@ namespace BlogedWebapp.Entities
         public AppUser User { get; set; }
         */
 
+        [Projection(ProjectionBehaviour.Preview)]
         public string BlogId { get; set; }
 
+        [Projection(ProjectionBehaviour.Full)]
         [ForeignKey(nameof(BlogId))]
         [JsonIgnore]
         public Blog Blog { get; set; }
 
+        [Projection(ProjectionBehaviour.Preview)]
         public BlogRoles Role { get; set; }
     }
 }

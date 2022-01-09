@@ -32,10 +32,10 @@ namespace BlogedWebapp.Entities
         [Projection(ProjectionBehaviour.Preview)]
         public int Status { get; set; } = 1;
 
-        [Projection(ProjectionBehaviour.Preview)]
+        [Projection(ProjectionBehaviour.Full)]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-        [Projection(ProjectionBehaviour.Preview)]
+        [Projection(ProjectionBehaviour.Full)]
         public DateTime UpdatedOn { get; set; }
     }
 }

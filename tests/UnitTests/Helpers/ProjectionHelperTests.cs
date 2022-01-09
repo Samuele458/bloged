@@ -1,9 +1,10 @@
-﻿using BlogedWebapp.Helpers;
+﻿using BlogedWebapp.Entities;
+using BlogedWebapp.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace UnitTests.Helpers
 {
@@ -104,22 +105,23 @@ namespace UnitTests.Helpers
             ProjectionBehaviour behaviour = ProjectionBehaviour.Normal
         ) where T : class
         {
-            List<T> list = new List<T>();
-            IQueryable<T> queryable = list.AsQueryable();
+            var param = Expression.Parameter(typeof(T), "o");
 
             var result = ProjectionHelper<T>
-                            .BuildProjectionLambda(queryable, ProjectionBehaviour.Normal)
+                            .BuildProjectionLambda(typeof(T), param, behaviour)
                             .ToString();
             return result;
         }
 
-        [TestMethod]
-        public void BuildProjectionLambda_NormalAccessInNormalField_ResultCorrect()
-        {
-            var result = StringifyProjectionLambda<TestEntity_WithProjectionAttributeOnProperty>();
-            var expectedResult = "o => new TestEntity_WithProjectionAttributeOnProperty() {Name = o.Name}";
 
-            Assert.IsTrue(result == expectedResult);
+        private static bool LambdaResultsEqual(string lambda1, string lambda2)
+        {
+            Regex whitespacesRegex = new Regex(@"\s+");
+
+            string lambda1Sanitized = whitespacesRegex.Replace(lambda1, "");
+            string lambda2Sanitized = whitespacesRegex.Replace(lambda2, "");
+
+            return lambda1Sanitized.Equals(lambda2Sanitized);
         }
 
         [TestMethod]
@@ -132,12 +134,134 @@ namespace UnitTests.Helpers
         }
 
         [TestMethod]
-        public void BuildProjectionLambda_PreviewField_ResultCorrect()
+        public void BuildProjectionLambda_PreviewAccessInNormalField_ResultCorrect()
         {
-            var result = StringifyProjectionLambda<TestEntity_WithoutFields>();
-            var expectedResult = "o => new TestEntity_WithoutFields() {}";
+            var result = StringifyProjectionLambda<TestEntity_WithNormalField>(ProjectionBehaviour.Preview);
+            var expectedResult = "o => new TestEntity_WithNormalField() {}";
 
             Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_PreviewAccessInPreviewField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithPreviewField>(ProjectionBehaviour.Preview);
+            var expectedResult = "o => new TestEntity_WithPreviewField() {Email = o.Email}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_PreviewAccessInFullField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithFullField>(ProjectionBehaviour.Preview);
+            var expectedResult = "o => new TestEntity_WithFullField() {}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_NormalAccessInNormalField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithNormalField>();
+            var expectedResult = "o => new TestEntity_WithNormalField() {Email = o.Email}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_NormalAccessInPreviewField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithPreviewField>();
+            var expectedResult = "o => new TestEntity_WithPreviewField() {Email = o.Email}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_NormalAccessInFullField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithFullField>();
+            var expectedResult = "o => new TestEntity_WithFullField() {}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+
+
+        [TestMethod]
+        public void BuildProjectionLambda_FullAccessInNormalField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithNormalField>(ProjectionBehaviour.Full);
+            var expectedResult = "o => new TestEntity_WithNormalField() {Email = o.Email}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_FullAccessInPreviewField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithPreviewField>(ProjectionBehaviour.Full);
+            var expectedResult = "o => new TestEntity_WithPreviewField() {Email = o.Email}";
+
+            Assert.IsTrue(result == expectedResult);
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_FullAccessInFullField_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<TestEntity_WithFullField>(ProjectionBehaviour.Full);
+            var expectedResult =
+                @"o => new TestEntity_WithFullField() {
+                    Email = o.Email
+                }";
+
+            Assert.IsTrue(LambdaResultsEqual(result, expectedResult));
+        }
+
+
+        [TestMethod]
+        public void BuildProjectionLambda_PreviewAccessBlogEntity_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<Blog>(ProjectionBehaviour.Preview);
+            var expectedResult = @"
+                o => new Blog() {
+                    Id = o.Id,
+                    Status = o.Status,
+                    Title = o.Title,
+                    UrlName = o.UrlName
+                }";
+
+            Assert.IsTrue(LambdaResultsEqual(result, expectedResult));
+        }
+
+        [TestMethod]
+        public void BuildProjectionLambda_NormalAccessBlogEntity_ResultCorrect()
+        {
+            var result = StringifyProjectionLambda<Blog>(ProjectionBehaviour.Normal);
+            var expectedResult = @"
+                o => new Blog() {
+		            Description = o.Description, 
+		            Id = o.Id, 
+		            Posts = o.Posts.Select(z => new Post() {
+			            AuthorId = z.AuthorId, 
+			            Id = z.Id, 
+			            OwnerId = z.OwnerId, 
+			            Status = z.Status, 
+			            Title = z.Title, 
+			            UrlName = z.UrlName
+		            }).ToList(), 
+		            Status = o.Status, 
+		            Title = o.Title, 
+		            UrlName = o.UrlName, 
+		            UsersBlog = o.UsersBlog.Select(z => new UsersBlog() {
+			            BlogId = z.BlogId, 
+			            Id = z.Id, 
+			            OwnerId = z.OwnerId, 
+			            Role = z.Role, Status = z.Status}).ToList()
+		        }";
+
+            Assert.IsTrue(LambdaResultsEqual(result, expectedResult));
         }
 
     }

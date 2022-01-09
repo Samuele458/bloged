@@ -42,7 +42,7 @@ namespace BlogedWebapp.Controllers.v1
         [HttpGet]
         public async Task<IActionResult> GetBlogs()
         {
-            var blogs = await unitOfWork.Blogs.All();
+            var blogs = await unitOfWork.Blogs.All(ProjectionBehaviour.Full);
             return Ok(blogs);
         }
 
@@ -60,7 +60,7 @@ namespace BlogedWebapp.Controllers.v1
             var IdentityId = User.Claims.FirstOrDefault(c => c.Type.Equals("Id"));
 
             // Checking if blog already exists
-            Blog existingBlog = await unitOfWork.Blogs.GetByUrlName(requestDto.UrlName, ProjectionBehaviour.IncludeRelated);
+            Blog existingBlog = await unitOfWork.Blogs.GetByUrlName(requestDto.UrlName, ProjectionBehaviour.Normal);
             if (existingBlog != null)
             {
                 return BadRequest(new GenericResponseDto()
@@ -167,7 +167,7 @@ namespace BlogedWebapp.Controllers.v1
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteBlog(Guid blogId)
         {
-            Blog blog = await unitOfWork.Blogs.GetById(blogId, ProjectionBehaviour.IncludeRelated);
+            Blog blog = await unitOfWork.Blogs.GetById(blogId, ProjectionBehaviour.Normal);
 
             // Checks if blog exists
             if (blog == null)

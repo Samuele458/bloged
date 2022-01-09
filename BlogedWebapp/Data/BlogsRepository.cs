@@ -15,7 +15,7 @@ namespace BlogedWebapp.Data
 
         Task<UsersBlog> SetBlogOwner(Blog blog, AppUser user);
 
-        Task<Blog> GetByUrlName(string urlName, ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Default);
+        Task<Blog> GetByUrlName(string urlName, ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Normal);
     }
 
     public class BlogsRepository : GenericRepository<Blog>, IBlogsRepository
@@ -34,7 +34,8 @@ namespace BlogedWebapp.Data
         {
             try
             {
-                return await MakeQueryProjection(projectionBehaviour)
+                return await ProjectionHelper<Blog>
+                                .BuildProjection(dbSet, projectionBehaviour)
                                 .Where(x => x.Status == 1)
                                 .AsNoTracking()
                                 .ToListAsync();
@@ -52,8 +53,9 @@ namespace BlogedWebapp.Data
             try
             {
 
-                return await MakeQueryProjection(projectionBehaviour)
-                            .FirstOrDefaultAsync(u => u.Id == Id.ToString());
+                return await ProjectionHelper<Blog>
+                                .BuildProjection(dbSet, projectionBehaviour)
+                                .FirstOrDefaultAsync(u => u.Id == Id.ToString());
 
             }
             catch (Exception e)
@@ -67,7 +69,14 @@ namespace BlogedWebapp.Data
         {
             try
             {
-                return await MakeQueryProjection(projectionBehaviour)
+                /*
+                this.dbSet.Select(o => new Blog()
+                {
+                    UrlName = o.UrlName
+                });*/
+
+                return await ProjectionHelper<Blog>
+                                .BuildProjection(dbSet, projectionBehaviour)
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(u => u.UrlName.Equals(urlName));
             }
@@ -122,6 +131,18 @@ namespace BlogedWebapp.Data
         {
             try
             {
+
+                /*
+                System.Diagnostics.Debug.WriteLine(dbSet.Select(o => new Blog()
+                {
+                    Posts = o.Posts.Select(p => new Post() { 
+                        UrlName = p.UrlName
+                    } ).ToList()
+                }).ToQueryString());*/
+
+
+                System.Diagnostics.Debug.WriteLine(dbSet.ToQueryString());
+
                 var blogObj = await dbSet
                         .FirstOrDefaultAsync(u => u.Id == blog.Id);
                 dbSet.Remove(blogObj);
@@ -135,45 +156,5 @@ namespace BlogedWebapp.Data
             }
         }
 
-        /// <inheritdoc/>
-        public override IQueryable<Blog> MakeQueryProjection(ProjectionBehaviour projectionBehaviour)
-        {
-            IQueryable<Blog> queryable = null;
-
-            switch (projectionBehaviour)
-            {
-                case ProjectionBehaviour.Minimal:
-                    queryable = dbSet.Select(b => new Blog()
-                    {
-                        Title = b.Title,
-                        UrlName = b.UrlName,
-                        Description = b.Description,
-                        Id = b.Id,
-                        Status = b.Status,
-                        CreatedOn = b.CreatedOn,
-                        UpdatedOn = b.UpdatedOn
-                    });
-                    break;
-
-
-                case ProjectionBehaviour.Default:
-                    queryable = dbSet;
-                    break;
-
-                case ProjectionBehaviour.IncludeRelated:
-                    queryable = dbSet
-                                .Include(u => u.UsersBlog)
-                                .Include(u => u.Posts);
-                    break;
-
-                case ProjectionBehaviour.IncludeRecursively:
-                    queryable = dbSet
-                                .Include(u => u.UsersBlog)
-                                .Include(u => u.Posts);
-                    break;
-            }
-
-            return queryable;
-        }
     }
 }

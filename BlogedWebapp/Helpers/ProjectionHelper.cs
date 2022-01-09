@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -12,29 +13,7 @@ namespace BlogedWebapp.Helpers
     /// </summary>
     public enum ProjectionBehaviour
     {
-        /// <summary>
-        ///  Gets just the most important and lightweight information
-        /// </summary>
-        Minimal,
-
-        /// <summary>
-        ///  Default projection behaviour
-        ///  It does not remove fields, but also does not include related entities
-        /// </summary>
-        Default,
-
-        /// <summary>
-        ///  Includes related entities to projection
-        /// </summary>
-        IncludeRelated,
-
-        /// <summary>
-        ///  Include related entities to projection and recersively add
-        ///  their related entities.
-        /// </summary>
-        IncludeRecursively,
-
-        //TODO set comments
+        None,
         Preview,
         Normal,
         Full
@@ -72,6 +51,28 @@ namespace BlogedWebapp.Helpers
         {
             get { return this.projectionBehaviour; }
         }
+
+        public static ProjectionBehaviour LowerProjectionBehaviour(ProjectionBehaviour projectionBehaviour)
+        {
+            ProjectionBehaviour returnValue = ProjectionBehaviour.None;
+
+            switch (projectionBehaviour)
+            {
+                case ProjectionBehaviour.Preview:
+                    returnValue = ProjectionBehaviour.None;
+                    break;
+
+                case ProjectionBehaviour.Normal:
+                    returnValue = ProjectionBehaviour.Preview;
+                    break;
+
+                case ProjectionBehaviour.Full:
+                    returnValue = ProjectionBehaviour.Normal;
+                    break;
+            }
+
+            return returnValue;
+        }
     }
 
 
@@ -82,18 +83,18 @@ namespace BlogedWebapp.Helpers
     public static class ProjectionHelper<T> where T : class
     {
 
-        public static Expression<Func<T, T>> BuildProjectionLambda(
-            IQueryable<T> dbset,
-            ProjectionBehaviour projectionBehaviour
+
+        public static Expression BuildProjectionLambda(
+            Type type,
+            ParameterExpression parameter,
+            ProjectionBehaviour projectionBehaviour,
+            List<Type> alreadySelectedTypes = null
         )
         {
-            var entityType = typeof(T);
-
-            // Parameter of lambda function
-            var entityParameter = Expression.Parameter(typeof(T), "o");
+            alreadySelectedTypes ??= new List<Type>();
 
             // Lambda function
-            var lambda = Expression.Lambda<Func<T, T>>(MakeEntityObject(entityType, entityParameter, projectionBehaviour), entityParameter);
+            var lambda = Expression.Lambda(MakeEntityObject(type, parameter, projectionBehaviour), parameter);
 
             return lambda;
         }
@@ -106,16 +107,22 @@ namespace BlogedWebapp.Helpers
         /// <returns>A Queryable object with applied projection filter</returns>
         public static IQueryable<T> BuildProjection(
             IQueryable<T> dbset,
-            ProjectionBehaviour projectionBehaviour
+            ProjectionBehaviour projectionBehaviour,
+            List<Type> alreadySelectedTypes = null
         )
         {
+            alreadySelectedTypes ??= new List<Type>();
+
             var entityType = typeof(T);
 
             // Parameter of lambda function
             var entityParameter = Expression.Parameter(typeof(T), "o");
 
             // Lambda function
-            var lambda = Expression.Lambda<Func<T, T>>(MakeEntityObject(entityType, entityParameter, projectionBehaviour), entityParameter);
+            var lambda = Expression.Lambda<Func<T, T>>(MakeEntityObject(entityType,
+                                                                        entityParameter,
+                                                                        projectionBehaviour,
+                                                                        alreadySelectedTypes), entityParameter);
 
             // Debugging
             System.Diagnostics.Debug.WriteLine(lambda.ToString());
@@ -147,9 +154,13 @@ namespace BlogedWebapp.Helpers
         public static Expression MakeEntityObject(
                 Type entityType,
                 Expression objectToAssign,
-                ProjectionBehaviour projectionBehaviour
+                ProjectionBehaviour projectionBehaviour,
+                List<Type> alreadySelectedTypes = null
             )
         {
+
+            alreadySelectedTypes ??= new List<Type>();
+
             var properties = entityType.GetProperties();
             Dictionary<PropertyInfo, RelatedEntity> propertiesWithRelatedEntity =
                 new Dictionary<PropertyInfo, RelatedEntity>();
@@ -157,11 +168,17 @@ namespace BlogedWebapp.Helpers
             Dictionary<PropertyInfo, Projection> propertiesWithProjection =
                 new Dictionary<PropertyInfo, Projection>();
 
+
+
             // Constructor
             var constructor = Expression.New(entityType);
 
             // The list with all assignments for the current object
             List<MemberBinding> bindings = new List<MemberBinding>();
+
+            // Sorting properties by name
+            Array.Sort(properties, (a, b) => string.Compare(a.Name, b.Name));
+
 
             foreach (var property in properties)
             {
@@ -176,13 +193,13 @@ namespace BlogedWebapp.Helpers
                 }
 
                 // Checking if current property is in projection, based on the ProjectionBehaviour to follow
-                if (IsInProjection(projectionBehaviour, projectionAttribute.Behaviour))
+                if (IsInProjection(projectionBehaviour, projectionAttribute.Behaviour) &&
+                    projectionBehaviour > ProjectionBehaviour.None)
                 {
                     // Property is in projection
 
                     var value = Expression.Property(objectToAssign, property);
-                    MemberAssignment assignment;
-
+                    MemberAssignment assignment = null;
 
                     // Checking if property is a normal value or has the RelatedEntity attribute. 
                     if (relatedEntityAttribute == null)
@@ -193,15 +210,58 @@ namespace BlogedWebapp.Helpers
                     }
                     else
                     {
-                        // Property is a sub entity.
-                        // The assignment must be done by creating a new object
-                        // of the specified entity type. This is done by calling 
-                        // Recursively MakeEntityObject
-                        assignment = Expression.Bind(property, MakeEntityObject(value.Type, value, projectionBehaviour));
+                        alreadySelectedTypes.Add(entityType);
+
+                        if (!alreadySelectedTypes.Contains(value.Type))
+                        {
+
+
+                            if (value.Type != typeof(string) && value.Type.GetInterfaces().Contains(typeof(IEnumerable)))
+                            {
+
+                                Type listType = value.Type.GenericTypeArguments[0];
+
+                                MethodInfo selectMethod = typeof(Enumerable)
+                                                            .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
+                                                            .Where(method => method.Name == "Select")
+                                                            .First()
+                                                            .MakeGenericMethod(listType, listType);
+
+
+                                var parameter = Expression.Parameter(listType, "z");
+                                var lambda = BuildProjectionLambda(listType, parameter, Projection.LowerProjectionBehaviour(projectionBehaviour));
+
+                                var selectCall = Expression.Call(null, selectMethod, value, lambda);
+
+
+                                MethodInfo toListMethod = typeof(Enumerable)
+                                                            .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
+                                                            .Where(method => method.Name == "ToList")
+                                                            .First()
+                                                            .MakeGenericMethod(listType);
+
+                                var toListCall = Expression.Call(null, toListMethod, selectCall);
+
+                                assignment = Expression.Bind(property, toListCall);
+
+                            }
+                            else
+                            {
+
+                                // Property is a sub entity.
+                                // The assignment must be done by creating a new object
+                                // of the specified entity type. This is done by calling 
+                                // Recursively MakeEntityObject
+                                assignment = Expression.Bind(property, MakeEntityObject(value.Type, value, Projection.LowerProjectionBehaviour(projectionBehaviour)));
+                            }
+                        }
                     }
 
                     // Add assignment to bindings (the list with all assignments for the current object)
-                    bindings.Add(assignment);
+                    if (assignment != null)
+                    {
+                        bindings.Add(assignment);
+                    }
                 }
 
             }

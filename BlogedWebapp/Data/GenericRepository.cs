@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BlogedWebapp.Data
@@ -14,26 +13,19 @@ namespace BlogedWebapp.Data
     /// <typeparam name="T">Entity type</typeparam>
     public interface IGenericRepository<T> where T : class
     {
-        /// <summary>
-        ///  Creates a queryable object based on the specified projection behaviour
-        /// </summary>
-        /// <param name="projectionBehaviour">Projection behaviour</param>
-        /// <returns>Queryable object, ready to be queried</returns>
-        IQueryable<T> MakeQueryProjection(ProjectionBehaviour projectionBehaviour);
-
 
         /// <summary>
         ///  Get all entities
         /// </summary>
         /// <returns>All entities</returns>
-        Task<IEnumerable<T>> All(ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Default);
+        Task<IEnumerable<T>> All(ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Normal);
 
         /// <summary>
         ///  Get entity by Id
         /// </summary>
         /// <param name="Id">Entity Id</param>
         /// <returns>Entity object</returns>
-        Task<T> GetById(Guid Id, ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Default);
+        Task<T> GetById(Guid Id, ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Normal);
 
         /// <summary>
         ///  Add new entity
@@ -116,12 +108,6 @@ namespace BlogedWebapp.Data
 
         /// <inheritdoc/>
         public Task<bool> Upsert(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public virtual IQueryable<T> MakeQueryProjection(ProjectionBehaviour projectionBehaviour)
         {
             throw new NotImplementedException();
         }

@@ -14,7 +14,7 @@ namespace BlogedWebapp.Entities
 
         [ForeignKey(nameof(OwnerId))]
         //[JsonIgnore]
-        //[Projection(ProjectionBehaviour.Normal)]
+        [Projection(ProjectionBehaviour.Full)]
         [RelatedEntity]
         public T Owner { get; set; }
 
