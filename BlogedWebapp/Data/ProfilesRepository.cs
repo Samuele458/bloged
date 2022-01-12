@@ -20,8 +20,9 @@ namespace BlogedWebapp.Data
 
         public ProfilesRepository(
                 DataContext context,
+                IUnitOfWork unitOfWork,
                 ILogger logger
-            ) : base(context, logger)
+            ) : base(context, unitOfWork, logger)
         {
 
         }

@@ -133,7 +133,7 @@ namespace BlogedWebapp.Controllers.v1
             var UserId = User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var authorizationResult = await authorizationService
-                                                .AuthorizeAsync(User, blog, "AllowedToUseBlog");
+                                                .AuthorizeAsync(User, blog, "BlogOwner");
 
             if (!authorizationResult.Succeeded)
             {
@@ -186,7 +186,7 @@ namespace BlogedWebapp.Controllers.v1
             var UserId = User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var authorizationResult = await authorizationService
-                                                .AuthorizeAsync(User, blog, "AllowedToUseBlog");
+                                                .AuthorizeAsync(User, blog, "BlogOwner");
 
             if (!authorizationResult.Succeeded)
             {

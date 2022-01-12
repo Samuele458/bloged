@@ -18,6 +18,13 @@ namespace BlogedWebapp.Helpers
 
         public virtual DbSet<Post> Posts { get; set; }
 
+        public virtual DbSet<Category> Categories { get; set; }
+
+        public virtual DbSet<Tag> Tags { get; set; }
+
+        public virtual DbSet<PostsTag> PostsTag { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

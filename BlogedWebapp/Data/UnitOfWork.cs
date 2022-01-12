@@ -1,5 +1,4 @@
 ﻿using BlogedWebapp.Helpers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -19,6 +18,10 @@ namespace BlogedWebapp.Data
         IBlogsRepository Blogs { get; }
 
         IPostsRepository Posts { get; }
+
+        ICategoriesRepository Categories { get; }
+
+        ITagsRepository Tags { get; }
 
         /// <summary>
         ///  Save db changes on context asynchronously
@@ -45,17 +48,23 @@ namespace BlogedWebapp.Data
 
         public IPostsRepository Posts { get; private set; }
 
+        public ICategoriesRepository Categories { get; private set; }
+
+        public ITagsRepository Tags { get; private set; }
+
         public UnitOfWork(
-            DataContext context, 
+            DataContext context,
             ILoggerFactory loggerFactory)
         {
             this.context = context;
             this.logger = loggerFactory.CreateLogger("db_logs");
 
-            Profiles = new ProfilesRepository(context, logger);
-            RefreshTokens = new RefreshTokensRepository(context, logger);
-            Blogs = new BlogsRepository(context, logger);
-            Posts = new PostsRepository(context, logger);
+            Profiles = new ProfilesRepository(context, this, logger);
+            RefreshTokens = new RefreshTokensRepository(context, this, logger);
+            Blogs = new BlogsRepository(context, this, logger);
+            Posts = new PostsRepository(context, this, logger);
+            Categories = new CategoriesRepository(context, this, logger);
+            Tags = new TagsRepository(context, this, logger);
         }
 
         /// <inheritdoc/>

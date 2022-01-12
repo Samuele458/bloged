@@ -18,8 +18,9 @@ namespace BlogedWebapp.Data
     {
         public PostsRepository(
                 DataContext context,
+                IUnitOfWork unitOfWork,
                 ILogger logger
-            ) : base(context, logger)
+            ) : base(context, unitOfWork, logger)
         {
 
 

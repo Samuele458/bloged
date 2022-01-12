@@ -230,7 +230,8 @@ namespace BlogedWebapp
             {
                 options.AddPolicy("AllowedToUse", Policies.AllowedToUse());
                 options.AddPolicy("AdminOrSuperadmin", Policies.AdminOrSuperadmin());
-                options.AddPolicy("AllowedToUseBlog", Policies.AllowedToUseBlog());
+                options.AddPolicy("BlogOwner", Policies.BlogOwner());
+                options.AddPolicy("AtLeastBlogWriter", Policies.AtLeastBlogWriter());
             });
 
             // Adding policy handlers

@@ -42,8 +42,9 @@ namespace BlogedWebapp.Data
 
         public RefreshTokensRepository(
                 DataContext context,
+                IUnitOfWork unitOfWork,
                 ILogger logger
-            ) : base(context, logger)
+            ) : base(context, unitOfWork, logger)
         {
 
         }

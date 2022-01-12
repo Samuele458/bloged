@@ -11,7 +11,7 @@ namespace BlogedWebapp.Data
     ///  Generic repository interface
     /// </summary>
     /// <typeparam name="T">Entity type</typeparam>
-    public interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<T> : IBaseRepository<T> where T : class
     {
 
         /// <summary>
@@ -19,13 +19,6 @@ namespace BlogedWebapp.Data
         /// </summary>
         /// <returns>All entities</returns>
         Task<IEnumerable<T>> All(ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Normal);
-
-        /// <summary>
-        ///  Get entity by Id
-        /// </summary>
-        /// <param name="Id">Entity Id</param>
-        /// <returns>Entity object</returns>
-        Task<T> GetById(Guid Id, ProjectionBehaviour projectionBehaviour = ProjectionBehaviour.Normal);
 
         /// <summary>
         ///  Add new entity
@@ -57,24 +50,16 @@ namespace BlogedWebapp.Data
 
     }
 
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : BaseRepository<T>, IGenericRepository<T> where T : class
     {
 
-        protected DataContext dataContext;
-
-        internal DbSet<T> dbSet;
-
-        protected readonly ILogger logger;
 
         public GenericRepository(
-                DataContext context,
-                ILogger logger
-            )
-        {
-            this.dataContext = context;
-            this.dbSet = context.Set<T>();
-            this.logger = logger;
-        }
+            DataContext context,
+            IUnitOfWork unitOfWork,
+            ILogger logger
+        ) : base(context, unitOfWork, logger)
+        { }
 
         /// <inheritdoc/>
         public virtual async Task<bool> Add(T entity)
@@ -96,12 +81,6 @@ namespace BlogedWebapp.Data
 
         /// <inheritdoc/>
         public virtual Task<bool> Delete(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public virtual Task<T> GetById(Guid Id, ProjectionBehaviour projectionBehaviour)
         {
             throw new NotImplementedException();
         }

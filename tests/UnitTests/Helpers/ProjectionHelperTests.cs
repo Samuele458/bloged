@@ -286,6 +286,7 @@ namespace UnitTests.Helpers
 		            Id = o.Id, 
 		            Posts = o.Posts.Select(z => new Post() {
 			            AuthorId = z.AuthorId, 
+                        CategoryId = z.CategoryId,
 			            Id = z.Id, 
 			            OwnerId = z.OwnerId, 
 			            Status = z.Status, 
@@ -299,7 +300,8 @@ namespace UnitTests.Helpers
 			            BlogId = z.BlogId, 
 			            Id = z.Id, 
 			            OwnerId = z.OwnerId, 
-			            Role = z.Role, Status = z.Status}).ToList()
+			            Role = z.Role, Status = z.Status
+                    }).ToList()
 		        }";
 
             Assert.IsTrue(LambdaResultsEqual(result, expectedResult));
@@ -317,10 +319,24 @@ namespace UnitTests.Helpers
 	                Id = o.Id, 
 	                Posts = o.Posts.Select(z => new Post() {
 		                AuthorId = z.AuthorId, 
+                        Category = new Category() {
+                            Id = z.Category.Id, 
+                            OwnerId = z.Category.OwnerId, 
+                            Status = z.Category.Status, 
+                            Title = z.Category.Title, 
+                            UrlName = z.Category.UrlName
+                        },
+                        CategoryId = z.CategoryId,
 		                Content = z.Content, 
 		                Id = z.Id, 
 		                OwnerId = z.OwnerId, 
 		                Status = z.Status, 
+                        Tags = z.Tags.Select( z => new PostsTag() {
+                            Id = z.Id, 
+                            PostId = z.PostId, 
+                            Status = z.Status, 
+                            TagId = z.TagId
+                        }).ToList(),
 		                Title = z.Title, 
 		                UrlName = z.UrlName
 	                }).ToList(), 
@@ -431,8 +447,6 @@ namespace UnitTests.Helpers
             Assert.IsTrue(LambdaResultsEqual(result1, expectedResult1));
             Assert.IsTrue(LambdaResultsEqual(result2, expectedResult2));
         }
-
-
 
     }
 }

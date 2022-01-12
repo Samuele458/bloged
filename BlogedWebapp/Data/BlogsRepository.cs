@@ -22,8 +22,9 @@ namespace BlogedWebapp.Data
     {
         public BlogsRepository(
                 DataContext context,
+                IUnitOfWork unitOfWork,
                 ILogger logger
-            ) : base(context, logger)
+            ) : base(context, unitOfWork, logger)
         {
 
 
@@ -132,19 +133,9 @@ namespace BlogedWebapp.Data
             try
             {
 
-                /*
-                System.Diagnostics.Debug.WriteLine(dbSet.Select(o => new Blog()
-                {
-                    Posts = o.Posts.Select(p => new Post() { 
-                        UrlName = p.UrlName
-                    } ).ToList()
-                }).ToQueryString());*/
-
-
-                System.Diagnostics.Debug.WriteLine(dbSet.ToQueryString());
-
                 var blogObj = await dbSet
                         .FirstOrDefaultAsync(u => u.Id == blog.Id);
+
                 dbSet.Remove(blogObj);
 
                 return true;

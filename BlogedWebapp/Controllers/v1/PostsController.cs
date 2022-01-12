@@ -16,7 +16,7 @@ namespace BlogedWebapp.Controllers.v1
     /// <summary>
     ///  Posts controller
     /// </summary>
-    [Route("v{version:apiVersion}/posts")]
+    [Route("v{version:apiVersion}/blog/{blogId}/posts")]
     public class PostsController : BaseController
     {
         private readonly UserManager<AppUser> userManager;
@@ -78,7 +78,7 @@ namespace BlogedWebapp.Controllers.v1
             // Getting author
             AppUser author = await userManager.FindByIdAsync(requestDto.AuthorId);
 
-            if( author == null )
+            if (author == null)
             {
                 return BadRequest(new GenericResponseDto()
                 {
@@ -92,7 +92,7 @@ namespace BlogedWebapp.Controllers.v1
 
             Blog blog = await unitOfWork.Blogs.GetById(new Guid(requestDto.BlogId));
 
-            if( blog == null )
+            if (blog == null)
             {
                 return BadRequest(new GenericResponseDto()
                 {

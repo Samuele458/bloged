@@ -44,7 +44,7 @@ namespace BlogedWebapp.Authorizations
             return policyBuilder;
         }
 
-        public static Action<AuthorizationPolicyBuilder> AllowedToUseBlog()
+        public static Action<AuthorizationPolicyBuilder> BlogOwner()
         {
             Action<AuthorizationPolicyBuilder> policyBuilder = options =>
             {
@@ -59,6 +59,26 @@ namespace BlogedWebapp.Authorizations
                 options
                     .Requirements
                     .Add(new BlogRolesRequirement(Entities.BlogRoles.Owner));
+            };
+
+            return policyBuilder;
+        }
+
+        public static Action<AuthorizationPolicyBuilder> AtLeastBlogWriter()
+        {
+            Action<AuthorizationPolicyBuilder> policyBuilder = options =>
+            {
+                /*options
+                    .AuthenticationSchemes
+                    .Add(JwtBearerDefaults.AuthenticationScheme);
+                */
+
+                options
+                    .RequireAuthenticatedUser();
+
+                options
+                    .Requirements
+                    .Add(new BlogRolesRequirement(Entities.BlogRoles.Writer));
             };
 
             return policyBuilder;

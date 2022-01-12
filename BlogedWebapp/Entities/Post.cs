@@ -1,5 +1,6 @@
 ﻿using BlogedWebapp.Helpers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlogedWebapp.Entities
@@ -22,5 +23,17 @@ namespace BlogedWebapp.Entities
         [JsonIgnore]
         [Projection(ProjectionBehaviour.Full)]
         public AppUser Author { get; set; }
+
+        [Projection(ProjectionBehaviour.Preview)]
+        public string CategoryId { get; set; }
+
+        [Projection(ProjectionBehaviour.Normal)]
+        [RelatedEntity]
+        [ForeignKey(nameof(CategoryId))]
+        public Category Category { get; set; }
+
+        [Projection(ProjectionBehaviour.Normal)]
+        [RelatedEntity]
+        public virtual ICollection<PostsTag> Tags { get; set; }
     }
 }
