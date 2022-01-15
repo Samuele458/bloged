@@ -79,7 +79,7 @@ namespace BlogedWebapp.Data
             }
         }
 
-        public override async Task<bool> Update(string blogId, Category entityObject)
+        public override async Task<Category> Update(string blogId, Category entityObject)
         {
             try
             {
@@ -87,17 +87,20 @@ namespace BlogedWebapp.Data
                 {
                     Category category = await dbSet.FirstOrDefaultAsync(u => u.Id == entityObject.Id);
 
-                    EntityUpdater.Update(category, entityObject);
+                    if (entityObject != null)
+                    {
+                        EntityUpdater.Update(category, entityObject);
+                    }
 
-                    return true;
+                    return category;
                 }
 
-                return false;
+                return null;
             }
             catch (Exception e)
             {
                 logger.LogError(e, "{Repo} \"Update\" method has generated an error.", typeof(BlogsRepository));
-                return false;
+                return null;
             }
         }
 

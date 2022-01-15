@@ -83,7 +83,7 @@ namespace BlogedWebapp.Data
             }
         }
 
-        public override async Task<bool> Update(string blogId, Tag entityObject)
+        public override async Task<Tag> Update(string blogId, Tag entityObject)
         {
             try
             {
@@ -91,17 +91,20 @@ namespace BlogedWebapp.Data
                 {
                     Tag tag = await dbSet.FirstOrDefaultAsync(u => u.Id == entityObject.Id);
 
-                    EntityUpdater.Update(tag, entityObject);
+                    if (entityObject != null)
+                    {
+                        EntityUpdater.Update(tag, entityObject);
+                    }
 
-                    return true;
+                    return tag;
                 }
 
-                return false;
+                return null;
             }
             catch (Exception e)
             {
                 logger.LogError(e, "{Repo} \"Update\" method has generated an error.", typeof(TagsRepository));
-                return false;
+                return null;
             }
         }
 

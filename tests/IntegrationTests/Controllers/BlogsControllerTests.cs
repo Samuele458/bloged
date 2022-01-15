@@ -3,13 +3,10 @@ using BlogedWebapp.Entities;
 using BlogedWebapp.Models.Dtos.Requests;
 using IntegrationTestsProject;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace IntegrationTests.Controllers
@@ -66,11 +63,12 @@ namespace IntegrationTests.Controllers
             var res = await client.PostAsync($"{UriPrefix}/blogs",
                 new StringContent(JsonConvert.SerializeObject(requestDto), Encoding.UTF8, "application/json"));
 
+
             Assert.True(res.StatusCode == HttpStatusCode.OK);
             Assert.NotNull(context.Set<Blog>().FirstOrDefault(b => b.UrlName.Equals("tech-blog")));
         }
 
-        
+
         [Fact]
         public async void DeleteBlog_ValidRequestFromAdmin_BlogDeleted()
         {
@@ -220,7 +218,7 @@ namespace IntegrationTests.Controllers
 
             var postRes = await client.PostAsync($"{UriPrefix}/blogs",
                 new StringContent(JsonConvert.SerializeObject(requestDto), Encoding.UTF8, "application/json"));
-            
+
             var blog = JsonConvert.DeserializeObject<Blog>(await postRes.Content.ReadAsStringAsync());
 
             await SetJwtBearer(normalUserAuthResponse);

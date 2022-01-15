@@ -128,7 +128,8 @@ namespace BlogedWebapp.Controllers.v1
                 {
                     Success = true,
                     Token = token.JwtToken,
-                    RefreshToken = token.RefreshToken
+                    RefreshToken = token.RefreshToken,
+                    UserId = newUser.Id
                 });
             }
             else
@@ -196,7 +197,8 @@ namespace BlogedWebapp.Controllers.v1
                 {
                     Success = true,
                     Token = token.JwtToken,
-                    RefreshToken = token.RefreshToken
+                    RefreshToken = token.RefreshToken,
+                    UserId = userExists.Id
                 });
             }
             else

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlogedWebapp.Models.Dtos.Requests
 {
@@ -21,7 +18,9 @@ namespace BlogedWebapp.Models.Dtos.Requests
         public string Content { get; set; }
 
         [Required]
-        public string BlogId { get; set; }
+        public string CategoryId { get; set; }
+
+        public List<string> Tags { get; set; }
 
     }
 }

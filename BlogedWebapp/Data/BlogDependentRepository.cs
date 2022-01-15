@@ -19,7 +19,7 @@ namespace BlogedWebapp.Data
 
         Task<bool> Add(string blogId, T entityObject);
 
-        Task<bool> Update(string blogId, T entityObject);
+        Task<T> Update(string blogId, T entityObject = null);
 
         Task<bool> Delete(string blogId, T entityObject);
     }
@@ -53,7 +53,7 @@ namespace BlogedWebapp.Data
             throw new System.NotImplementedException();
         }
 
-        public virtual Task<bool> Update(string blogId, T entityObject)
+        public virtual Task<T> Update(string blogId, T entityObject)
         {
             throw new System.NotImplementedException();
         }
