@@ -4,11 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm update -g yarn
-RUN npm install -g lerna
-RUN yarn
-RUN lerna bootstrap
-RUN yarn build --cwd /app/packages/dashboard
-RUN yarn build --cwd /app/packages/blog
+RUN npm install
+RUN npm run build
 
 RUN chmod +x ./deploy.sh
