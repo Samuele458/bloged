@@ -5,7 +5,6 @@
 		<UserSecretsId>c52f3301-c337-449b-a897-36499e58c6e5</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<ClientFolder>Client\</ClientFolder>
-		<DashboardSpaRoot>Client\packages\dashboard\</DashboardSpaRoot>
 		<BlogSpaRoot>Client\packages\blog\</BlogSpaRoot>
 	</PropertyGroup>
 
@@ -30,19 +29,13 @@
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.2" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="wwwroot\dashboard\" />
-	</ItemGroup>
 
 	<Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug'  And !Exists('$(ClientFolder)node_modules')">
 		<MakeDir Directories="$(PublishUrl)wwwroot" />
-		<MakeDir Directories="$(PublishUrl)wwwroot\dashboard" />
 	</Target>
 
 	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
 		<MakeDir Directories="$(PublishUrl)wwwroot" />
-		<MakeDir Directories="$(PublishUrl)wwwroot\dashboard" />
-		<Exec Command="mkdir -p /app/publish/wwwroot/dashboard" Condition=" '$(OS)' != 'Windows_NT' " />
 	</Target>
 
 	<ItemGroup>

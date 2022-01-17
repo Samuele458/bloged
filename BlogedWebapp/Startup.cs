@@ -286,23 +286,10 @@ namespace BlogedWebapp
             });
 
             //Dashbord SPA path
-            const string dashboardPath = "/dashboard";
+            //const string dashboardPath = "/dashboard";
 
             if (env.IsDevelopment())
             {
-
-                //map dashboard spa in development
-                app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(dashboardPath)
-                                   || ctx.Request.Path.StartsWithSegments("/sockjs-node"),
-                    client =>
-                    {
-                        client.UseSpa(spa =>
-                        {
-                            //spa.Options.SourcePath = "Client/packages/dashboard";
-                            //spa.UseReactDevelopmentServer("start-from-aspnet");
-                            spa.UseProxyToSpaDevelopmentServer("http://localhost:3001");
-                        });
-                    });
 
                 //map blog spa in development
                 app.UseSpa(spa =>
@@ -317,35 +304,6 @@ namespace BlogedWebapp
             {
                 //serve static files on wwwroot folder
                 app.UseStaticFiles();
-
-                //map dashboard SPA in production
-                app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(dashboardPath)
-                                       || ctx.Request.Path.StartsWithSegments("/sockjs-node"),
-                client =>
-                {
-                    client.UseSpa(spa =>
-                    {
-
-                        spa.Options.SourcePath = "wwwroot/dashboard";
-                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
-                        {
-                            OnPrepareResponse = ctx =>
-                            {
-                                // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
-                                var headers = ctx.Context.Response.GetTypedHeaders();
-                                headers.CacheControl = new CacheControlHeaderValue
-                                {
-                                    Public = true,
-                                    MaxAge = TimeSpan.FromDays(0)
-                                };
-                            }
-                        };
-                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-                        {
-                            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "dashboard"))
-                        };
-                    });
-                });
 
                 //map blog spa in production
                 app.UseSpa(spa =>

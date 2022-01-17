@@ -30,8 +30,8 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
       - name: Pushing images to Docker Hub
         run: |
-          docker tag bloged_api:latest ${{secrets.DOCKER_USER}}/bloged
-          docker push ${{secrets.DOCKER_USER}}/bloged
+          docker tag bloged_api:latest ${{secrets.DOCKER_USER}}/bloged_api
+          docker push ${{secrets.DOCKER_USER}}/bloged_api:latest
       - name: Merging to preproduction branch
         run: |
           git clone ${{env.REPO}} -b ${GITHUB_REF##*/} tmp
