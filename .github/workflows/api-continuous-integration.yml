@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Building stack
-        run: docker-compose -f docker-compose.api.yml build
+        run: docker-compose -f docker-compose.api-test.yml build
       - name: Running unit-tests
-        run: docker-compose -f docker-compose.api.yml up api_unit_tests
+        run: docker-compose -f docker-compose.api-test.yml up api_unit_tests
       - name: Checking unit tests
         run: exit $(docker container inspect ApiUnitTests --format '{{.State.ExitCode}}')
       - name: Merging to preproduction branch

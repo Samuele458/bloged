@@ -19,6 +19,13 @@ services:
      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
 
+
+  api_unit_tests:
+    build:
+      context: .
+      dockerfile: tests/UnitTests/Dockerfile
+    container_name: ApiUnitTests
+
 volumes:
   wwwroot-folder:
 
