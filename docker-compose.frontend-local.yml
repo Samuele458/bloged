@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image: samuele4589/bloged_frontend:latest
+    image: bloged_frontend:latest
     build:
       context: Frontend
       dockerfile: Dockerfile
