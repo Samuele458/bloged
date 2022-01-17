@@ -2,9 +2,9 @@ name: Frontend Continuous Integration
 
 on:
   push:
-    branches: [blog, dashboard]
+    branches: [frontend]
   pull_request:
-    branches: [blog, dashboard]
+    branches: [frontend]
 
 env:
   REPO: https://Samuele458:${{secrets.GITHUB_TOKEN}}@github.com/Samuele458/bloged.git
@@ -22,6 +22,16 @@ jobs:
         run: docker-compose -f docker-compose.frontend.yml up
       - name: Checking frontend container status
         run: exit $(docker container inspect BlogedFrontend --format '{{.State.ExitCode}}')
+      - name: Docker login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - name: Pushing images to Docker Hub
+        run: |
+          docker tag bloged_frontend:latest ${{secrets.DOCKER_USER}}/bloged_frontend
+          docker push ${{secrets.DOCKER_USER}}/bloged_frontend:latest
       - name: Merging to preproduction branch
         run: |
           git clone ${{env.REPO}} -b ${GITHUB_REF##*/} tmp
