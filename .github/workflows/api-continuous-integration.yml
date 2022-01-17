@@ -22,6 +22,14 @@ jobs:
         run: docker-compose -f docker-compose.api-test.yml up api_unit_tests
       - name: Checking unit tests
         run: exit $(docker container inspect ApiUnitTests --format '{{.State.ExitCode}}')
+      - name: Docker login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - name: Pushing images to Docker Hub
+        run: docker-compose push ${{secrets.DOCKER_USER}}/bloged
       - name: Merging to preproduction branch
         run: |
           git clone ${{env.REPO}} -b ${GITHUB_REF##*/} tmp
