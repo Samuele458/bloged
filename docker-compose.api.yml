@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   api:
-    image: bloged_api:latest
+    image: samuele4589/bloged_api:latest
     build:
       context: .
       dockerfile: BlogedWebapp/Dockerfile
