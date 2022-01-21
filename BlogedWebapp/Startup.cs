@@ -222,6 +222,7 @@ namespace BlogedWebapp
                 ClockSkew = TimeSpan.Zero
             };
 
+
             // Injecting token options
             services.AddSingleton(tokenValidationParameters);
 
