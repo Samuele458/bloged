@@ -13,7 +13,7 @@ docker rm --force BlogedWebapp
 docker rm --force BlogedFrontend
 
 echo "Removing images"
-docker image prune --force
+docker image prune --all --force
 docker images --all
 
 rm -r /home/ubuntu/bloged
