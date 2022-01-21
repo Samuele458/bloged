@@ -1,6 +1,5 @@
 #!/bin/bash
 
-sleep 1
 
 #stopping containers in execution
 echo "Stopping BlogedWebApp Container"
@@ -18,7 +17,6 @@ echo "Removing images"
 docker image prune --all --force
 docker images --all
 
-sleep 1
 
 rm -r /home/ubuntu/bloged
 mkdir /home/ubuntu/bloged

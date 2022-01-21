@@ -3,12 +3,6 @@ version: '3.8'
 services:
   api:
     image: samuele4589/bloged_api:latest
-    build:
-      context: .
-      dockerfile: BlogedWebapp/Dockerfile
-      args:
-       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     container_name: BlogedWebapp
     ports:
      - 8080:80
