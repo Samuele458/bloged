@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#stopping containers in execution
+echo "Stopping BlogedWebApp Container"
+docker stop BlogedWebapp
+
+echo "Running Containers:"
+docker ps
+
+#removing containers
+echo "Removing containers"
+docker rm --force BlogedWebapp
+docker rm --force BlogedFrontend
+
+echo "Removing images"
+docker image prune --all --force
+docker images --all
+
 cd /home/ubuntu/bloged
 docker-compose -f docker-compose.api.yml -f docker-compose.frontend.yml build --pull
 docker-compose -f docker-compose.api.yml -f docker-compose.frontend.yml up -d
