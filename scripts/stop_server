@@ -8,6 +8,8 @@ docker rm --force BlogedWebapp
 docker rm --force ApiUnitTests
 docker rm --force BlogedFrontend
 
+docker image prune --force
+
 
 rm -r /home/ubuntu/bloged
 mkdir /home/ubuntu/bloged
