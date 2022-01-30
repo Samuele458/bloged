@@ -5,12 +5,18 @@ import { PublicComponent } from './public/public.component';
 const routes: Routes = [
   {
     path: '',
-    loadChildren: ()=> import("./public/public.module").then(m => m.PublicModule)
-  }
+    loadChildren: () =>
+      import('./public/public.module').then((m) => m.PublicModule),
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./private/private.module').then((m) => m.PrivateModule),
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
