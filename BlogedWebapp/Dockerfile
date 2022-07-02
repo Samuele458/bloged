@@ -16,7 +16,7 @@ WORKDIR "/src/BlogedWebapp"
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV PATH="/root/.dotnet/tools:${PATH}"
 RUN dotnet build "BlogedWebapp.csproj" -c Release -o /app/build
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef --version 5.0.11
 RUN chmod +x Scripts/migrate_db.sh
 ARG AWS_ACCESS_KEY_ID
 ENV AWS_ACCESS_KEY_ID ${AWS_ACCESS_KEY_ID}
