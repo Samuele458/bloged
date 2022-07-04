@@ -1,0 +1,30 @@
+// Shared
+@import "./shared/colors.scss";
+
+// Libs
+@import "~tailwindcss/base";
+@import "~tailwindcss/components";
+@import "~tailwindcss/utilities";
+
+// Components
+@import "./components/general.scss";
+@import "./components/minting-dapp.scss";
+@import "./components/navbar.scss";
+@import "./components/footer.scss";
+@import "./components/imagesGallery.scss";
+@import "./components/Roadmap.scss";
+@import "./components/rarity-widget.scss";
+@import "./components/popup.scss";
+@import "./components/faq.scss";
+
+// Pages
+@import "./pages/home.scss";
+@import "./pages/policy.scss";
+@import "./pages/mint-page.scss";
+
+@font-face {
+  font-family: "FatFrank";
+  src: local("FatFrank"), url(../fonts/FatFrank.woff) format("woff");
+  /* other formats include: 'woff2', 'truetype, 'opentype',
+                            'embedded-opentype', and 'svg' */
+}

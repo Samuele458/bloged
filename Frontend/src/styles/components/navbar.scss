@@ -1,0 +1,138 @@
+// Generic
+$navbar-bg-color: rgb(33, 33, 33);
+$navbar-text-color: rgb(255, 255, 255);
+
+.navbar {
+  display: flex;
+  background-color: $navbar-bg-color;
+  height: 4.5rem;
+  position: fixed;
+  width: 100%;
+  justify-content: stretch;
+  justify-content: center;
+  box-shadow: -2px -2px 8px 0 rgba(128, 128, 128, 1) !important;
+  z-index: 100;
+
+  .icon {
+    width: 2rem;
+    height: 2rem;
+    color: $navbar-text-color;
+  }
+
+  .navbar-expand {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+
+  .navbar-content {
+    display: flex;
+    flex-direction: row;
+
+    color: $navbar-text-color;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.2rem 1rem;
+    height: 4.5rem;
+    position: relative;
+
+    width: 100%;
+    max-width: 80rem;
+
+    @media screen and (max-width: 1150px) {
+      .nav-pages {
+        display: none;
+      }
+
+      .navbar-expand {
+        display: block;
+      }
+    }
+  }
+
+  .navbar-popup {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: $navbar-bg-color;
+    color: $navbar-text-color;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 110;
+
+    .nav-pages {
+      flex-direction: column;
+      margin-bottom: 2rem;
+
+      .nav-page {
+        font-size: 2rem;
+      }
+    }
+
+    .popup-toolbar {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      padding: 2rem;
+      font-size: 3rem;
+    }
+  }
+
+  .nav-logo {
+    height: auto;
+    width: 3rem;
+    display: block;
+    margin: 0.2rem;
+    margin-right: 1rem;
+    border-radius: 100%;
+  }
+
+  .nav-logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .nav-title {
+      font-size: 2rem;
+
+      @media screen and (max-width: 900px) {
+        display: none;
+      }
+    }
+  }
+
+  .nav-pages {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    .nav-page {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 0.5rem;
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: center;
+
+    @media screen and (max-width: 600px) {
+      display: none;
+    }
+
+    .nav-link {
+      font-size: 2rem;
+      font-size: 2rem;
+      width: 2rem;
+      margin-right: 1rem;
+    }
+  }
+}

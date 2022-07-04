@@ -1,0 +1,23 @@
+.images-gallery {
+  height: 20rem;
+  display: flex;
+  align-items: center;
+
+  * {
+    overflow: hidden;
+  }
+
+  .image-item {
+    height: 17rem;
+    width: auto;
+    margin: 2rem;
+    display: block;
+    transition: all 0.2s;
+    border-radius: 0.5rem;
+    border: 0.5rem solid white;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}

@@ -1,0 +1,64 @@
+// General
+$faq-bg-color: transparent;
+$faq-title-color: rgb(0, 0, 0);
+
+$faq-item-bg-color: rgb(27, 27, 27);
+$faq-item-color: rgb(255, 255, 255);
+$faq-item-content-bg-color: rgb(83, 83, 83);
+$faq-item-content-color: rgb(255, 255, 255);
+
+.faq {
+  background-color: $faq-bg-color;
+  padding: 0.5rem;
+  margin: 1rem 0rem 3rem 0rem;
+
+  .faq-title {
+    color: $faq-title-color;
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .faq-content {
+    .Collapsible {
+      width: 40rem;
+      color: $faq-item-color;
+      margin-top: 1.5rem;
+
+      @media screen and (max-width: 900px) {
+        width: 20rem;
+      }
+
+      .collapsible-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 1.5rem;
+      }
+
+      .collapsible-content {
+        p {
+          color: $faq-item-content-color;
+          font-size: 1.3rem;
+        }
+      }
+
+      .Collapsible__trigger {
+        padding-top: 32px !important;
+        background-color: $faq-item-bg-color;
+        width: 100%;
+        display: block;
+        padding: 20px;
+      }
+
+      .Collapsible__contentOuter {
+        border: 0.4rem solid $faq-item-bg-color;
+      }
+
+      .Collapsible__contentInner {
+        padding: 2rem;
+        background-color: $faq-item-content-bg-color;
+      }
+    }
+  }
+}

@@ -1,0 +1,221 @@
+* {
+  padding: 0px;
+  margin: 0px;
+}
+
+body {
+  @apply min-h-screen;
+  font-family: "FatFrank", Sans-serif;
+  background-color: black;
+  background-position: center center;
+  background-size: cover;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+.icon {
+  height: 2rem;
+  width: 2rem;
+  color: white;
+}
+
+// Bolded button
+
+.bolded-btn {
+  background-color: rgba(115, 34, 33);
+  font-size: 2.5;
+  font-family: "FatFrank", Sans-serif;
+  color: white;
+  border-radius: 0.4rem;
+
+  &:hover {
+    background-color: rgb(199, 62, 60);
+  }
+}
+
+// Page section
+
+.page-section {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+
+  .page-section-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media screen and (max-width: 960px) {
+    flex-direction: column;
+    .page-section-col {
+      margin-bottom: 1.5rem;
+      margin-top: 1.5rem;
+    }
+  }
+}
+
+// Section band
+
+.section-band {
+  width: 100%;
+  background-color: $band-bg-color;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+
+  .section-band-marquee {
+    .marquee-item {
+      padding: 0.2rem;
+    }
+  }
+}
+
+// --- Other ---
+
+.line-title {
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0%);
+  -webkit-text-stroke-width: 1.6px;
+  -webkit-text-stroke-color: rgb(255, 255, 255);
+  font-size: 1.5rem;
+}
+
+a,
+a:link,
+a:visited {
+  font-family: "Space", Sans-serif;
+
+  &:hover {
+    @apply underline;
+  }
+}
+
+strong {
+  @apply font-semibold;
+}
+
+main {
+  @apply flex flex-col;
+}
+
+#logo {
+  @apply m-auto;
+  @apply w-full;
+  @apply max-w-xl;
+}
+
+span.emoji {
+  @apply text-2xl;
+}
+
+.error {
+  z-index: 100;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  @apply flex flex-col;
+  @apply rounded-lg;
+  @apply p-3;
+
+  @apply text-sm;
+  @apply bg-error-50;
+  @apply border border-error-200;
+  @apply shadow;
+  @apply text-error-500;
+
+  &::before {
+    content: "Error";
+
+    @apply font-semibold;
+    @apply text-base;
+  }
+
+  button {
+    @apply inline-block;
+    @apply mt-3 ml-auto;
+    @apply px-2 py-1;
+    @apply rounded-md;
+
+    @apply text-xs;
+
+    @apply font-semibold;
+    @apply text-errortxt;
+    @apply bg-error-500;
+
+    &:hover {
+      @apply bg-error-400;
+    }
+  }
+}
+
+button {
+  @apply py-3 px-6;
+  font-family: "Space", Sans-serif;
+  @apply shadow-sm;
+
+  &:hover {
+    @apply bg-neutral-100;
+  }
+
+  &.primary {
+    border-radius: 10px;
+    padding: 15px;
+    outline: none;
+    color: #1a1a1a;
+    --webkit-box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+    background-color: #f1f1f1;
+    border: 2px solid #f1f1f1;
+    font-weight: bold;
+    margin-top: 26px;
+    width: 100%;
+    font-size: 24px;
+    cursor: pointer;
+    --webkit-transition: 0.3s ease;
+    transition: 0.3s ease;
+    line-height: 20px;
+
+    &:hover {
+      background-color: transparent;
+      color: white;
+      letter-spacing: 2px;
+      --webkit-box-shadow: unset;
+      box-shadow: unset;
+    }
+  }
+}
+
+input[type="text"] {
+  @apply py-2 px-4;
+
+  @apply rounded-full;
+
+  @apply font-mono font-semibold;
+  @apply text-primary-600;
+  @apply bg-popupsbg;
+  @apply border border-neutral-200;
+  @apply shadow-sm;
+  @apply outline-none;
+
+  &:focus {
+    @apply bg-neutral-50;
+    @apply border-primary-300;
+  }
+
+  &:disabled {
+    @apply opacity-50;
+
+    &:hover {
+      @apply cursor-not-allowed;
+    }
+  }
+}
+
+label {
+  @apply mt-4 mb-1 ml-1;
+
+  @apply font-semibold;
+  @apply text-sm text-primary-600;
+}

@@ -1,0 +1,186 @@
+.rarity-widget {
+  color: black;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
+  .search-input {
+    justify-self: center;
+    margin: 1.4rem 0rem;
+  }
+
+  .rarity-title {
+    font-size: 3rem;
+    text-align: center;
+  }
+
+  .nfts-num {
+    margin-left: 10px;
+    font-size: 1.8rem;
+  }
+
+  .rarity-gallery-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 20px;
+    justify-content: center;
+    align-content: center;
+    padding: 0.6rem;
+    font-style: bold;
+    margin-bottom: 1rem;
+
+    .rarity-item {
+      img {
+        width: 15rem;
+        height: 15rem;
+      }
+
+      .nft-num {
+        text-align: center;
+      }
+
+      .rank {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media screen and (max-width: 1200px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media screen and (max-width: 900px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media screen and (max-width: 600px) {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+
+  .paginator-wrapper {
+    .paginator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .paginator-btn {
+        color: white;
+        background-color: black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.3rem;
+        cursor: pointer;
+        width: 2.3rem;
+        height: 2.3rem;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.766);
+        }
+      }
+
+      .page-left {
+        border-top-left-radius: 0.5rem;
+        border-bottom-left-radius: 0.5rem;
+      }
+
+      .page-right {
+        border-top-right-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+      }
+    }
+  }
+
+  .rarity-popup-content {
+    display: flex;
+    align-items: flex-start;
+
+    .rarity-popup-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      margin: 1rem;
+
+      img {
+        width: 15rem;
+        height: 15rem;
+      }
+
+      .nft-num {
+        text-align: center;
+      }
+
+      .rank {
+        font-size: 1.5rem;
+      }
+    }
+
+    .attributes-wrapper {
+      margin: 1rem;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+
+      .rarity-score {
+        background-color: rgb(255, 145, 0);
+        color: white;
+        padding: 0.4rem;
+        margin: 0.5rem;
+        border-radius: 0.5rem;
+        padding-top: 0.8rem;
+
+        h3 {
+          padding: 0.4rem;
+          font-size: 1.5rem;
+        }
+
+        .rarity-score-value {
+          background-color: rgb(255, 183, 0);
+          border-radius: 0.3rem;
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+          font-size: 1.7rem;
+        }
+      }
+
+      .attribute-item {
+        margin: 0.5rem;
+        width: 15rem;
+        .labels {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .attribute-box {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-radius: 0.4rem;
+          background-color: rgb(34, 34, 34);
+          padding: 0.3rem;
+
+          .value {
+            color: white;
+          }
+
+          .occurrences-wrapper {
+            background-color: white;
+            border-radius: 0.3rem;
+            padding: 0.15rem;
+
+            .occurrences {
+            }
+          }
+        }
+      }
+    }
+
+    @media screen and (max-width: 900px) {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+}

@@ -1,0 +1,45 @@
+.popup-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0rem;
+  left: 0rem;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  padding-bottom: 30rem;
+  padding-top: 30rem;
+
+  background-color: rgba(255, 255, 255, 0.464);
+
+  &.disabled {
+    display: none;
+  }
+
+  .popup {
+    margin-top: 30rem;
+    display: relative;
+    min-width: 30rem;
+    background-color: white;
+    -webkit-box-shadow: 3px 2px 28px -3px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 3px 2px 28px -3px rgba(0, 0, 0, 0.75);
+    box-shadow: 3px 2px 28px -3px rgba(0, 0, 0, 0.75);
+    padding: 4rem;
+    position: relative;
+
+    @media screen and (max-width: 600px) {
+      padding: 1rem;
+      padding-top: 4rem;
+      min-width: unset;
+    }
+
+    .close-popup {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      font-size: 2.4rem;
+      cursor: pointer;
+    }
+  }
+}

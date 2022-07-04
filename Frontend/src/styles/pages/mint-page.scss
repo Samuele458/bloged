@@ -1,0 +1,18 @@
+.mint-page {
+  // background: url("../../images/bg.jpg");
+  background-size: cover;
+
+  .minting-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0rem;
+  }
+
+  @media screen and (max-width: 900px) {
+    .minting-section {
+      flex-direction: column;
+    }
+  }
+}

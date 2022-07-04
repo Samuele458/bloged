@@ -1,0 +1,179 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+
+  .roadmap-section {
+    height: unset;
+  }
+
+  .rarity-section {
+    height: unset;
+    padding: 2rem;
+  }
+
+  .header-section {
+    background-color: $primary-bg-color;
+    height: unset;
+    padding: 3rem;
+    padding-top: 1.5rem;
+
+    .header {
+      display: flex;
+      align-items: center;
+
+      .title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        h1 {
+          font-size: 6rem;
+          width: 30rem;
+          text-align: center;
+          line-height: 5rem;
+          color: rgb(250, 230, 1);
+        }
+      }
+
+      .nft-gif {
+        width: 20rem;
+        height: auto;
+        margin: 2rem;
+        -webkit-box-shadow: 7px 8px 24px 0px rgba(0, 0, 0, 0.7);
+        box-shadow: 7px 8px 24px 0px rgba(0, 0, 0, 0.7);
+        display: block;
+        transition: 0.5s all;
+        border: 0.5rem solid white;
+
+        border-radius: 1rem;
+        transform: rotate(-4deg);
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    .mint-info {
+      align-items: stretch;
+      min-width: 15rem;
+      max-width: 30rem;
+
+      .title {
+        font-size: 3rem;
+        width: 100%;
+        color: $primary-text-color;
+        line-height: 4rem;
+        margin-bottom: 1rem;
+
+        &::after {
+          display: block;
+          width: 5rem;
+          height: 0.5rem;
+          border-radius: 5px;
+          background-color: $primary-text-color;
+          content: "";
+        }
+      }
+
+      .description {
+        font-size: 1.1rem;
+        color: rgb(255, 255, 255);
+      }
+
+      .counter {
+        color: white;
+        font-size: 1.3rem;
+        margin-top: 1rem;
+        text-align: center;
+      }
+
+      .connect-wallet-button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .metamask-logo {
+          height: 2rem;
+          width: auto;
+          margin-left: 1rem;
+        }
+      }
+    }
+  }
+
+  .connect-wallet-section {
+    background-color: white;
+    min-height: 20rem;
+
+    .page-section-col {
+      align-items: center;
+      padding: 2rem;
+
+      h2 {
+        text-transform: uppercase;
+        font-size: 4rem;
+        color: rgb(65, 84, 114);
+      }
+
+      h3 {
+        font-size: 1.5rem;
+        color: rgb(180, 202, 217);
+        margin-bottom: 3rem;
+      }
+    }
+  }
+}
+
+.gallery-section {
+  background-color: $primary-bg-color;
+  .page-section-col {
+    width: 100%;
+  }
+}
+
+.quotation-section {
+  background-color: $primary-bg-color;
+  align-items: flex-start;
+  padding: 7rem;
+  height: unset;
+
+  @media screen and (max-width: 960px) {
+    align-items: center;
+  }
+
+  .page-section-col {
+    align-items: center;
+    max-width: 30rem;
+
+    img {
+      width: auto;
+      height: 4rem;
+
+      &.circle {
+        border-radius: 100%;
+      }
+    }
+
+    h2 {
+      font-size: 48px;
+      color: rgb(250, 230, 1);
+      text-align: center;
+      line-height: 3rem;
+      margin-bottom: 1rem;
+      margin-top: 1rem;
+    }
+
+    h3 {
+      font-size: 24px;
+      color: white;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.faq-section {
+  padding: 4rem;
+}

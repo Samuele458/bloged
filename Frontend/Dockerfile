@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install
-RUN npm run build
+RUN npm install -g yarn
+RUN yarn install
+RUN yarn run build
 
 RUN chmod +x ./deploy.sh
