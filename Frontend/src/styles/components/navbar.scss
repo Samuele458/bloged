@@ -1,6 +1,6 @@
 // Generic
-$navbar-bg-color: rgb(33, 33, 33);
-$navbar-text-color: rgb(255, 255, 255);
+$navbar-bg-color: rgb(255, 255, 255);
+$navbar-text-color: rgb(33, 33, 33);
 
 .navbar {
   display: flex;
@@ -83,11 +83,11 @@ $navbar-text-color: rgb(255, 255, 255);
 
   .nav-logo {
     height: auto;
-    width: 3rem;
+    width: 12rem;
     display: block;
     margin: 0.2rem;
     margin-right: 1rem;
-    border-radius: 100%;
+    // border-radius: 100%;
   }
 
   .nav-logo-wrapper {

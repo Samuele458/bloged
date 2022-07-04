@@ -5,8 +5,8 @@
 
 body {
   @apply min-h-screen;
-  font-family: "FatFrank", Sans-serif;
-  background-color: black;
+  font-family: "Roboto", sans-serif;
+  background-color: rgb(255, 255, 255);
   background-position: center center;
   background-size: cover;
 }
@@ -26,7 +26,7 @@ html {
 .bolded-btn {
   background-color: rgba(115, 34, 33);
   font-size: 2.5;
-  font-family: "FatFrank", Sans-serif;
+  font-family: "Roboto", sans-serif;
   color: white;
   border-radius: 0.4rem;
 
@@ -86,7 +86,7 @@ html {
 a,
 a:link,
 a:visited {
-  font-family: "Space", Sans-serif;
+  font-family: "Roboto", sans-serif;
 
   &:hover {
     @apply underline;
@@ -152,42 +152,43 @@ span.emoji {
 
 button {
   @apply py-3 px-6;
-  font-family: "Space", Sans-serif;
+  font-family: "Roboto", sans-serif;
   @apply shadow-sm;
 
   &:hover {
     @apply bg-neutral-100;
   }
+}
 
-  &.primary {
-    border-radius: 10px;
-    padding: 15px;
-    outline: none;
-    color: #1a1a1a;
-    --webkit-box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
-    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
-    background-color: #f1f1f1;
-    border: 2px solid #f1f1f1;
-    font-weight: bold;
-    margin-top: 26px;
-    width: 100%;
-    font-size: 24px;
-    cursor: pointer;
-    --webkit-transition: 0.3s ease;
-    transition: 0.3s ease;
-    line-height: 20px;
+.primary {
+  border-radius: 10px;
+  padding: 15px;
+  outline: none;
+  color: #1a1a1a;
+  --webkit-box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+  background-color: transparent;
+  border: 2px solid #1a1a1a;
+  font-weight: bold;
+  margin-top: 26px;
+  width: 100%;
+  font-size: 24px;
+  cursor: pointer;
+  --webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+  line-height: 20px;
 
-    &:hover {
-      background-color: transparent;
-      color: white;
-      letter-spacing: 2px;
-      --webkit-box-shadow: unset;
-      box-shadow: unset;
-    }
+  &:hover {
+    background-color: #4f4f4f;
+    color: white;
+    letter-spacing: 2px;
+    --webkit-box-shadow: unset;
+    box-shadow: unset;
   }
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
   @apply py-2 px-4;
 
   @apply rounded-full;
@@ -218,4 +219,28 @@ label {
 
   @apply font-semibold;
   @apply text-sm text-primary-600;
+}
+
+.shadow {
+  -webkit-box-shadow: 0px 0px 25px 5px rgba(0, 0, 0, 0.42);
+  box-shadow: 0px 0px 25px 5px rgba(0, 0, 0, 0.42);
+}
+.login-page {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  height: 100vh;
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    padding: 2rem;
+    @extend .shadow;
+    max-width: 30rem;
+  }
 }

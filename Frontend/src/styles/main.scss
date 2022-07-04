@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
 // Shared
 @import "./shared/colors.scss";
 
@@ -23,7 +25,7 @@
 @import "./pages/mint-page.scss";
 
 @font-face {
-  font-family: "FatFrank";
+  font-family: "Roboto", sans-serif;
   src: local("FatFrank"), url(../fonts/FatFrank.woff) format("woff");
   /* other formats include: 'woff2', 'truetype, 'opentype',
                             'embedded-opentype', and 'svg' */

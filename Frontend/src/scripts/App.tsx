@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Policy from "./pages/Policy";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import LoginPage from "./pages/LoginPage/LoginPage";
 
 const App = () => {
   const socials = {};
@@ -25,6 +26,7 @@ const App = () => {
               <Policy filePath="/assets/policies/terms-and-conditions.md" />
             }
           /> */}
+          <Route path="/login" element={<LoginPage />}></Route>
         </Routes>
         <Footer
           Links={
